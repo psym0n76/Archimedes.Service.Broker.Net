@@ -7,7 +7,7 @@
             switch (message)
             {
                 case "Price":
-                    //return new BrokerProcessPrice();
+                    return new BrokerProcessPrice();
                 case "Trade":
                     return new BrokerProcessTrade();
                 case "Candle":

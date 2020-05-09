@@ -2,7 +2,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-//using Fx.MessageBus.Publishers;
+using Fx.MessageBus.Publishers;
 
 namespace Fx.Broker.Fxcm.Runner
 {
@@ -86,8 +86,8 @@ namespace Fx.Broker.Fxcm.Runner
         {
             Console.WriteLine($"Post Market Order {tradeId}");
 
-            //INetQPublish p = new NetQPublish();
-            //p.PublishMessage(tradeId);
+            INetQPublish p = new NetQPublish();
+            p.PublishMessage(tradeId);
         }
     }
 }

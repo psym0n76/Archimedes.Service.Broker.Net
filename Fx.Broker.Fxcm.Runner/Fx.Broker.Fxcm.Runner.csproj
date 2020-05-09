@@ -112,6 +112,10 @@
       <Project>{332B1F27-7F00-40D8-B601-38FD881EFED1}</Project>
       <Name>Fx.Broker.Fxcm</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Fx.MessageBus\Fx.MessageBus.csproj">
+      <Project>{f10d9a6c-5d7d-49e0-afa1-b96842d5dee5}</Project>
+      <Name>Fx.MessageBus</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
