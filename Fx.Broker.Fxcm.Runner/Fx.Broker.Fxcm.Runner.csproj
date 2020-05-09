@@ -52,8 +52,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Archimedes.Library, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\..\Archimedes.Service.BrokerDotNet\packages\Archimedes.Library.1.0.62\lib\netstandard2.0\Archimedes.Library.dll</HintPath>
-      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Archimedes.Library.1.0.62\lib\netstandard2.0\Archimedes.Library.dll</HintPath>
     </Reference>
     <Reference Include="EasyNetQ, Version=4.0.8.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\..\WebApplication1\packages\EasyNetQ.4.0.8\lib\net461\EasyNetQ.dll</HintPath>
