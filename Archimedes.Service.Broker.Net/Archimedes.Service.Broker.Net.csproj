@@ -146,6 +146,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="Properties\PublishProfiles\FolderProfile.pubxml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Fx.Broker.Fxcm.Runner\Fx.Broker.Fxcm.Runner.csproj">
