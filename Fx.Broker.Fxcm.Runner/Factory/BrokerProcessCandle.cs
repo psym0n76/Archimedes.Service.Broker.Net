@@ -5,7 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Archimedes.Library.Message;
 using Archimedes.Library.Message.Dto;
-using Fx.MessageBus.Publishers;
+//using Fx.MessageBus.Publishers;
 
 
 // ReSharper disable once CheckNamespace
@@ -61,8 +61,8 @@ namespace Fx.Broker.Fxcm.Runner
 
         private static void PublishMessage(ResponseCandle message)
         {
-            INetQPublish p = new NetQPublish();
-            p.PublishCandleMessage(message);
+            //INetQPublish p = new NetQPublish();
+            //p.PublishCandleMessage(message);
         }
 
         private static IList<Candle> GetHistory(Session session, SampleParams sampleParams)
