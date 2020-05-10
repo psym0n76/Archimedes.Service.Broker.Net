@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Mvc;
+using Fx.Broker.Fxcm.Runner;
 
 namespace Archimedes.Service.BrokerDotNet
 {
@@ -11,7 +12,7 @@ namespace Archimedes.Service.BrokerDotNet
             AreaRegistration.RegisterAllAreas();
             GlobalConfiguration.Configure(WebApiConfig.Register);
 
-            Task.Run(() => { Fx.Broker.Fxcm.Runner.Program.GetHistPricesRunner(); });
+            Task.Run(Program.GetHistPricesRunner);
         }
     }
 }
