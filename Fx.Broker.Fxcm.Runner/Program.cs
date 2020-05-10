@@ -29,14 +29,12 @@ namespace Fx.Broker.Fxcm.Runner
             //session.Connect();
             //IList<Candle> candleHistory = GetHistory(session, sampleParams);
             //session.Close();
-
             //return candleHistory.Count;
 
             Console.WriteLine("Starting....");
 
             var brokerSession = new BrokerSession();
             var sampleParams = new SampleParams(ConfigurationManager.AppSettings);
-
             var consumer = new MessageBrokerConsumer(sampleParams, brokerSession);
 
             consumer.Run();
