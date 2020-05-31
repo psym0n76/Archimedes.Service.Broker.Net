@@ -1,15 +1,21 @@
 ﻿using System;
+using System.Diagnostics;
 using Archimedes.Library.Message;
 using EasyNetQ;
-    
+using NLog;
+
 
 namespace Fx.Broker.Fxcm.Runner
 {
     public class MessageBrokerConsumer
     {
+
+        private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
+
         private readonly SampleParams _sampleParams;
         private readonly IBrokerSession _brokerSession;
         private Session _session;
+
 
         public MessageBrokerConsumer(SampleParams sampleParams, IBrokerSession brokerSession)
         {
@@ -21,22 +27,32 @@ namespace Fx.Broker.Fxcm.Runner
 
         public void Run()
         {
+
+            var stopWatch = new Stopwatch();
+            stopWatch.Start();
+
             try
             {
+                _logger.Info($"Get Session Token:{_sampleParams.AccessToken} URL:{_sampleParams.Url}");
                 _session = _brokerSession.GetSession(_sampleParams.AccessToken, _sampleParams.Url);
+
                 _session.Connect();
 
+                _logger.Info($"Connected to URL:{_sampleParams.Url}");
                 Console.WriteLine("Connected");
 
                 SubscribeCandleMessage();
 
+                _logger.Info($"Disconnected:{_sampleParams.Url} - Elapsed: {stopWatch.Elapsed:dd\\.hh\\:mm\\:ss}");
+
                 Console.WriteLine("Disconnected");
                 Console.WriteLine();
-
+                stopWatch.Stop();
             }
             catch (Exception e)
             {
-                Console.WriteLine("Exception: {0}", e.Message);
+                _logger.Info($"Disconnected:{_sampleParams.Url} - Elapsed: {stopWatch.Elapsed:dd\\.hh\\:mm\\:ss}");
+                _logger.Error($"Error message:{e.Message} StackTrade:{e.StackTrace}");
             }
         }
 
@@ -51,7 +67,7 @@ namespace Fx.Broker.Fxcm.Runner
                         HandleTextMessage(candle);
                     }
                 });
-                Console.WriteLine("Listening for Candle messages. Hit <return> to quit.");
+                _logger.Info("Listening for Candle messages. Hit <return> to quit");
                 Console.ReadLine();
             }
         }

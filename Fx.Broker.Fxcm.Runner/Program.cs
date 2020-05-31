@@ -1,13 +1,16 @@
 using System;
 using System.Configuration;
+using NLog;
 
 namespace Fx.Broker.Fxcm.Runner
 {
     public class Program
     {
+        private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
+
         static void Main(string[] args)
         {
-            Console.WriteLine("Starting....");
+            _logger.Info("Starting.....");
 
             var brokerSession = new BrokerSession();
             var sampleParams = new SampleParams(ConfigurationManager.AppSettings);
@@ -31,7 +34,7 @@ namespace Fx.Broker.Fxcm.Runner
             //session.Close();
             //return candleHistory.Count;
 
-            Console.WriteLine("Starting....");
+            _logger.Info("Starting.....");
 
             var brokerSession = new BrokerSession();
             var sampleParams = new SampleParams(ConfigurationManager.AppSettings);
@@ -40,7 +43,8 @@ namespace Fx.Broker.Fxcm.Runner
             consumer.Run();
 
             Console.WriteLine("Finishing....");
-            Console.ReadLine();
+            _logger.Info("Finishing.....");
+
         }
     }
 }
