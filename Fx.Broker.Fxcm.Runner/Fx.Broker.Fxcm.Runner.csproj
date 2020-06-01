@@ -95,6 +95,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Factory\BrokerProcessCandle.cs" />
+    <Compile Include="QueueTesting.cs" />
     <Compile Include="Session\BrokerSession.cs" />
     <Compile Include="Domain\SampleParams.cs" />
     <Compile Include="Factory\BrokerProcessFactory.cs" />

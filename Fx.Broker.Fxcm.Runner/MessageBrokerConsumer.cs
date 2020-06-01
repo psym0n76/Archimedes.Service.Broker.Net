@@ -39,14 +39,11 @@ namespace Fx.Broker.Fxcm.Runner
                 _session.Connect();
 
                 _logger.Info($"Connected to URL:{_sampleParams.Url}");
-                Console.WriteLine("Connected");
 
                 SubscribeCandleMessage();
 
                 _logger.Info($"Disconnected:{_sampleParams.Url} - Elapsed: {stopWatch.Elapsed:dd\\.hh\\:mm\\:ss}");
 
-                Console.WriteLine("Disconnected");
-                Console.WriteLine();
                 stopWatch.Stop();
             }
             catch (Exception e)

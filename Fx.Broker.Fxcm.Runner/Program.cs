@@ -43,6 +43,9 @@ namespace Fx.Broker.Fxcm.Runner
             {
                 _logger.Info("Starting Hist Price Runner.....");
 
+                var test = new QueueTesting();
+                test.TestQueue();
+
                 var brokerSession = new BrokerSession();
                 var sampleParams = new SampleParams(ConfigurationManager.AppSettings);
                 var consumer = new MessageBrokerConsumer(sampleParams, brokerSession);
@@ -55,37 +58,6 @@ namespace Fx.Broker.Fxcm.Runner
             catch (Exception e)
             {
                 _logger.Error(e, "Stopped program because of exception");
-            }
-
-        }
-
-        private void TestQueue()
-        {
-            _logger.Info("Test Queue");
-
-            const string Host = "host=localhost";
-
-            var price = new ResponsePrice()
-            {
-                Status = "Test",
-                Payload = new List<PriceDto>(){new PriceDto(){AskClose = 1.2}},
-                Text = "This is working"
-            };
-
-            _logger.Info(price);
-
-            try
-            {
-                using (var bus = RabbitHutch.CreateBus(Host))
-                {
-                    bus.Publish(price);
-                    _logger.Info("Posted PriceResponse messages. Hit <return> to quit");
-                }
-            }
-            catch (Exception e)
-            {
-
-                _logger.Error(e,"Failed to post to Queue");
             }
         }
     }
