@@ -1,8 +1,7 @@
-using System;
 using System.Collections.Generic;
 using Archimedes.Library.Message;
 using Archimedes.Library.Message.Dto;
-using EasyNetQ;
+using Fx.MessageBus.Publishers;
 using NLog;
 
 namespace Fx.Broker.Fxcm.Runner
@@ -24,20 +23,10 @@ namespace Fx.Broker.Fxcm.Runner
                 Text = "This is working"
             };
 
-            _logger.Info(price);
+            _logger.Info(price.ToString);
 
-            try
-            {
-                using (var bus = RabbitHutch.CreateBus(Host))
-                {
-                    bus.Publish(price);
-                    _logger.Info("Posted PriceResponse messages. Hit <return> to quit");
-                }
-            }
-            catch (Exception e)
-            {
-                _logger.Error(e,"Failed to post to Queue");
-            }
+            var pub = new NetQPublish();
+            pub.PublishPriceMessage(price);
         }
     }
 }

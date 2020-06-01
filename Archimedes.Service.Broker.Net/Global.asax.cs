@@ -20,7 +20,10 @@ namespace Archimedes.Service.BrokerDotNet
                 AreaRegistration.RegisterAllAreas();
                 GlobalConfiguration.Configure(WebApiConfig.Register);
 
-                Task.Run(Program.GetHistPricesRunner);
+                //Task.Run(Program.GetHistPricesRunner);
+
+                Program.GetHistPricesRunner();
+
             }
             catch (Exception e)
             {

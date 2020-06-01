@@ -7,5 +7,8 @@ namespace Fx.MessageBus.Publishers
         void PublishMessage(string message);
         void PublishTradeMessage(ResponseTrade message);
         void PublishCandleMessage(ResponseCandle message);
+        void PublishPriceMessage(ResponsePrice message);
+
+        
     }
 }

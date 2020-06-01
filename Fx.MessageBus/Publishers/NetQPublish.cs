@@ -32,5 +32,14 @@ namespace Fx.MessageBus.Publishers
                 bus.Publish(message);
             }
         }
+
+        public void PublishPriceMessage(ResponsePrice message)
+        {
+            using (var bus = RabbitHutch.CreateBus(Host))
+            {
+
+                bus.Publish<ResponsePrice>(message);
+            }
+        }
     }
 }
