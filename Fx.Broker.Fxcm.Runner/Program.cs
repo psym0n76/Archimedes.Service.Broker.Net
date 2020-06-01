@@ -7,43 +7,50 @@ namespace Fx.Broker.Fxcm.Runner
     public class Program
     {
         private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
-
-        static void Main(string[] args)
+        public static void Main(string[] args)
         {
-            _logger.Info("Starting.....");
+            try
+            {
+                _logger.Info("Initialise Main");
 
-            var brokerSession = new BrokerSession();
-            var sampleParams = new SampleParams(ConfigurationManager.AppSettings);
+                var brokerSession = new BrokerSession();
+                var sampleParams = new SampleParams(ConfigurationManager.AppSettings);
 
-            var consumer = new MessageBrokerConsumer(sampleParams, brokerSession);
+                var consumer = new MessageBrokerConsumer(sampleParams, brokerSession);
 
-            consumer.Run();
+                consumer.Run();
+            }
+            catch (Exception e)
+            {
+                _logger.Error(e, "Stopped program because of exception");
+            }
+            finally
+            {
+                NLog.LogManager.Shutdown();
+            }
 
-            Console.WriteLine("Finishing....");
-            Console.ReadLine();
         }
 
         public static void GetHistPricesRunner()
         {
-            //SampleParams sampleParams = new SampleParams(ConfigurationManager.AppSettings);
-            //PrintSampleParams("GetHistPrices", sampleParams);
 
-            //var session = new Session(sampleParams.AccessToken, sampleParams.Url);
-            //session.Connect();
-            //IList<Candle> candleHistory = GetHistory(session, sampleParams);
-            //session.Close();
-            //return candleHistory.Count;
+            try
+            {
+                _logger.Info("Starting Hist Price Runner.....");
 
-            _logger.Info("Starting.....");
+                var brokerSession = new BrokerSession();
+                var sampleParams = new SampleParams(ConfigurationManager.AppSettings);
+                var consumer = new MessageBrokerConsumer(sampleParams, brokerSession);
 
-            var brokerSession = new BrokerSession();
-            var sampleParams = new SampleParams(ConfigurationManager.AppSettings);
-            var consumer = new MessageBrokerConsumer(sampleParams, brokerSession);
+                consumer.Run();
 
-            consumer.Run();
+                _logger.Info("Finishing.....");
+            }
 
-            Console.WriteLine("Finishing....");
-            _logger.Info("Finishing.....");
+            catch (Exception e)
+            {
+                _logger.Error(e, "Stopped program because of exception");
+            }
 
         }
     }
