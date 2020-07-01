@@ -44,9 +44,7 @@ namespace Fx.Broker.Fxcm.Runner
                 test.TestQueue(sampleParams.RabbitHutchConnection);
 
                 //var brokerSession = new BrokerSession();
-
                 //var consumer = new MessageBrokerConsumer(sampleParams, brokerSession);
-
                 //consumer.Run();
 
                 _logger.Info("Finishing.....");
