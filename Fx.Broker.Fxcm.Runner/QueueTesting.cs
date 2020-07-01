@@ -18,7 +18,7 @@ namespace Fx.Broker.Fxcm.Runner
             {
                 Status = "Test",
                 Payload = new List<PriceDto>(){new PriceDto(){AskClose = 1.2}},
-                Text = "This is working"
+                Text = "Test Message"
             };
 
             _logger.Info(price.ToString);
