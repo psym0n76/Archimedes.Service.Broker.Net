@@ -12,7 +12,15 @@ namespace Fx.Broker.Fxcm.Runner
             {
                 Console.WriteLine("Process Price Update");
                 session.SubscribeSymbol(sampleParams.Instrument);
-                session.PriceUpdate += Session_PriceUpdate;
+                //session.PriceUpdate += Session_PriceUpdate;
+
+                session.PriceUpdate += (PriceUpdate priceUpdate) =>
+                {
+                    INetQPublish p = new NetQPublish(sampleParams.RabbitHutchConnection);
+                    p.PublishMessage("");
+                    Console.WriteLine($"Date: {priceUpdate.Updated} Ask: {priceUpdate.Ask} Bid: {priceUpdate.Bid}");
+                };
+
                 Console.ReadLine();
 
                 // session.PriceUpdate -= Session_PriceUpdate;
@@ -20,11 +28,11 @@ namespace Fx.Broker.Fxcm.Runner
             }).ConfigureAwait(false);
         }
 
-        private static void Session_PriceUpdate(PriceUpdate priceUpdate)
-        {
-            INetQPublish p = new NetQPublish();
-            p.PublishMessage("");
-            Console.WriteLine($"Date: {priceUpdate.Updated} Ask: {priceUpdate.Ask} Bid: {priceUpdate.Bid}");
-        }
+        //private static void Session_PriceUpdate(PriceUpdate priceUpdate)
+        //{
+        //    INetQPublish p = new NetQPublish();
+        //    p.PublishMessage("");
+        //    Console.WriteLine($"Date: {priceUpdate.Updated} Ask: {priceUpdate.Ask} Bid: {priceUpdate.Bid}");
+        //}
     }
 }

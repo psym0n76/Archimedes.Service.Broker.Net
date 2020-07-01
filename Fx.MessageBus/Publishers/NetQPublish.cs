@@ -5,11 +5,16 @@ namespace Fx.MessageBus.Publishers
 {
     public class NetQPublish : INetQPublish
     {
-        private const string Host = "host=localhost";
+        private readonly string _host;
+
+        public NetQPublish(string host)
+        {
+            _host = host;
+        }
 
         public void PublishMessage(string message)
         {
-            using (var bus = RabbitHutch.CreateBus(Host))
+            using (var bus = RabbitHutch.CreateBus(_host))
             {
                 bus.Publish(message);
             }
@@ -17,28 +22,25 @@ namespace Fx.MessageBus.Publishers
 
         public void PublishTradeMessage(ResponseTrade message)
         {
-            using (var bus = RabbitHutch.CreateBus(Host))
+            using (var bus = RabbitHutch.CreateBus(_host))
             {
-
                 bus.Publish(message);
             }
         }
 
         public void PublishCandleMessage(ResponseCandle message)
         {
-            using (var bus = RabbitHutch.CreateBus(Host))
+            using (var bus = RabbitHutch.CreateBus(_host))
             {
-
                 bus.Publish(message);
             }
         }
 
         public void PublishPriceMessage(ResponsePrice message)
         {
-            using (var bus = RabbitHutch.CreateBus(Host))
+            using (var bus = RabbitHutch.CreateBus(_host))
             {
-
-                bus.Publish<ResponsePrice>(message);
+                bus.Publish(message);
             }
         }
     }

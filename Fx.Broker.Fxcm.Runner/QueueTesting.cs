@@ -10,11 +10,9 @@ namespace Fx.Broker.Fxcm.Runner
     {
         private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
 
-        public void TestQueue()
+        public void TestQueue(string host)
         {
             _logger.Info("Test Queue");
-
-            const string Host = "host=localhost";
 
             var price = new ResponsePrice()
             {
@@ -25,7 +23,7 @@ namespace Fx.Broker.Fxcm.Runner
 
             _logger.Info(price.ToString);
 
-            var pub = new NetQPublish();
+            var pub = new NetQPublish(host);
             pub.PublishPriceMessage(price);
         }
     }

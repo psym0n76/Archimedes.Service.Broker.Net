@@ -18,7 +18,18 @@ namespace Fx.Broker.Fxcm.Runner
                 Console.WriteLine("Process Market Order");
                 session.Subscribe(TradingTable.OpenPosition);
                 session.Subscribe(TradingTable.Order);
-                session.OpenPositionUpdate += Session_OpenPositionUpdate;
+                //session.OpenPositionUpdate += Session_OpenPositionUpdate;
+
+                session.OpenPositionUpdate += (UpdateAction action, OpenPosition obj) =>
+                {
+                    if (action != UpdateAction.Insert) return;
+                    Console.WriteLine(
+                        $"{Enum.GetName(typeof(UpdateAction), action)} Trade ID: {obj.TradeId}; Amount: {obj.AmountK}; Rate: {obj.Open}");
+                    SyncResponseEvent.Set();
+                    PostTradeIdToQueue(obj.TradeId, sampleParams.RabbitHutchConnection);
+                };
+
+
                 session.OrderUpdate += Session_OrderUpdate;
 
                 CreateMarketOrder(session, sampleParams);
@@ -31,7 +42,10 @@ namespace Fx.Broker.Fxcm.Runner
                 session.Unsubscribe(TradingTable.OpenPosition);
                 session.Unsubscribe(TradingTable.Order);
                 session.OrderUpdate -= Session_OrderUpdate;
-                session.OpenPositionUpdate -= Session_OpenPositionUpdate;
+                // session.OpenPositionUpdate -= Session_OpenPositionUpdate;
+
+
+
 
             }).ConfigureAwait(false);
         }
@@ -44,14 +58,14 @@ namespace Fx.Broker.Fxcm.Runner
             }
         }
 
-        private static void Session_OpenPositionUpdate(UpdateAction action, OpenPosition obj)
-        {
-            if (action != UpdateAction.Insert) return;
-            Console.WriteLine(
-                $"{Enum.GetName(typeof(UpdateAction), action)} Trade ID: {obj.TradeId}; Amount: {obj.AmountK}; Rate: {obj.Open}");
-            SyncResponseEvent.Set();
-            PostTradeIdToQueue(obj.TradeId);
-        }
+        //private static void Session_OpenPositionUpdate(UpdateAction action, OpenPosition obj)
+        //{
+        //    if (action != UpdateAction.Insert) return;
+        //    Console.WriteLine(
+        //        $"{Enum.GetName(typeof(UpdateAction), action)} Trade ID: {obj.TradeId}; Amount: {obj.AmountK}; Rate: {obj.Open}");
+        //    SyncResponseEvent.Set();
+        //    PostTradeIdToQueue(obj.TradeId);
+        //}
 
         private static void CreateMarketOrder(Session session, SampleParams sampleParams)
         {
@@ -82,11 +96,11 @@ namespace Fx.Broker.Fxcm.Runner
             session.OpenTrade(openTradeParams);
         }
 
-        private static void PostTradeIdToQueue(string tradeId)
+        private static void PostTradeIdToQueue(string tradeId,string host)
         {
             Console.WriteLine($"Post Market Order {tradeId}");
 
-            INetQPublish p = new NetQPublish();
+            INetQPublish p = new NetQPublish(host);
             p.PublishMessage(tradeId);
         }
     }

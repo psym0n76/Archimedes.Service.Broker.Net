@@ -23,7 +23,7 @@ namespace Fx.Broker.Fxcm.Runner
 
                 var candleHistoryDto = GetCandleHistoryDto(candleHistory);
 
-                PublishMessage(candleHistoryDto);
+                PublishMessage(candleHistoryDto,sampleParams);
                 PrintHistory(candleHistory);
 
             }).ConfigureAwait(false);
@@ -59,9 +59,9 @@ namespace Fx.Broker.Fxcm.Runner
             return result;
         }
 
-        private static void PublishMessage(ResponseCandle message)
+        private static void PublishMessage(ResponseCandle message,SampleParams sampleParams)
         {
-            INetQPublish p = new NetQPublish();
+            INetQPublish p = new NetQPublish(sampleParams.RabbitHutchConnection);
             p.PublishCandleMessage(message);
         }
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Globalization;
+using EasyNetQ;
 
 namespace Fx.Broker.Fxcm.Runner
 {
@@ -8,6 +9,7 @@ namespace Fx.Broker.Fxcm.Runner
     {
         public SampleParams(NameValueCollection args)
         {
+            RabbitHutchConnection = GetArgument(args, "RabbitHutchConnection");
             AccessToken = GetRequiredArgument(args, "AccessToken");
             Account = GetArgument(args, "Account");
             Url = GetRequiredArgument(args, "URL");
@@ -19,6 +21,8 @@ namespace Fx.Broker.Fxcm.Runner
             Count = GetCount(args);
             Lots = GetLots(args);
         }
+
+        public string RabbitHutchConnection { get; }
 
         public string AccessToken { get; }
 
