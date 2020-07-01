@@ -43,11 +43,11 @@ namespace Fx.Broker.Fxcm.Runner
                 var test = new QueueTesting();
                 test.TestQueue(sampleParams.RabbitHutchConnection);
 
-                var brokerSession = new BrokerSession();
+                //var brokerSession = new BrokerSession();
 
-                var consumer = new MessageBrokerConsumer(sampleParams, brokerSession);
+                //var consumer = new MessageBrokerConsumer(sampleParams, brokerSession);
 
-                consumer.Run();
+                //consumer.Run();
 
                 _logger.Info("Finishing.....");
             }
