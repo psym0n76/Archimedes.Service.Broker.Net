@@ -2,9 +2,9 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Fx.MessageBus.Publishers;
+using Fx.Broker.Fxcm;
 
-namespace Fx.Broker.Fxcm.Runner
+namespace Archimedes.Broker.Fxcm.Runner
 {
     public class BrokerProcessTrade : IBrokerProcess
     {
@@ -26,7 +26,7 @@ namespace Fx.Broker.Fxcm.Runner
                     Console.WriteLine(
                         $"{Enum.GetName(typeof(UpdateAction), action)} Trade ID: {obj.TradeId}; Amount: {obj.AmountK}; Rate: {obj.Open}");
                     SyncResponseEvent.Set();
-                    PostTradeIdToQueue(obj.TradeId, sampleParams.RabbitHutchConnection);
+                    //PostTradeIdToQueue(obj.TradeId, sampleParams.RabbitHutchConnection);
                 };
 
 
@@ -96,12 +96,12 @@ namespace Fx.Broker.Fxcm.Runner
             session.OpenTrade(openTradeParams);
         }
 
-        private static void PostTradeIdToQueue(string tradeId,string host)
-        {
-            Console.WriteLine($"Post Market Order {tradeId}");
+        //private static void PostTradeIdToQueue(string tradeId,string host)
+        //{
+        //    Console.WriteLine($"Post Market Order {tradeId}");
 
-            INetQPublish p = new NetQPublish(host);
-            p.PublishMessage(tradeId);
-        }
+        //    INetQPublish p = new NetQPublish(host);
+        //    p.PublishMessage(tradeId);
+        //}
     }
 }

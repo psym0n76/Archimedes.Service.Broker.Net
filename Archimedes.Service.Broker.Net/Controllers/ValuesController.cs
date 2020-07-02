@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Web.Http;
 
-namespace Archimedes.Service.BrokerDotNet.Controllers
+namespace Archimedes.Service.Broker.Net.Controllers
 {
     public class ValuesController : ApiController
     {

@@ -1,33 +1,34 @@
 ﻿using System;
-using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Mvc;
-using Fx.Broker.Fxcm.Runner;
+using Archimedes.Service.Broker.Net.DependencyResolution;
 using NLog;
+using StructureMap;
 
-namespace Archimedes.Service.BrokerDotNet
+namespace Archimedes.Service.Broker.Net
 {
     public class WebApiApplication : System.Web.HttpApplication
     {
-        private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
+        private readonly Logger _logger = LogManager.GetCurrentClassLogger();
         protected void Application_Start()
         {
-
             try
             {
-                _logger.Info("Started configuration:");
+                _logger.Info("Application Start:");
 
                 AreaRegistration.RegisterAllAreas();
                 GlobalConfiguration.Configure(WebApiConfig.Register);
 
-                //Task.Run(Program.GetHistPricesRunner);
+                var container = Container.For<DefaultRegistry>();
+                var runner = container.GetInstance<QueueTestRunner>();
+                runner.Run();
 
-                Program.GetHistPricesRunner();
-
+                //Program.GetHistPricesRunner();
+                
             }
             catch (Exception e)
             {
-                _logger.Error($"Termination Error: {e.StackTrace}");
+                _logger.Error($"Termination Error: Message:{e.Message} StackTrade: {e.StackTrace}");
             }
         }
     }

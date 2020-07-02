@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Specialized;
 using System.Globalization;
-using EasyNetQ;
 
-namespace Fx.Broker.Fxcm.Runner
+namespace Archimedes.Broker.Fxcm.Runner
 {
     public class SampleParams
     {
@@ -82,42 +81,36 @@ namespace Fx.Broker.Fxcm.Runner
             return sArgument;
         }
 
-        private DateTime GetDateTime(NameValueCollection args, string paramName)
+        private static DateTime GetDateTime(NameValueCollection args, string paramName)
         {
-            string sDateFormat = "MM.dd.yyyy HH:mm:ss";
-            string sDateTime = args[paramName];
-            DateTime dateTime;
+            const string sDateFormat = "MM.dd.yyyy HH:mm:ss";
+            var sDateTime = args[paramName];
             if (!DateTime.TryParseExact(sDateTime, sDateFormat, CultureInfo.InvariantCulture,
-                DateTimeStyles.AssumeLocal, out dateTime))
+                DateTimeStyles.AssumeLocal, out var dateTime))
             {
                 return DateTime.MinValue;
             }
             else
             {
                 if (DateTime.Compare(dateTime, DateTime.Now) >= 0)
-                {
-                    throw new Exception(string.Format("\"{0}\" value {1} is invalid; please fix the value in the configuration file", paramName, sDateTime));
-                }
+                    throw new Exception(
+                        $"\"{paramName}\" value {sDateTime} is invalid; please fix the value in the configuration file");
             }
 
             return dateTime;
         }
 
-        private int GetCount(NameValueCollection args)
+        private static int GetCount(NameValueCollection args)
         {
             const int exceptValue = -1;
-            string sCount = GetArgument(args, "Count") ?? "";
+            var sCount = GetArgument(args, "Count") ?? "";
 
-            if (string.IsNullOrEmpty(sCount) == true)
+            if (string.IsNullOrEmpty(sCount))
             {
                 return exceptValue;
             }
 
-            int count = 0;
-            if (!Int32.TryParse(sCount, out count))
-                return exceptValue;
-            else
-                return count;
+            return !int.TryParse(sCount, out var count) ? exceptValue : count;
         }
     }
 }

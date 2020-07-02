@@ -1,4 +1,7 @@
-﻿namespace Fx.Broker.Fxcm.Runner
+﻿
+using Fx.Broker.Fxcm;
+
+namespace Archimedes.Broker.Fxcm.Runner
 {
     public class BrokerSession : IBrokerSession
     {

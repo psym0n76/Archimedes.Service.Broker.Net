@@ -1,6 +1,6 @@
 ﻿using System.Web.Http;
 
-namespace Archimedes.Service.BrokerDotNet
+namespace Archimedes.Service.Broker.Net
 {
     public static class WebApiConfig
     {

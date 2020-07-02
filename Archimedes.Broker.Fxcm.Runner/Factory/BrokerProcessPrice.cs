@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Fx.MessageBus.Publishers;
+using Fx.Broker.Fxcm;
+//using Fx.MessageBus.Publishers;
 
-namespace Fx.Broker.Fxcm.Runner
+namespace Archimedes.Broker.Fxcm.Runner
 {
     public class BrokerProcessPrice : IBrokerProcess
     {
@@ -16,9 +17,9 @@ namespace Fx.Broker.Fxcm.Runner
 
                 session.PriceUpdate += (PriceUpdate priceUpdate) =>
                 {
-                    INetQPublish p = new NetQPublish(sampleParams.RabbitHutchConnection);
-                    p.PublishMessage("");
-                    Console.WriteLine($"Date: {priceUpdate.Updated} Ask: {priceUpdate.Ask} Bid: {priceUpdate.Bid}");
+                    //INetQPublish p = new NetQPublish(sampleParams.RabbitHutchConnection);
+                    //p.PublishMessage("");
+                    //Console.WriteLine($"Date: {priceUpdate.Updated} Ask: {priceUpdate.Ask} Bid: {priceUpdate.Bid}");
                 };
 
                 Console.ReadLine();

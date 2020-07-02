@@ -5,13 +5,19 @@ using Archimedes.Library.Message.Dto;
 using Fx.MessageBus.Publishers;
 using NLog;
 
-namespace Fx.Broker.Fxcm.Runner
+namespace Archimedes.Broker.Fxcm.Runner
 {
-    public class QueueTesting
+    public class QueueTesting : IQueueTesting
     {
         private readonly Logger _logger = LogManager.GetCurrentClassLogger();
+        private readonly INetQPublish _netQPublish;
 
-        public void TestQueue(string host)
+        public QueueTesting(INetQPublish netQPublish)
+        {
+            _netQPublish = netQPublish;
+        }
+
+        public void QueueTest()
         {
             try
             {
@@ -20,15 +26,12 @@ namespace Fx.Broker.Fxcm.Runner
                 var price = new ResponsePrice()
                 {
                     Status = "Test",
-                    Payload = new List<PriceDto>() {new PriceDto() {AskClose = 1.2}},
+                    Payload = new List<PriceDto>() {new PriceDto() {BidOpen = 1.34, BidHigh = 1.40, BidLow = 1.3, BidClose = 1.39,AskOpen = 1.34, AskHigh = 1.40, AskLow = 1.3, AskClose = 1.39}},
                     Text = "Test Message"
                 };
 
                 _logger.Info(price);
-                _logger.Info(host);
-
-                var pub = new NetQPublish(host);
-                pub.PublishPriceMessage(price);
+                _netQPublish.PublishPriceMessage(price);
 
             }
             catch (Exception e)

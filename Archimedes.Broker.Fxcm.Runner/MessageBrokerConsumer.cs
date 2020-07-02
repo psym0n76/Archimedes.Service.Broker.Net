@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Diagnostics;
-using Archimedes.Library.Message;
-using EasyNetQ;
+using Fx.Broker.Fxcm;
 using NLog;
 
 
-namespace Fx.Broker.Fxcm.Runner
+namespace Archimedes.Broker.Fxcm.Runner
 {
     public class MessageBrokerConsumer
     {
@@ -23,8 +22,6 @@ namespace Fx.Broker.Fxcm.Runner
             _brokerSession = brokerSession;
         }
 
-        private const string Host = "host=localhost";
-
         public void Run()
         {
 
@@ -40,7 +37,7 @@ namespace Fx.Broker.Fxcm.Runner
 
                 _logger.Info($"Connected to URL:{_sampleParams.Url}");
 
-                SubscribeCandleMessage();
+               // SubscribeCandleMessage();
 
                 _logger.Info($"Disconnected:{_sampleParams.Url} - Elapsed: {stopWatch.Elapsed:dd\\.hh\\:mm\\:ss}");
 
@@ -53,34 +50,34 @@ namespace Fx.Broker.Fxcm.Runner
             }
         }
 
-        private void SubscribeCandleMessage()
-        {
-            using (var bus = RabbitHutch.CreateBus(Host))
-            {
-                bus.Subscribe<RequestCandle>("Candle", @interface =>
-                {
-                    if (@interface is RequestCandle candle)
-                    {
-                        HandleTextMessage(candle);
-                    }
-                });
-                _logger.Info("Listening for Candle messages. Hit <return> to quit");
-                Console.ReadLine();
-            }
-        }
+        //private void SubscribeCandleMessage()
+        //{
+        //    using (var bus = RabbitHutch.CreateBus(Host))
+        //    {
+        //        bus.Subscribe<RequestCandle>("Candle", @interface =>
+        //        {
+        //            if (@interface is RequestCandle candle)
+        //            {
+        //                HandleTextMessage(candle);
+        //            }
+        //        });
+        //        _logger.Info("Listening for Candle messages. Hit <return> to quit");
+        //        Console.ReadLine();
+        //    }
+        //}
 
-        private void HandleTextMessage(IRequest message)
-        {
-            if (message == null) return;
+        //private void HandleTextMessage(IRequest message)
+        //{
+        //    if (message == null) return;
 
-            var process = BrokerProcessFactory.Get(message.Text);
+        //    var process = BrokerProcessFactory.Get(message.Text);
 
-            // return a message of some kind
-            process.Run(_session, _sampleParams);
+        //    // return a message of some kind
+        //    process.Run(_session, _sampleParams);
 
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine("Got message: {0}", message.Text);
-            Console.ResetColor();
-        }
+        //    Console.ForegroundColor = ConsoleColor.Red;
+        //    Console.WriteLine("Got message: {0}", message.Text);
+        //    Console.ResetColor();
+        //}
     }
 }

@@ -1,1 +1,1 @@
-﻿<%@ Application Codebehind="Global.asax.cs" Inherits="Archimedes.Service.BrokerDotNet.WebApiApplication" Language="C#" %>
+﻿<%@ Application Codebehind="Global.asax.cs" Inherits="Archimedes.Service.Broker.Net.WebApiApplication" Language="C#" %>

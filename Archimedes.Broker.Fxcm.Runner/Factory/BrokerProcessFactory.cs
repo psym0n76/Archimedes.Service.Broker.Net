@@ -1,4 +1,4 @@
-﻿namespace Fx.Broker.Fxcm.Runner
+﻿namespace Archimedes.Broker.Fxcm.Runner
 {
     public class BrokerProcessFactory
     {

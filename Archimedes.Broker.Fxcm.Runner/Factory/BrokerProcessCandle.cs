@@ -5,11 +5,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using Archimedes.Library.Message;
 using Archimedes.Library.Message.Dto;
-using Fx.MessageBus.Publishers;
+using Fx.Broker.Fxcm;
 
 
 // ReSharper disable once CheckNamespace
-namespace Fx.Broker.Fxcm.Runner
+namespace Archimedes.Broker.Fxcm.Runner
 {
     public class BrokerProcessCandle : IBrokerProcess
     {
@@ -23,7 +23,7 @@ namespace Fx.Broker.Fxcm.Runner
 
                 var candleHistoryDto = GetCandleHistoryDto(candleHistory);
 
-                PublishMessage(candleHistoryDto,sampleParams);
+                //PublishMessage(candleHistoryDto,sampleParams);
                 PrintHistory(candleHistory);
 
             }).ConfigureAwait(false);
@@ -59,11 +59,11 @@ namespace Fx.Broker.Fxcm.Runner
             return result;
         }
 
-        private static void PublishMessage(ResponseCandle message,SampleParams sampleParams)
-        {
-            INetQPublish p = new NetQPublish(sampleParams.RabbitHutchConnection);
-            p.PublishCandleMessage(message);
-        }
+        //private static void PublishMessage(ResponseCandle message,SampleParams sampleParams)
+        //{
+        //    INetQPublish p = new NetQPublish(sampleParams.RabbitHutchConnection);
+        //    p.PublishCandleMessage(message);
+        //}
 
         private static IList<Candle> GetHistory(Session session, SampleParams sampleParams)
         {

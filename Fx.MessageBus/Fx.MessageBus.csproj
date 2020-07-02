@@ -5,8 +5,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Archimedes.Library" Version="1.0.68" />
-    <PackageReference Include="EasyNetQ" Version="3.7.1" />
+    <PackageReference Include="Archimedes.Library" Version="1.0.70" />
+    <PackageReference Include="EasyNetQ" Version="5.2.0" />
   </ItemGroup>
 
 </Project>
