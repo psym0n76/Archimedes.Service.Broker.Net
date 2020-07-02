@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Archimedes.Library.Message;
 using Archimedes.Library.Message.Dto;
@@ -12,19 +13,28 @@ namespace Fx.Broker.Fxcm.Runner
 
         public void TestQueue(string host)
         {
-            _logger.Info("Test Queue");
-
-            var price = new ResponsePrice()
+            try
             {
-                Status = "Test",
-                Payload = new List<PriceDto>(){new PriceDto(){AskClose = 1.2}},
-                Text = "Test Message"
-            };
+                _logger.Info("Running Test Queue");
 
-            _logger.Info(price.ToString);
+                var price = new ResponsePrice()
+                {
+                    Status = "Test",
+                    Payload = new List<PriceDto>() {new PriceDto() {AskClose = 1.2}},
+                    Text = "Test Message"
+                };
 
-            var pub = new NetQPublish(host);
-            pub.PublishPriceMessage(price);
+                _logger.Info(price);
+                _logger.Info(host);
+
+                var pub = new NetQPublish(host);
+                pub.PublishPriceMessage(price);
+
+            }
+            catch (Exception e)
+            {
+                _logger.Error($"Error found: Message:{e.Message} StackTrace:{e.StackTrace}");
+            }
         }
     }
 }
