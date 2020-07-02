@@ -17,6 +17,8 @@ namespace Fx.Broker.Fxcm.Runner
                 var brokerSession = new BrokerSession();
                 var sampleParams = new SampleParams(ConfigurationManager.AppSettings);
 
+                _logger.Info($"AppSettings:{sampleParams}");
+
                 var consumer = new MessageBrokerConsumer(sampleParams, brokerSession);
 
                 consumer.Run();
@@ -29,17 +31,18 @@ namespace Fx.Broker.Fxcm.Runner
             {
                 NLog.LogManager.Shutdown();
             }
-
         }
 
         public static void GetHistPricesRunner()
         {
-
             try
             {
                 _logger.Info("Starting Hist Price Runner.....");
 
                 var sampleParams = new SampleParams(ConfigurationManager.AppSettings);
+
+                _logger.Info($"AppSettings:{sampleParams}");
+
                 var test = new QueueTesting();
                 test.TestQueue(sampleParams.RabbitHutchConnection);
 

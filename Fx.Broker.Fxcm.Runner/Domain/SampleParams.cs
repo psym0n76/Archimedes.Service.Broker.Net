@@ -48,7 +48,7 @@ namespace Fx.Broker.Fxcm.Runner
         {
             return
                 $"\n AccessToken={AccessToken}\n Url={Url}\n Account={Account}\n Instrument={Instrument}\n TimeFrame={Timeframe}" +
-                $"\n BuySell={BuySell}\n Lots={Lots}\n DateFrom={DateFrom}\n DateTo={DateTo}";
+                $"\n BuySell={BuySell}\n Lots={Lots}\n DateFrom={DateFrom}\n DateTo={DateTo}\n RabbitHutchConnection={RabbitHutchConnection}";
         }
 
         private static int GetLots(NameValueCollection args)
