@@ -9,7 +9,7 @@ namespace Fx.Broker.Fxcm.Runner
 {
     public class QueueTesting
     {
-        private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
+        private readonly Logger _logger = LogManager.GetCurrentClassLogger();
 
         public void TestQueue(string host)
         {
