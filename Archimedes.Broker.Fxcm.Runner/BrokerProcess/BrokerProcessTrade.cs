@@ -1,38 +1,59 @@
 ﻿using Fx.Broker.Fxcm.Models;
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Archimedes.Library.Message;
+using Archimedes.Library.Message.Dto;
 using Fx.Broker.Fxcm;
+using Fx.MessageBus.Publishers;
+using NLog;
 
 namespace Archimedes.Broker.Fxcm.Runner
 {
-    public class BrokerProcessTrade : IBrokerProcess
+    public class BrokerProcessTrade : IBrokerProcessTrade
     {
         private static readonly EventWaitHandle SyncResponseEvent = new EventWaitHandle(false, EventResetMode.AutoReset);
+        private readonly INetQPublish _netQPublish;
+        private readonly Logger _logger = LogManager.GetCurrentClassLogger();
 
-        public void Run(Session session, SampleParams sampleParams)
+        public BrokerProcessTrade(INetQPublish netQPublish)
+        {
+            _netQPublish = netQPublish;
+        }
+
+        public void Run(RequestTrade request)
         {
 
             Task.Run(() =>
             {
-                Console.WriteLine("Process Market Order");
+                _logger.Info("Process Market Order");
+
+                var session = BrokerSession.GetInstance();
+
+                if (session.State == SessionState.Disconnected)
+                {
+                    session.Connect();
+                }
+
                 session.Subscribe(TradingTable.OpenPosition);
                 session.Subscribe(TradingTable.Order);
                 //session.OpenPositionUpdate += Session_OpenPositionUpdate;
 
-                session.OpenPositionUpdate += (UpdateAction action, OpenPosition obj) =>
+                session.OpenPositionUpdate += (action, obj) =>
                 {
                     if (action != UpdateAction.Insert) return;
-                    Console.WriteLine(
-                        $"{Enum.GetName(typeof(UpdateAction), action)} Trade ID: {obj.TradeId}; Amount: {obj.AmountK}; Rate: {obj.Open}");
+
+                    _logger.Info($"{Enum.GetName(typeof(UpdateAction), action)} Trade ID: {obj.TradeId}; Amount: {obj.AmountK}; Rate: {obj.Open}");
+
                     SyncResponseEvent.Set();
-                    //PostTradeIdToQueue(obj.TradeId, sampleParams.RabbitHutchConnection);
+                    PostTradeIdToQueue(obj.TradeId);
                 };
 
 
                 session.OrderUpdate += Session_OrderUpdate;
 
-                CreateMarketOrder(session, sampleParams);
+                CreateMarketOrder(session, request);
 
                 if (!SyncResponseEvent.WaitOne(30000)) //wait 30 sec
                 {
@@ -42,19 +63,16 @@ namespace Archimedes.Broker.Fxcm.Runner
                 session.Unsubscribe(TradingTable.OpenPosition);
                 session.Unsubscribe(TradingTable.Order);
                 session.OrderUpdate -= Session_OrderUpdate;
-                // session.OpenPositionUpdate -= Session_OpenPositionUpdate;
-
-
-
+                //session.OpenPositionUpdate -= Session_OpenPositionUpdate;
 
             }).ConfigureAwait(false);
         }
 
-        private static void Session_OrderUpdate(UpdateAction action, Order obj)
+        private void Session_OrderUpdate(UpdateAction action, Order obj)
         {
             if (action == UpdateAction.Insert || action == UpdateAction.Delete)
             {
-                Console.WriteLine($"{Enum.GetName(typeof(UpdateAction), action)} OrderID: {obj.OrderId}");
+               _logger.Info($"{Enum.GetName(typeof(UpdateAction), action)} OrderID: {obj.OrderId}");
             }
         }
 
@@ -67,14 +85,14 @@ namespace Archimedes.Broker.Fxcm.Runner
         //    PostTradeIdToQueue(obj.TradeId);
         //}
 
-        private static void CreateMarketOrder(Session session, SampleParams sampleParams)
+        private void CreateMarketOrder(Session session, RequestTrade request)
         {
-            Console.WriteLine("Create Market Order");
+            _logger.Info("Create Market Order");
             var openTradeParams = new OpenTradeParams();
 
-            if (!string.IsNullOrEmpty(sampleParams.Account))
+            if (!string.IsNullOrEmpty(request.Account))
             {
-                openTradeParams.AccountId = sampleParams.Account;
+                openTradeParams.AccountId = request.Account;
             }
             else
             {
@@ -87,21 +105,31 @@ namespace Archimedes.Broker.Fxcm.Runner
                 }
             }
 
-            openTradeParams.Amount = sampleParams.Lots ?? 1;
-            openTradeParams.Symbol = sampleParams.Instrument;
-            openTradeParams.IsBuy = sampleParams.BuySell == "B";
+            openTradeParams.Amount = request.Lots;
+            openTradeParams.Symbol = request.Market;
+            openTradeParams.IsBuy = request.BuySell == "B";
             openTradeParams.OrderType = "AtMarket";
             openTradeParams.TimeInForce = "GTC";
 
             session.OpenTrade(openTradeParams);
         }
 
-        //private static void PostTradeIdToQueue(string tradeId,string host)
-        //{
-        //    Console.WriteLine($"Post Market Order {tradeId}");
+        private void PostTradeIdToQueue(string tradeId)
+        {
+            _logger.Info($"Post Market Order {tradeId}");
 
-        //    INetQPublish p = new NetQPublish(host);
-        //    p.PublishMessage(tradeId);
-        //}
+            var trade = new ResponseTrade()
+            {
+                Payload = new List<TradeDto>()
+                {
+                    new TradeDto()
+                    {
+                        Market = tradeId
+                    }
+                }
+            };
+
+            _netQPublish.PublishTradeMessage(trade);
+        }
     }
 }

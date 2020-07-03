@@ -1,13 +1,27 @@
-﻿
+﻿using System.Configuration;
 using Fx.Broker.Fxcm;
 
 namespace Archimedes.Broker.Fxcm.Runner
 {
-    public class BrokerSession : IBrokerSession
+    public static class BrokerSession
     {
-        public Session GetSession(string accessToken, string host)
+        private static volatile Session _instance;
+        private static readonly object _mutex = new object();
+
+        public static Session GetInstance()
         {
-            return new Session(accessToken, host);
+            if (_instance == null)
+            {
+                lock (_mutex)
+                {
+                    if (_instance == null)
+                    {
+                        _instance = new Session(ConfigurationManager.AppSettings["AccessToken"],ConfigurationManager.AppSettings["URL"]);
+                    }
+                }
+            }
+
+            return _instance;
         }
     }
 }

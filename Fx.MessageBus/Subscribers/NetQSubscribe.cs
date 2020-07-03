@@ -6,11 +6,16 @@ namespace Fx.MessageBus.Subscribers
 {
     public class NetQSubscribe : INetQSubscriber
     {
-        private const string Host = "host=localhost";
+        private readonly string _host;
+
+        public NetQSubscribe(string host)
+        {
+            _host = host;
+        }
 
         public void SubscribeCandleMessage()
         {
-            using (var bus = RabbitHutch.CreateBus(Host))
+            using (var bus = RabbitHutch.CreateBus(_host))
             {
                 bus.Subscribe<RequestCandle>("Candle", @interface =>
                 {
@@ -26,7 +31,7 @@ namespace Fx.MessageBus.Subscribers
 
         public void SubscribeTradeMessage()
         {
-            using (var bus = RabbitHutch.CreateBus(Host))
+            using (var bus = RabbitHutch.CreateBus(_host))
             {
                 bus.Subscribe<RequestTrade>("Trade", @interface =>
                 {

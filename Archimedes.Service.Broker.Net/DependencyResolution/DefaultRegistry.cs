@@ -28,8 +28,6 @@ namespace Archimedes.Service.Broker.Net.DependencyResolution {
 
         public DefaultRegistry() {
 
-            var sampleParams = new SampleParams(ConfigurationManager.AppSettings);
-
             Scan(
                 scan => {
                     scan.TheCallingAssembly();
@@ -39,7 +37,7 @@ namespace Archimedes.Service.Broker.Net.DependencyResolution {
             //For<IExample>().Use<Example>();
 
             For<INetQPublish>().Use<NetQPublish>()
-                .Ctor<string>("host").Is(sampleParams.RabbitHutchConnection);
+                .Ctor<string>("host").Is(ConfigurationManager.AppSettings["RabbitHutchConnection"]);
 
             For<IQueueTesting>().Use<QueueTesting>();
 

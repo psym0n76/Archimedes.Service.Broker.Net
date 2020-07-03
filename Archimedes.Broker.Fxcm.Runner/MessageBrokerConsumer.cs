@@ -1,6 +1,6 @@
 ﻿using System;
+using System.Configuration;
 using System.Diagnostics;
-using Fx.Broker.Fxcm;
 using NLog;
 
 
@@ -9,75 +9,46 @@ namespace Archimedes.Broker.Fxcm.Runner
     public class MessageBrokerConsumer
     {
 
-        private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
+        private readonly Logger _logger = LogManager.GetCurrentClassLogger();
+        private readonly ICandleSubscriber _subscriber;
 
-        private readonly SampleParams _sampleParams;
-        private readonly IBrokerSession _brokerSession;
-        private Session _session;
-
-
-        public MessageBrokerConsumer(SampleParams sampleParams, IBrokerSession brokerSession)
+        public MessageBrokerConsumer(ICandleSubscriber subscriber)
         {
-            _sampleParams = sampleParams;
-            _brokerSession = brokerSession;
+            _subscriber = subscriber;
         }
 
         public void Run()
         {
-
             var stopWatch = new Stopwatch();
             stopWatch.Start();
 
+            var url = ConfigurationManager.AppSettings["URL"];
+            var accessToken = ConfigurationManager.AppSettings["AccessToken"];
+
             try
             {
-                _logger.Info($"Get Session Token:{_sampleParams.AccessToken} URL:{_sampleParams.Url}");
-                _session = _brokerSession.GetSession(_sampleParams.AccessToken, _sampleParams.Url);
+                _logger.Info($"Get Session Token:{accessToken} URL:{url}");
 
-                _session.Connect();
+                var session = BrokerSession.GetInstance();
 
-                _logger.Info($"Connected to URL:{_sampleParams.Url}");
+                session.Connect();
 
-               // SubscribeCandleMessage();
+                _logger.Info($"Connected to URL:{url}");
 
-                _logger.Info($"Disconnected:{_sampleParams.Url} - Elapsed: {stopWatch.Elapsed:dd\\.hh\\:mm\\:ss}");
+                _subscriber.SubscribeCandleMessage(session);
+                //_subscriber.SubscribeCandleMessage(session,_sampleParams);
+                //_subscriber.SubscribeCandleMessage(session,_sampleParams);
 
-                stopWatch.Stop();
             }
             catch (Exception e)
             {
-                _logger.Info($"Disconnected:{_sampleParams.Url} - Elapsed: {stopWatch.Elapsed:dd\\.hh\\:mm\\:ss}");
                 _logger.Error($"Error message:{e.Message} StackTrade:{e.StackTrace}");
             }
+            finally
+            {
+                _logger.Info($"Disconnected:{url} - Elapsed: {stopWatch.Elapsed:dd\\.hh\\:mm\\:ss}");
+                stopWatch.Stop();
+            }
         }
-
-        //private void SubscribeCandleMessage()
-        //{
-        //    using (var bus = RabbitHutch.CreateBus(Host))
-        //    {
-        //        bus.Subscribe<RequestCandle>("Candle", @interface =>
-        //        {
-        //            if (@interface is RequestCandle candle)
-        //            {
-        //                HandleTextMessage(candle);
-        //            }
-        //        });
-        //        _logger.Info("Listening for Candle messages. Hit <return> to quit");
-        //        Console.ReadLine();
-        //    }
-        //}
-
-        //private void HandleTextMessage(IRequest message)
-        //{
-        //    if (message == null) return;
-
-        //    var process = BrokerProcessFactory.Get(message.Text);
-
-        //    // return a message of some kind
-        //    process.Run(_session, _sampleParams);
-
-        //    Console.ForegroundColor = ConsoleColor.Red;
-        //    Console.WriteLine("Got message: {0}", message.Text);
-        //    Console.ResetColor();
-        //}
     }
 }
