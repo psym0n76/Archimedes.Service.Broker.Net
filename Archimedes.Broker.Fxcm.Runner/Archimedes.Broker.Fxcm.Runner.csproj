@@ -91,9 +91,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BrokerProcess\IBrokerProcessCandle.cs" />
-    <Compile Include="BrokerProcess\IBrokerProcessPrice.cs" />
-    <Compile Include="BrokerProcess\IBrokerProcessTrade.cs" />
+    <Compile Include="BrokerProcess\Interfaces\IBrokerProcessCandle.cs" />
+    <Compile Include="BrokerProcess\Interfaces\IBrokerProcessPrice.cs" />
+    <Compile Include="BrokerProcess\Interfaces\IBrokerProcessTrade.cs" />
     <Compile Include="Session\BrokerSession.cs" />
     <Compile Include="Subscribers\CandleSubscriber.cs" />
     <Compile Include="BrokerProcess\BrokerProcessCandle.cs" />
