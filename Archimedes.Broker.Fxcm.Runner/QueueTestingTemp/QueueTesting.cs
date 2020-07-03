@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using Archimedes.Library.Message;
 using Archimedes.Library.Message.Dto;
 using Fx.MessageBus.Publishers;
@@ -19,28 +21,38 @@ namespace Archimedes.Broker.Fxcm.Runner
 
         public void QueueTest()
         {
+            var counter = 0;
             try
             {
-                _logger.Info("Running Test Queue");
-
-                var price = new ResponsePrice()
+                Task.Run(() =>
                 {
-                    Status = "Test",
-                    Payload = new List<PriceDto>()
+                    _logger.Info("Running Test Queue");
+
+                    var price = new ResponsePrice()
                     {
-                        new PriceDto()
+                        Status = "Test",
+                        Payload = new List<PriceDto>()
                         {
-                            Market = "GBPUSD",
-                            Timestamp = DateTime.Now,
-                            BidOpen = 1.34, BidHigh = 1.40, BidLow = 1.3, BidClose = 1.39,AskOpen = 1.34, AskHigh = 1.40, AskLow = 1.3, AskClose = 1.39
-                        }
-                    },
-                    Text = "Test Message"
-                };
+                            new PriceDto()
+                            {
+                                Market = "GBPUSD",
+                                Timestamp = DateTime.Now,
+                                BidOpen = 1.34, BidHigh = 1.40, BidLow = 1.3, BidClose = 1.39, AskOpen = 1.34,
+                                AskHigh = 1.40, AskLow = 1.3, AskClose = 1.39
+                            }
+                        },
+                        Text = "Test Message"
+                    };
 
-                _logger.Info(price);
-                _netQPublish.PublishPriceMessage(price);
 
+                    while (true)
+                    {
+                        _logger.Info($"MTest Message No. {counter++} Message \n {price}");
+                        _netQPublish.PublishPriceMessage(price);
+                        Thread.Sleep(60000);
+                        
+                    }
+                });
             }
             catch (Exception e)
             {
