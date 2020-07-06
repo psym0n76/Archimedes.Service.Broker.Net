@@ -48,6 +48,7 @@ namespace Archimedes.Broker.Fxcm.Runner
 
                         _logger.Info($"MTest Message No. {counter++} Message \n {price}");
                         _netQPublish.PublishPriceMessage(price);
+                        _netQPublish.PublishPriceMessage(price);
     
                         //Thread.Sleep(0);
                         
