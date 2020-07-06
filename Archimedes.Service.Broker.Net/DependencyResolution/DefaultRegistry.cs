@@ -44,6 +44,8 @@ namespace Archimedes.Service.Broker.Net.DependencyResolution {
             For<IQueueTesting>().Use<QueueTesting>();
             For<IPriceSubscriber>().Use<PriceSubscriber>();
             For<ICandleSubscriber>().Use<CandleSubscriber>();
+            For<IBrokerProcessCandle>().Use<BrokerProcessCandle>();
+            For<IBrokerProcessPrice>().Use<BrokerProcessPriceTest>();
 
             For<IMessageBrokerConsumer>().Use<MessageBrokerConsumer>();
 
