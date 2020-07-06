@@ -6,15 +6,17 @@ using NLog;
 
 namespace Archimedes.Broker.Fxcm.Runner
 {
-    public class MessageBrokerConsumer
+    public class MessageBrokerConsumer : IMessageBrokerConsumer
     {
 
         private readonly Logger _logger = LogManager.GetCurrentClassLogger();
         private readonly ICandleSubscriber _subscriber;
+        private readonly IPriceSubscriber _priceSubscriber;
 
-        public MessageBrokerConsumer(ICandleSubscriber subscriber)
+        public MessageBrokerConsumer(ICandleSubscriber subscriber, IPriceSubscriber priceSubscriber)
         {
             _subscriber = subscriber;
+            _priceSubscriber = priceSubscriber;
         }
 
         public void Run()
@@ -31,11 +33,13 @@ namespace Archimedes.Broker.Fxcm.Runner
 
                 var session = BrokerSession.GetInstance();
 
-                session.Connect();
+                //session.Connect();
 
                 _logger.Info($"Connected to URL:{url}");
 
                 _subscriber.SubscribeCandleMessage(session);
+                _priceSubscriber.SubscribePriceMessage(session);
+                
                 //_subscriber.SubscribeCandleMessage(session,_sampleParams);
                 //_subscriber.SubscribeCandleMessage(session,_sampleParams);
 

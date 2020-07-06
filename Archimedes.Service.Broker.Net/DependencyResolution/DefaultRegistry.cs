@@ -36,10 +36,16 @@ namespace Archimedes.Service.Broker.Net.DependencyResolution {
                 });
             //For<IExample>().Use<Example>();
 
+
+
             For<INetQPublish>().Use<NetQPublish>()
                 .Ctor<string>("host").Is(ConfigurationManager.AppSettings["RabbitHutchConnection"]);
 
             For<IQueueTesting>().Use<QueueTesting>();
+            For<IPriceSubscriber>().Use<PriceSubscriber>();
+            For<ICandleSubscriber>().Use<CandleSubscriber>();
+
+            For<IMessageBrokerConsumer>().Use<MessageBrokerConsumer>();
 
 
         }

@@ -91,19 +91,23 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BrokerProcess\BrokerProcessPriceTest.cs" />
     <Compile Include="BrokerProcess\Interfaces\IBrokerProcessCandle.cs" />
     <Compile Include="BrokerProcess\Interfaces\IBrokerProcessPrice.cs" />
     <Compile Include="BrokerProcess\Interfaces\IBrokerProcessTrade.cs" />
+    <Compile Include="IMessageBrokerConsumer.cs" />
     <Compile Include="Session\BrokerSession.cs" />
-    <Compile Include="Subscribers\CandleSubscriber.cs" />
+    <Compile Include="Subscribers\Candle\CandleSubscriber.cs" />
     <Compile Include="BrokerProcess\BrokerProcessCandle.cs" />
     <Compile Include="BrokerProcess\BrokerProcessPrice.cs" />
     <Compile Include="BrokerProcess\BrokerProcessTrade.cs" />
-    <Compile Include="Subscribers\ICandleSubscriber.cs" />
+    <Compile Include="Subscribers\Candle\ICandleSubscriber.cs" />
     <Compile Include="QueueTestingTemp\IQueueTesting.cs" />
     <Compile Include="MessageBrokerConsumer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QueueTestingTemp\QueueTesting.cs" />
+    <Compile Include="Subscribers\Price\PriceSubscriber.cs" />
+    <Compile Include="Subscribers\Price\IPriceSubscriber.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

@@ -1,4 +1,5 @@
 ﻿using System.Configuration;
+using System.Threading;
 using System.Threading.Tasks;
 using Archimedes.Library.Message;
 using EasyNetQ;
@@ -35,7 +36,8 @@ namespace Archimedes.Broker.Fxcm.Runner
 
                 while (true)
                 {
-                    Task.Delay(1000);
+                    Thread.Sleep(1000);
+                    
                 }
             }
         }

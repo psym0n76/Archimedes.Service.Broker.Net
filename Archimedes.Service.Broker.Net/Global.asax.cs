@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Web.Http;
 using System.Web.Mvc;
+using Archimedes.Broker.Fxcm.Runner;
 using Archimedes.Service.Broker.Net.DependencyResolution;
 using NLog;
 using StructureMap;
@@ -25,7 +26,8 @@ namespace Archimedes.Service.Broker.Net
                 GlobalConfiguration.Configure(WebApiConfig.Register);
 
                 var container = Container.For<DefaultRegistry>();
-                var runner = container.GetInstance<QueueTestRunner>();
+
+                var runner = container.GetInstance<MessageBrokerConsumer>();
                 runner.Run();
 
                 //Program.GetHistPricesRunner();
