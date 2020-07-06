@@ -41,6 +41,13 @@ namespace Archimedes.Broker.Fxcm.Runner
                                     Timestamp = DateTime.Now,
                                     BidOpen = 1.34, BidHigh = 1.40, BidLow = 1.3, BidClose = 1.39, AskOpen = 1.34,
                                     AskHigh = 1.40, AskLow = 1.3, AskClose = 1.39, Granularity = "15",TickQty = 25
+                                },
+                                new PriceDto()
+                                {
+                                    Market = "GBPUSD",
+                                    Timestamp = DateTime.Now,
+                                    BidOpen = 1.34, BidHigh = 1.40, BidLow = 1.3, BidClose = 1.39, AskOpen = 1.34,
+                                    AskHigh = 1.40, AskLow = 1.3, AskClose = 1.39, Granularity = "15",TickQty = 25
                                 }
                             },
                             Text = "Test Message"
@@ -48,17 +55,7 @@ namespace Archimedes.Broker.Fxcm.Runner
 
                         _logger.Info($"MTest Message No. {counter++} Message \n {price}");
                         _netQPublish.PublishPriceMessage(price);
-                        _netQPublish.PublishPriceMessage(price);
-                        _netQPublish.PublishPriceMessage(price);
-                        _netQPublish.PublishPriceMessage(price);
-                        _netQPublish.PublishPriceMessage(price);
-                        _netQPublish.PublishPriceMessage(price);
-                        _netQPublish.PublishPriceMessage(price);
-                        _netQPublish.PublishPriceMessage(price);
-                        _netQPublish.PublishPriceMessage(price);
-                        _netQPublish.PublishPriceMessage(price);
-    
-                        //Thread.Sleep(0);
+                        Thread.Sleep(30000);
                         
                     }
                 });
