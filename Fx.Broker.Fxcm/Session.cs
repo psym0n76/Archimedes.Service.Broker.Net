@@ -25,20 +25,15 @@
  * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+using Fx.Broker.Fxcm.Models;
+using Newtonsoft.Json;
+using Quobject.SocketIoClientDotNet.Client;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
-using System.Threading;
 using System.Collections.Specialized;
 using System.Diagnostics;
-
-using Quobject.SocketIoClientDotNet.Client;
-using Newtonsoft.Json;
-
-using Fx.Broker.Fxcm.Models;
+using System.Net;
+using System.Threading;
 
 // TODO: GetOffers etc: Get snapshot of several tables at once, note that GetModelResponse already supports it.
 // TODO: Subscribe/Unsubscribe: probably multiple tables may be specified.
@@ -59,9 +54,9 @@ namespace Fx.Broker.Fxcm
         Order,
         Account,
         Summary,
-// TODO
-//        LeverageProfile,
-//        Properties
+        // TODO
+        //        LeverageProfile,
+        //        Properties
     }
 
     /// <summary>
@@ -812,28 +807,28 @@ namespace Fx.Broker.Fxcm
             valueCollection.Add("is_buy", parameters.IsBuy == true ? "true" : "false");
 
             if (parameters.Rate != null)
-                valueCollection.Add("rate", parameters.Rate.Value.ToString("G", 
+                valueCollection.Add("rate", parameters.Rate.Value.ToString("G",
                     System.Globalization.CultureInfo.InvariantCulture));
 
             valueCollection.Add("amount", parameters.Amount.ToString());
 
             if (parameters.Stop != null)
-                valueCollection.Add("stop", parameters.Stop.Value.ToString("G", 
+                valueCollection.Add("stop", parameters.Stop.Value.ToString("G",
                     System.Globalization.CultureInfo.InvariantCulture));
 
             if (parameters.TrailingStep != null)
-                valueCollection.Add("trailing_step", parameters.TrailingStep.Value.ToString("G", 
+                valueCollection.Add("trailing_step", parameters.TrailingStep.Value.ToString("G",
                     System.Globalization.CultureInfo.InvariantCulture));
 
             if (parameters.Limit != null)
-                valueCollection.Add("limit", parameters.Limit.Value.ToString("G", 
+                valueCollection.Add("limit", parameters.Limit.Value.ToString("G",
                     System.Globalization.CultureInfo.InvariantCulture));
 
             if (parameters.IsInPips != null)
                 valueCollection.Add("is_in_pips", parameters.IsInPips == true ? "true" : "false");
 
             if (parameters.AtMarket != null)
-                valueCollection.Add("at_market", parameters.AtMarket.Value.ToString("G", 
+                valueCollection.Add("at_market", parameters.AtMarket.Value.ToString("G",
                     System.Globalization.CultureInfo.InvariantCulture));
 
             if (!string.IsNullOrEmpty(parameters.OrderType))
@@ -859,7 +854,7 @@ namespace Fx.Broker.Fxcm
         public string CloseTrade(CloseTradeParams parameters)
         {
             CheckSessionState();
-           
+
             var valueCollection = new NameValueCollection();
             if (parameters.TradeId != null)
                 valueCollection.Add("trade_id", parameters.TradeId);
@@ -879,7 +874,7 @@ namespace Fx.Broker.Fxcm
 
             if (!string.IsNullOrEmpty(parameters.TimeInForce))
                 valueCollection.Add("time_in_force", parameters.TimeInForce);
-          
+
             var response = mHttpRequestExecutor.Execute<Json.TradingBaseResponse>(
                 "POST", "/trading/close_trade", valueCollection);
 
@@ -959,17 +954,17 @@ namespace Fx.Broker.Fxcm
             valueCollection.Add("is_buy", parameters.IsBuy == true ? "true" : "false");
 
             if (parameters.Rate != null)
-                valueCollection.Add("rate", parameters.Rate.Value.ToString("G", 
+                valueCollection.Add("rate", parameters.Rate.Value.ToString("G",
                     System.Globalization.CultureInfo.InvariantCulture));
 
             valueCollection.Add("amount", parameters.Amount.ToString());
 
             if (parameters.Stop != null)
-                valueCollection.Add("stop", parameters.Stop.Value.ToString("G", 
+                valueCollection.Add("stop", parameters.Stop.Value.ToString("G",
                     System.Globalization.CultureInfo.InvariantCulture));
 
             if (parameters.TrailingStep != null)
-                valueCollection.Add("trailing_step", parameters.TrailingStep.Value.ToString("G", 
+                valueCollection.Add("trailing_step", parameters.TrailingStep.Value.ToString("G",
                     System.Globalization.CultureInfo.InvariantCulture));
 
             if (parameters.TrailingStopStep != null)
@@ -977,14 +972,14 @@ namespace Fx.Broker.Fxcm
                     System.Globalization.CultureInfo.InvariantCulture));
 
             if (parameters.Limit != null)
-                valueCollection.Add("limit", parameters.Limit.Value.ToString("G", 
+                valueCollection.Add("limit", parameters.Limit.Value.ToString("G",
                     System.Globalization.CultureInfo.InvariantCulture));
 
             if (parameters.IsInPips != null)
                 valueCollection.Add("is_in_pips", parameters.IsInPips == true ? "true" : "false");
 
             if (parameters.Range != null)
-                valueCollection.Add("range", parameters.Range.Value.ToString("G", 
+                valueCollection.Add("range", parameters.Range.Value.ToString("G",
                     System.Globalization.CultureInfo.InvariantCulture));
 
             if (!string.IsNullOrEmpty(parameters.OrderType))
@@ -1101,8 +1096,8 @@ namespace Fx.Broker.Fxcm
                 valueCollection.Add("limit2", parameters.Limit2.Value.ToString("G",
                     System.Globalization.CultureInfo.InvariantCulture));
 
-              var response = mHttpRequestExecutor.Execute<Json.TradingSimpleOCOResponse>(
-                "POST", "/trading/simple_oco", valueCollection);
+            var response = mHttpRequestExecutor.Execute<Json.TradingSimpleOCOResponse>(
+              "POST", "/trading/simple_oco", valueCollection);
 
             return response.ToOrdersList();
         }
@@ -1200,7 +1195,7 @@ namespace Fx.Broker.Fxcm
                 valueCollection.Add("stop", parameters.Stop.Value.ToString("G",
                     System.Globalization.CultureInfo.InvariantCulture));
 
-            valueCollection.Add("is_stop_in_pips", parameters.IsStopInPips== true ? "true" : "false");
+            valueCollection.Add("is_stop_in_pips", parameters.IsStopInPips == true ? "true" : "false");
 
             if (parameters.TrailingStep != null)
                 valueCollection.Add("trailing_step", parameters.TrailingStep.Value.ToString("G",
@@ -1552,11 +1547,11 @@ namespace Fx.Broker.Fxcm
                     return "Account";
                 case TradingTable.Summary:
                     return "Summary";
-// TODO
-//                case TradingTable.LeverageProfile:
-//                    return "LeverageProfile";
-//                case TradingTable.Properties:
-//                    return "Properties";
+                    // TODO
+                    //                case TradingTable.LeverageProfile:
+                    //                    return "LeverageProfile";
+                    //                case TradingTable.Properties:
+                    //                    return "Properties";
             }
             throw new Exception("Unknown table type");
         }
@@ -1588,11 +1583,11 @@ namespace Fx.Broker.Fxcm
                     return OnAccountUpdate;
                 case TradingTable.Summary:
                     return OnSummaryUpdate;
-// TODO
-//                case TradingTable.LeverageProfile:
-//                    return null;
-//                case TradingTable.Properties:
-//                    return null;
+                    // TODO
+                    //                case TradingTable.LeverageProfile:
+                    //                    return null;
+                    //                case TradingTable.Properties:
+                    //                    return null;
             }
             throw new Exception("Unknown table type");
         }
@@ -1640,12 +1635,12 @@ namespace Fx.Broker.Fxcm
         /// <summary>
         /// The access token.
         /// </summary>
-        private string mAccessToken;
+        private readonly string mAccessToken;
 
         /// <summary>
         /// The server host.
         /// </summary>
-        private string mHost;
+        private readonly string mHost;
 
         /// <summary>
         /// The current session state.
@@ -1665,7 +1660,7 @@ namespace Fx.Broker.Fxcm
         /// <summary>
         /// The lock object which guards access to object's events.
         /// </summary>
-        private object mEventsLock;
+        private readonly object mEventsLock;
 
         /// <summary>
         /// The Http request executor.

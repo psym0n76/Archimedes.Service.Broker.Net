@@ -25,13 +25,9 @@
  * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using Newtonsoft.Json;
 
 namespace Fx.Broker.Fxcm.Json
 {
@@ -44,7 +40,7 @@ namespace Fx.Broker.Fxcm.Json
         /// Instrumentid. Integer from Offer trading table
         /// </summary>
         [JsonProperty("instrument_id")]
-        public string Instrumentid{ get; set; }
+        public string Instrumentid { get; set; }
 
         /// <summary>
         /// Timeframe of the candles

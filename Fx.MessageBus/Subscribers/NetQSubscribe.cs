@@ -1,6 +1,6 @@
-﻿using EasyNetQ;
+﻿using Archimedes.Library.Message;
+using EasyNetQ;
 using System;
-using Archimedes.Library.Message;
 
 namespace Fx.MessageBus.Subscribers
 {

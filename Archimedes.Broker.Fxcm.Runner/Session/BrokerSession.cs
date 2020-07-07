@@ -1,5 +1,5 @@
-﻿using System.Configuration;
-using Fx.Broker.Fxcm;
+﻿using Fx.Broker.Fxcm;
+using System.Configuration;
 
 namespace Archimedes.Broker.Fxcm.Runner
 {
@@ -16,7 +16,7 @@ namespace Archimedes.Broker.Fxcm.Runner
                 {
                     if (_instance == null)
                     {
-                        _instance = new Session(ConfigurationManager.AppSettings["AccessToken"],ConfigurationManager.AppSettings["URL"]);
+                        _instance = new Session(ConfigurationManager.AppSettings["AccessToken"], ConfigurationManager.AppSettings["URL"]);
                     }
                 }
             }

@@ -1,10 +1,10 @@
-﻿using System.Configuration;
-using System.Threading;
-using System.Threading.Tasks;
-using Archimedes.Library.Message;
+﻿using Archimedes.Library.Message;
 using EasyNetQ;
 using Fx.Broker.Fxcm;
 using NLog;
+using System.Configuration;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Archimedes.Broker.Fxcm.Runner
 {

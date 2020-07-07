@@ -1,23 +1,23 @@
-﻿using Fx.Broker.Fxcm.Models;
+﻿using Archimedes.Library.Message;
+using Archimedes.Library.Message.Dto;
+using Fx.Broker.Fxcm;
+using Fx.Broker.Fxcm.Models;
+using NLog;
 using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Archimedes.Library.Message;
-using Archimedes.Library.Message.Dto;
-using Fx.Broker.Fxcm;
-using Fx.MessageBus.Publishers;
-using NLog;
+using Archimedes.Library.EasyNetQ;
 
 namespace Archimedes.Broker.Fxcm.Runner
 {
     public class BrokerProcessTrade : IBrokerProcessTrade
     {
         private static readonly EventWaitHandle SyncResponseEvent = new EventWaitHandle(false, EventResetMode.AutoReset);
-        private readonly INetQPublish _netQPublish;
+        private readonly INetQPublish<ResponseTrade> _netQPublish;
         private readonly Logger _logger = LogManager.GetCurrentClassLogger();
 
-        public BrokerProcessTrade(INetQPublish netQPublish)
+        public BrokerProcessTrade(INetQPublish<ResponseTrade> netQPublish)
         {
             _netQPublish = netQPublish;
         }
@@ -72,7 +72,7 @@ namespace Archimedes.Broker.Fxcm.Runner
         {
             if (action == UpdateAction.Insert || action == UpdateAction.Delete)
             {
-               _logger.Info($"{Enum.GetName(typeof(UpdateAction), action)} OrderID: {obj.OrderId}");
+                _logger.Info($"{Enum.GetName(typeof(UpdateAction), action)} OrderID: {obj.OrderId}");
             }
         }
 
@@ -129,7 +129,7 @@ namespace Archimedes.Broker.Fxcm.Runner
                 }
             };
 
-            _netQPublish.PublishTradeMessage(trade);
+            _netQPublish.PublishMessage(trade);
         }
     }
 }

@@ -1,20 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Archimedes.Library.Message;
+﻿using Archimedes.Library.Message;
 using Archimedes.Library.Message.Dto;
 using Fx.Broker.Fxcm;
-using Fx.MessageBus.Publishers;
 using NLog;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using Archimedes.Library.EasyNetQ;
 
 namespace Archimedes.Broker.Fxcm.Runner
 {
     public class BrokerProcessPrice : IBrokerProcessPrice
     {
-        private readonly INetQPublish _netQPublish;
+        private readonly INetQPublish<ResponsePrice> _netQPublish;
         private readonly Logger _logger = LogManager.GetCurrentClassLogger();
 
-        public BrokerProcessPrice(INetQPublish netQPublish)
+        public BrokerProcessPrice(INetQPublish<ResponsePrice> netQPublish)
         {
             _netQPublish = netQPublish;
         }
@@ -54,7 +54,7 @@ namespace Archimedes.Broker.Fxcm.Runner
                         }
                     };
 
-                    _netQPublish.PublishPriceMessage(priceResponse);
+                    _netQPublish.PublishMessage(priceResponse);
                 };
 
                 Console.ReadLine();

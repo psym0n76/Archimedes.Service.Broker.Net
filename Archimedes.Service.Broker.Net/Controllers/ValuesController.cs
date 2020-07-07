@@ -8,7 +8,7 @@ namespace Archimedes.Service.Broker.Net.Controllers
         // GET api/values
         public IEnumerable<string> Get()
         {
-            return new string[] { "FXCMBroker", "FXCMBroker","FXCMBroker" };
+            return new string[] { "FXCMBroker", "FXCMBroker", "FXCMBroker" };
         }
 
         // GET api/values/5

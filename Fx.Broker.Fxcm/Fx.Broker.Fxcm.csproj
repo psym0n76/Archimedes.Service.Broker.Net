@@ -32,7 +32,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Archimedes.Library, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Archimedes.Library.1.0.79\lib\netstandard2.0\Archimedes.Library.dll</HintPath>
+      <HintPath>..\packages\Archimedes.Library.1.0.81\lib\netstandard2.0\Archimedes.Library.dll</HintPath>
     </Reference>
     <Reference Include="EasyNetQ, Version=5.2.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\EasyNetQ.5.2.0\lib\net461\EasyNetQ.dll</HintPath>

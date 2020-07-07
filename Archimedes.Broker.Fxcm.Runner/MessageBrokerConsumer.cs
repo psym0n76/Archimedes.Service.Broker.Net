@@ -1,8 +1,7 @@
-﻿using System;
+﻿using NLog;
+using System;
 using System.Configuration;
 using System.Diagnostics;
-using System.Threading.Tasks;
-using NLog;
 
 
 namespace Archimedes.Broker.Fxcm.Runner

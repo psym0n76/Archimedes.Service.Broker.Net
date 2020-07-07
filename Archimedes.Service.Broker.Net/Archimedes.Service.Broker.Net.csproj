@@ -47,7 +47,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Archimedes.Library, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Archimedes.Library.1.0.79\lib\netstandard2.0\Archimedes.Library.dll</HintPath>
+      <HintPath>..\packages\Archimedes.Library.1.0.81\lib\netstandard2.0\Archimedes.Library.dll</HintPath>
     </Reference>
     <Reference Include="EasyNetQ, Version=5.2.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\EasyNetQ.5.2.0\lib\net461\EasyNetQ.dll</HintPath>
@@ -281,10 +281,6 @@
     <ProjectReference Include="..\Archimedes.Broker.Fxcm.Runner\Archimedes.Broker.Fxcm.Runner.csproj">
       <Project>{bb24f46b-7822-49ab-a577-f77e18da6279}</Project>
       <Name>Archimedes.Broker.Fxcm.Runner</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Fx.MessageBus\Fx.MessageBus.csproj">
-      <Project>{F10D9A6C-5D7D-49E0-AFA1-B96842D5DEE5}</Project>
-      <Name>Fx.MessageBus</Name>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup>

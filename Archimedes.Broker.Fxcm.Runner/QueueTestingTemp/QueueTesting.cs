@@ -1,20 +1,20 @@
+using Archimedes.Library.Message;
+using Archimedes.Library.Message.Dto;
+using NLog;
 using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Archimedes.Library.Message;
-using Archimedes.Library.Message.Dto;
-using Fx.MessageBus.Publishers;
-using NLog;
+using Archimedes.Library.EasyNetQ;
 
 namespace Archimedes.Broker.Fxcm.Runner
 {
     public class QueueTesting : IQueueTesting
     {
         private readonly Logger _logger = LogManager.GetCurrentClassLogger();
-        private readonly INetQPublish _netQPublish;
+        private readonly INetQPublish<ResponsePrice> _netQPublish;
 
-        public QueueTesting(INetQPublish netQPublish)
+        public QueueTesting(INetQPublish<ResponsePrice> netQPublish)
         {
             _netQPublish = netQPublish;
         }
@@ -54,9 +54,9 @@ namespace Archimedes.Broker.Fxcm.Runner
                         };
 
                         _logger.Info($"MTest Message No. {counter++} Message \n {price}");
-                        _netQPublish.PublishPriceMessage(price);
+                        _netQPublish.PublishMessage(price);
                         Thread.Sleep(30000);
-                        
+
                     }
                 });
             }

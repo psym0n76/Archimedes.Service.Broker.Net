@@ -1,5 +1,4 @@
-﻿using System.Configuration;
-using Archimedes.Broker.Fxcm.Runner;
+﻿using Archimedes.Broker.Fxcm.Runner;
 
 namespace Archimedes.Service.Broker.Net
 {
@@ -16,6 +15,6 @@ namespace Archimedes.Service.Broker.Net
         {
             _testing.QueueTest();
         }
-        
+
     }
 }

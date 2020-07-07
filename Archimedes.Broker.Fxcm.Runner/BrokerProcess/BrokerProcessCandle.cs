@@ -1,14 +1,14 @@
-﻿using Fx.Broker.Fxcm.Models;
+﻿using Archimedes.Library.Extensions;
+using Archimedes.Library.Message;
+using Archimedes.Library.Message.Dto;
+using Fx.Broker.Fxcm;
+using Fx.Broker.Fxcm.Models;
+using NLog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Archimedes.Library.Extensions;
-using Archimedes.Library.Message;
-using Archimedes.Library.Message.Dto;
-using Fx.Broker.Fxcm;
-using Fx.MessageBus.Publishers;
-using NLog;
+using Archimedes.Library.EasyNetQ;
 
 
 // ReSharper disable once CheckNamespace
@@ -16,10 +16,10 @@ namespace Archimedes.Broker.Fxcm.Runner
 {
     public class BrokerProcessCandle : IBrokerProcessCandle
     {
-        private readonly INetQPublish _netQPublish;
+        private readonly INetQPublish<ResponseCandle> _netQPublish;
         private readonly Logger _logger = LogManager.GetCurrentClassLogger();
-        
-        public BrokerProcessCandle(INetQPublish netQPublish)
+
+        public BrokerProcessCandle(INetQPublish<ResponseCandle> netQPublish)
         {
             _netQPublish = netQPublish;
         }
@@ -41,7 +41,7 @@ namespace Archimedes.Broker.Fxcm.Runner
 
                 var candleHistoryDto = GetCandleHistoryDto(candleHistory);
 
-                _netQPublish.PublishCandleMessage(candleHistoryDto);
+                _netQPublish.PublishMessage(candleHistoryDto);
 
             }).ConfigureAwait(false);
         }
@@ -78,21 +78,21 @@ namespace Archimedes.Broker.Fxcm.Runner
                 return null;
             }
 
-            var result = new ResponseCandle {Text = "something", Payload = new List<CandleDto>()};
+            var result = new ResponseCandle { Text = "something", Payload = new List<CandleDto>() };
 
             var candleDto = candle.Select(c => new CandleDto()
-                {
-                    Timestamp = c.Timestamp,
-                    BidOpen = c.BidOpen,
-                    BidHigh = c.BidHigh,
-                    BidLow = c.BidLow,
-                    BidClose = c.BidClose,
-                    AskOpen = c.AskOpen,
-                    AskHigh = c.AskHigh,
-                    AskLow = c.AskLow,
-                    AskClose = c.AskClose,
-                    TickQty = c.TickQty
-                })
+            {
+                Timestamp = c.Timestamp,
+                BidOpen = c.BidOpen,
+                BidHigh = c.BidHigh,
+                BidLow = c.BidLow,
+                BidClose = c.BidClose,
+                AskOpen = c.AskOpen,
+                AskHigh = c.AskHigh,
+                AskLow = c.AskLow,
+                AskClose = c.AskClose,
+                TickQty = c.TickQty
+            })
                 .ToList();
 
             result.Payload = candleDto;

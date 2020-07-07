@@ -1,11 +1,11 @@
-﻿using System;
-using System.Threading;
-using System.Web.Http;
-using System.Web.Mvc;
-using Archimedes.Broker.Fxcm.Runner;
+﻿using Archimedes.Broker.Fxcm.Runner;
 using Archimedes.Service.Broker.Net.DependencyResolution;
 using NLog;
 using StructureMap;
+using System;
+using System.Threading;
+using System.Web.Http;
+using System.Web.Mvc;
 
 namespace Archimedes.Service.Broker.Net
 {
@@ -32,6 +32,7 @@ namespace Archimedes.Service.Broker.Net
 
                 _logger.Info("Started running Price testing");
                 runner.Run();
+
                 _logger.Info("Started running Test Price testing");
                 testRunner.Run();
 

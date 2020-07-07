@@ -15,27 +15,41 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-using System.Configuration;
 using Archimedes.Broker.Fxcm.Runner;
-using Fx.MessageBus.Publishers;
 
-namespace Archimedes.Service.Broker.Net.DependencyResolution {
+using System.Configuration;
+using Archimedes.Library.EasyNetQ;
+using Archimedes.Library.Message;
+
+namespace Archimedes.Service.Broker.Net.DependencyResolution
+{
     using StructureMap.Configuration.DSL;
     using StructureMap.Graph;
-	
-    public class DefaultRegistry : Registry {
+
+    public class DefaultRegistry : Registry
+    {
         #region Constructors and Destructors
 
-        public DefaultRegistry() {
+        public DefaultRegistry()
+        {
 
             Scan(
-                scan => {
+                scan =>
+                {
                     scan.TheCallingAssembly();
                     scan.WithDefaultConventions();
-					scan.With(new ControllerConvention());
+                    scan.With(new ControllerConvention());
                 });
 
-            For<INetQPublish>().Use<NetQPublish>()
+            For<INetQPublish<ResponsePrice>>().Use<NetQPublish<ResponsePrice>>()
+                .Ctor<string>("host").Is(ConfigurationManager.AppSettings["RabbitHutchConnection"]);
+
+
+
+            For<INetQPublish<ResponseCandle>>().Use<NetQPublish<ResponseCandle>>()
+                .Ctor<string>("host").Is(ConfigurationManager.AppSettings["RabbitHutchConnection"]);
+
+            For<INetQPublish<ResponseTrade>>().Use<NetQPublish<ResponseTrade>>()
                 .Ctor<string>("host").Is(ConfigurationManager.AppSettings["RabbitHutchConnection"]);
 
             For<IQueueTesting>().Use<QueueTesting>();

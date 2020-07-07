@@ -9,6 +9,6 @@ namespace Fx.MessageBus.Publishers
         void PublishCandleMessage(ResponseCandle message);
         void PublishPriceMessage(ResponsePrice message);
 
-        
+
     }
 }

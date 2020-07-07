@@ -25,19 +25,12 @@
  * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using Newtonsoft.Json.Linq;
-using System.Net;
 using System.Collections.Specialized;
 using System.IO;
-using Newtonsoft.Json;
-
-using Fx.Broker.Fxcm.Json;
+using System.Net;
+using System.Text;
 
 namespace Fx.Broker.Fxcm
 {
@@ -47,9 +40,9 @@ namespace Fx.Broker.Fxcm
     /// </summary>
     class HttpRequestExecutor
     {
-        private string mHost;
-        private string mAccessToken;
-        private string mSessionId;
+        private readonly string mHost;
+        private readonly string mAccessToken;
+        private readonly string mSessionId;
 
         /// <summary>
         /// Constructor.
