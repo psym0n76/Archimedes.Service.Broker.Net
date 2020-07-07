@@ -37,13 +37,8 @@ namespace Archimedes.Broker.Fxcm.Runner
 
                 _logger.Info($"Connected to URL:{url}");
 
-                // move into tasks
-
                 _subscriber.SubscribeCandleMessage(session);
                 _priceSubscriber.SubscribePriceMessage(session);
-
-                //_subscriber.SubscribeCandleMessage(session,_sampleParams);
-                //_subscriber.SubscribeCandleMessage(session,_sampleParams);
 
             }
             catch (Exception e)
