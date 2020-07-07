@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Configuration;
 using System.Diagnostics;
+using System.Threading.Tasks;
 using NLog;
 
 
@@ -37,9 +38,11 @@ namespace Archimedes.Broker.Fxcm.Runner
 
                 _logger.Info($"Connected to URL:{url}");
 
+                // move into tasks
+
                 _subscriber.SubscribeCandleMessage(session);
                 _priceSubscriber.SubscribePriceMessage(session);
-                
+
                 //_subscriber.SubscribeCandleMessage(session,_sampleParams);
                 //_subscriber.SubscribeCandleMessage(session,_sampleParams);
 

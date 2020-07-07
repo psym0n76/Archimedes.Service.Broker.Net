@@ -34,9 +34,6 @@ namespace Archimedes.Service.Broker.Net.DependencyResolution {
                     scan.WithDefaultConventions();
 					scan.With(new ControllerConvention());
                 });
-            //For<IExample>().Use<Example>();
-
-
 
             For<INetQPublish>().Use<NetQPublish>()
                 .Ctor<string>("host").Is(ConfigurationManager.AppSettings["RabbitHutchConnection"]);
@@ -48,8 +45,6 @@ namespace Archimedes.Service.Broker.Net.DependencyResolution {
             For<IBrokerProcessPrice>().Use<BrokerProcessPriceTest>();
 
             For<IMessageBrokerConsumer>().Use<MessageBrokerConsumer>();
-
-
         }
 
         #endregion

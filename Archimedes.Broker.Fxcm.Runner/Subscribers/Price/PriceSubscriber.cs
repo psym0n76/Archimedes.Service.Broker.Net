@@ -20,25 +20,28 @@ namespace Archimedes.Broker.Fxcm.Runner
 
         public void SubscribePriceMessage(Session session)
         {
-            using (var bus = RabbitHutch.CreateBus(ConfigurationManager.AppSettings["RabbitHutchConnection"]))
+            Task.Run(() =>
             {
-                bus.Subscribe<RequestPrice>("Price", @interface =>
+                using (var bus = RabbitHutch.CreateBus(ConfigurationManager.AppSettings["RabbitHutchConnection"]))
                 {
-                    if (@interface is RequestPrice price)
+                    bus.Subscribe<RequestPrice>("Price", @interface =>
                     {
-                        _logger.Info($"Price Message Recieved: {price.Text}");
+                        if (@interface is RequestPrice price)
+                        {
+                            _logger.Info($"Price Message Recieved: {price.Text}");
 
-                        _brokerProcessPrice.Run(price);
+                            _brokerProcessPrice.Run(price);
+                        }
+                    });
+
+                    _logger.Info("Listening for Price messages");
+
+                    while (true)
+                    {
+                        Thread.Sleep(1000);
                     }
-                });
-
-                _logger.Info("Listening for Price messages");
-
-                while (true)
-                {
-                    Thread.Sleep(1000);
                 }
-            }
+            });
         }
     }
 }

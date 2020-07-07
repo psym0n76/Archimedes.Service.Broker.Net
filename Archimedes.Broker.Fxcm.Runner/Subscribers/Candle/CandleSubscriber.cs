@@ -20,26 +20,29 @@ namespace Archimedes.Broker.Fxcm.Runner
 
         public void SubscribeCandleMessage(Session session)
         {
-            using (var bus = RabbitHutch.CreateBus(ConfigurationManager.AppSettings["RabbitHutchConnection"]))
+            Task.Run(() =>
             {
-                bus.Subscribe<RequestCandle>("Candle", @interface =>
+                using (var bus = RabbitHutch.CreateBus(ConfigurationManager.AppSettings["RabbitHutchConnection"]))
                 {
-                    if (@interface is RequestCandle candle)
+                    bus.Subscribe<RequestCandle>("Candle", @interface =>
                     {
-                        _logger.Info($"Candle Message Recieved: {candle.Text}");
+                        if (@interface is RequestCandle candle)
+                        {
+                            _logger.Info($"Candle Message Recieved: {candle.Text}");
 
-                        _brokerProcessCandle.Run(candle);
+                            _brokerProcessCandle.Run(candle);
+                        }
+                    });
+
+                    _logger.Info("Listening for Candle messages");
+
+                    while (true)
+                    {
+                        Thread.Sleep(1000);
+
                     }
-                });
-
-                _logger.Info("Listening for Candle messages");
-
-                while (true)
-                {
-                    Thread.Sleep(1000);
-                    
                 }
-            }
+            });
         }
     }
 }
