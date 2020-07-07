@@ -15,27 +15,34 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Archimedes.Service.Broker.Net.DependencyResolution
-{
+using StructureMap;
+using StructureMap.Graph.Scanning;
+
+namespace Archimedes.Service.Broker.Net.DependencyResolution {
+    using System;
+    using System.Web.Mvc;
+
     using StructureMap.Configuration.DSL;
     using StructureMap.Graph;
     using StructureMap.Pipeline;
     using StructureMap.TypeRules;
-    using System;
-    using System.Web.Mvc;
 
-    public class ControllerConvention : IRegistrationConvention
-    {
+    public class ControllerConvention : IRegistrationConvention {
         #region Public Methods and Operators
 
-        public void Process(Type type, Registry registry)
-        {
-            if (type.CanBeCastTo<Controller>() && !type.IsAbstract)
-            {
+        public void Process(Type type, Registry registry) {
+            if (type.CanBeCastTo<Controller>() && !type.IsAbstract) {
                 registry.For(type).LifecycleIs(new UniquePerRequestLifecycle());
             }
         }
 
         #endregion
+
+        public void ScanTypes(TypeSet types, Registry registry)
+        {
+            //if (types.CanBeCastTo<Controller>() && !type.IsAbstract) {
+            //    registry.For(type).LifecycleIs(new UniquePerRequestLifecycle());
+            //}
+        }
     }
 }

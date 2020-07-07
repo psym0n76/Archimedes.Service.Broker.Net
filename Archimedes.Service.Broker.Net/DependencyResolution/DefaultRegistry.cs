@@ -20,6 +20,7 @@ using Archimedes.Broker.Fxcm.Runner;
 using System.Configuration;
 using Archimedes.Library.EasyNetQ;
 using Archimedes.Library.Message;
+using StructureMap;
 
 namespace Archimedes.Service.Broker.Net.DependencyResolution
 {

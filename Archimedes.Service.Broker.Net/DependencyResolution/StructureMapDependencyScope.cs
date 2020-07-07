@@ -15,13 +15,15 @@
 // </copyright>
 // --------------------------------------------------------------------------------------------------------------------
 
+using System.Linq;
+using CommonServiceLocator;
+
 namespace Archimedes.Service.Broker.Net.DependencyResolution
 {
-    using Microsoft.Practices.ServiceLocation;
+    //using Microsoft.Practices.ServiceLocation;
     using StructureMap;
     using System;
     using System.Collections.Generic;
-    using System.Linq;
     using System.Web;
 
     /// <summary>
@@ -39,11 +41,7 @@ namespace Archimedes.Service.Broker.Net.DependencyResolution
 
         public StructureMapDependencyScope(IContainer container)
         {
-            if (container == null)
-            {
-                throw new ArgumentNullException("container");
-            }
-            Container = container;
+            Container = container ?? throw new ArgumentNullException("container");
         }
 
         #endregion
