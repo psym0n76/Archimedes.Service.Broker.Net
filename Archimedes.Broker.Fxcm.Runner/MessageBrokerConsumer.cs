@@ -33,12 +33,12 @@ namespace Archimedes.Broker.Fxcm.Runner
 
                 var session = BrokerSession.GetInstance();
 
-                //session.Connect();
+                session.Connect();
 
                 _logger.Info($"Connected to URL:{url}");
 
                 _subscriber.SubscribeCandleMessage(session);
-                _priceSubscriber.SubscribePriceMessage(session);
+                //_priceSubscriber.SubscribePriceMessage(session);
 
             }
             catch (Exception e)

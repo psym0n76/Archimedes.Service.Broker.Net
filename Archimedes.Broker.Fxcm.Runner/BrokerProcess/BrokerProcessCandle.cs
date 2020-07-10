@@ -37,67 +37,82 @@ namespace Archimedes.Broker.Fxcm.Runner
 
                 _logger.Info($"Process Candle History: {request}");
 
-                var candleHistory = GetHistory(session, request);
-
-                var candleHistoryDto = GetCandleHistoryDto(candleHistory);
-
-                _netQPublish.PublishMessage(candleHistoryDto);
+                _netQPublish.PublishMessage(CandleHistory(session, request));
 
             }).ConfigureAwait(false);
         }
 
 
-        private IList<Candle> GetHistory(Session session, RequestCandle request)
+        private ResponseCandle CandleHistory(Session session, RequestCandle request)
         {
+            var response = new ResponseCandle
+                {Text = "Candle Response from Broker", Payload = new List<CandleDto>(), Status = "Live",Request = request};
 
             var offers = session.GetOffers();
             var offer = offers.FirstOrDefault(o => o.Currency == request.Market);
-            if (offer == null)
-            {
-                _logger.Info($"The instrument {request.Market} is not valid");
-                return null;
-            }
 
-            if (request.StartDate.BrokerDate() != DateTime.MinValue && request.EndDate.BrokerDate() == DateTime.MinValue)
-            {
-                _logger.Info($"Please provide DateTo in configuration file");
-                return null;
-            }
 
-            const int unknownCount = 1;
+            if (!ValidateRequest(request, offer, response)) 
+                return response;
 
-            return session.GetCandles(offer.OfferId, request.TimeFrameInterval, unknownCount,
+            var candles = session.GetCandles(offer.OfferId, request.TimeFrameInterval, 1,
                 request.StartDate.BrokerDate(), request.EndDate.BrokerDate());
+
+
+            return BuildResponse(request, candles, response);
         }
 
-        private ResponseCandle GetCandleHistoryDto(IList<Candle> candle)
+        private ResponseCandle BuildResponse(RequestCandle request, IList<Candle> candles, ResponseCandle response)
         {
-            if (candle == null)
+            if (candles == null)
             {
-                _logger.Info($"Candle empty");
-                return null;
+                const string message = "Candle empty";
+                _logger.Info(message);
+                response.Status = message;
+                return response;
             }
 
-            var result = new ResponseCandle { Text = "something", Payload = new List<CandleDto>() };
-
-            var candleDto = candle.Select(c => new CandleDto()
-            {
-                Timestamp = c.Timestamp,
-                BidOpen = c.BidOpen,
-                BidHigh = c.BidHigh,
-                BidLow = c.BidLow,
-                BidClose = c.BidClose,
-                AskOpen = c.AskOpen,
-                AskHigh = c.AskHigh,
-                AskLow = c.AskLow,
-                AskClose = c.AskClose,
-                TickQty = c.TickQty
-            })
+            var candleDto = candles.Select(c => new CandleDto()
+                {
+                    Timestamp = c.Timestamp,
+                    BidOpen = c.BidOpen,
+                    BidHigh = c.BidHigh,
+                    BidLow = c.BidLow,
+                    BidClose = c.BidClose,
+                    AskOpen = c.AskOpen,
+                    AskHigh = c.AskHigh,
+                    AskLow = c.AskLow,
+                    AskClose = c.AskClose,
+                    TickQty = c.TickQty,
+                    Market = request.Market
+                })
                 .ToList();
 
-            result.Payload = candleDto;
+            response.Payload = candleDto;
 
-            return result;
+            return response;
+        }
+
+        private bool ValidateRequest(RequestCandle request, Offer offer, ResponseCandle response)
+        {
+            if (offer == null)
+            {
+                var message = $"The instrument {request.Market} is not valid";
+                _logger.Info(message);
+                response.Status = message;
+                return false;
+            }
+
+            if (request.StartDate.BrokerDate() != DateTime.MinValue &&
+                request.EndDate.BrokerDate() == DateTime.MinValue)
+            {
+                var message = $"Incorrect Date formats {request.StartDate.BrokerDate()} {request.EndDate.BrokerDate()}";
+                _logger.Info(message);
+                response.Status = message;
+                return false;
+            }
+
+            return true;
         }
     }
 }

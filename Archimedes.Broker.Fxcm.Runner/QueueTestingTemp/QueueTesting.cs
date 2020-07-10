@@ -53,10 +53,9 @@ namespace Archimedes.Broker.Fxcm.Runner
                             Text = "Test Message"
                         };
 
-                        _logger.Info($"MTest Message No. {counter++} Message \n {price}");
+                        _logger.Info($"Test Message No. {counter++} Message \n {price}");
                         _netQPublish.PublishMessage(price);
                         Thread.Sleep(30000);
-
                     }
                 });
             }
