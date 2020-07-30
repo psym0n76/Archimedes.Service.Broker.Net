@@ -66,7 +66,19 @@ namespace Archimedes.Broker.Fxcm.Runner
             };
 
             var offers = session.GetOffers();
+
+            if (offers ==null)
+            {
+                _logger.Warn($"Null returned from Offers: {request}");
+            }
+
             var offer = offers.FirstOrDefault(o => o.Currency == request.Market);
+
+            if (offer ==null)
+            {
+                _logger.Warn($"Nothing returned for {request.Market}");
+            }
+
 
             if (!ValidateRequest(request, offer, response))
                 return response;
@@ -116,7 +128,7 @@ namespace Archimedes.Broker.Fxcm.Runner
         {
             if (offer == null)
             {
-                var message = $"The instrument {request.Market} is not valid";
+                var message = $"The instrument {request.Market} is not valid {request}";
                 _logger.Info(message);
                 response.Status = message;
                 return false;
