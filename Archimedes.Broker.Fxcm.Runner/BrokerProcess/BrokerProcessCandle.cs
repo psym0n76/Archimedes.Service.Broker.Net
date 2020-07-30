@@ -60,18 +60,23 @@ namespace Archimedes.Broker.Fxcm.Runner
         private ResponseCandle CandleHistory(Session session, RequestCandle request)
         {
             var response = new ResponseCandle
-                {Text = "Candle Response from Broker", Payload = new List<CandleDto>(), Status = "Live",Request = request};
+            {
+                Text = "Candle Response from Broker", Payload = new List<CandleDto>(), Status = "Live",
+                Request = request
+            };
 
             var offers = session.GetOffers();
             var offer = offers.FirstOrDefault(o => o.Currency == request.Market);
 
-
-            if (!ValidateRequest(request, offer, response)) 
+            if (!ValidateRequest(request, offer, response))
                 return response;
+
+            _logger.Info($" Broker Request parameters: " +
+                         $"\n  {nameof(offer.OfferId)}: {offer.OfferId} {nameof(request.TimeFrameInterval)}: {request.TimeFrameInterval}" +
+                         $"\n  {nameof(request.StartDate)}: {request.StartDate} {nameof(request.EndDate)}: {request.EndDate}");
 
             var candles = session.GetCandles(offer.OfferId, request.TimeFrameInterval, 1,
                 request.StartDate.BrokerDate(), request.EndDate.BrokerDate());
-
 
             return BuildResponse(request, candles, response);
         }
@@ -80,8 +85,8 @@ namespace Archimedes.Broker.Fxcm.Runner
         {
             if (candles == null)
             {
-                const string message = "Candle empty";
-                _logger.Info(message);
+                string message = $"Candle response from Broker empty {request}";
+                _logger.Warn(message);
                 response.Status = message;
                 return response;
             }
