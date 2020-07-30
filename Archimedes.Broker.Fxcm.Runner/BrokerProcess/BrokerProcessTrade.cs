@@ -36,6 +36,12 @@ namespace Archimedes.Broker.Fxcm.Runner
                     session.Connect();
                 }
 
+                if (session.State == SessionState.Disconnected)
+                {
+                    _logger.Error("Unalbe to connect to FCXM");
+                    return;
+                }
+
                 session.Subscribe(TradingTable.OpenPosition);
                 session.Subscribe(TradingTable.Order);
                 //session.OpenPositionUpdate += Session_OpenPositionUpdate;

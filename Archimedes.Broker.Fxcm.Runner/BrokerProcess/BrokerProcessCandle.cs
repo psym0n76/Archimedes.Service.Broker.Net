@@ -35,6 +35,12 @@ namespace Archimedes.Broker.Fxcm.Runner
                     session.Connect();
                 }
 
+                if (session.State == SessionState.Disconnected)
+                {
+                    _logger.Error($"Unable to connect to FXCM");
+                    return;
+                }
+
                 _logger.Info($"Process Candle History: {request}");
 
                 _netQPublish.PublishMessage(CandleHistory(session, request));

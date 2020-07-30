@@ -4,8 +4,10 @@ using Fx.Broker.Fxcm;
 using NLog;
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Archimedes.Library.EasyNetQ;
+using Microsoft.Extensions.Primitives;
 
 namespace Archimedes.Broker.Fxcm.Runner
 {
@@ -20,7 +22,7 @@ namespace Archimedes.Broker.Fxcm.Runner
         }
 
         public void Run(RequestPrice request)
-        {
+        {   
             Task.Run(() =>
             {
                 var session = BrokerSession.GetInstance();
@@ -30,6 +32,12 @@ namespace Archimedes.Broker.Fxcm.Runner
                 if (session.State == SessionState.Disconnected)
                 {
                     session.Connect();
+                }
+
+                if (session.State == SessionState.Disconnected)
+                {
+                    _logger.Error("Unalbe to connect to FCXM");
+                    return;
                 }
 
                 session.SubscribeSymbol(request.Market);
@@ -57,7 +65,10 @@ namespace Archimedes.Broker.Fxcm.Runner
                     _netQPublish.PublishMessage(priceResponse);
                 };
 
-                Console.ReadLine();
+                while (true)
+                {
+                    //loop tpo keep session open
+                }
 
                 //session.PriceUpdate -= Session_PriceUpdate;
                 session.UnsubscribeSymbol(request.Market);

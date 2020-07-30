@@ -43,7 +43,7 @@ namespace Archimedes.Broker.Fxcm.Runner
             }
             catch (Exception e)
             {
-                _logger.Error($"Error message:{e.Message} StackTrade:{e.StackTrace}");
+                _logger.Error($"Error message:{e.Message} StackTrace:{e.StackTrace}");
             }
             finally
             {
