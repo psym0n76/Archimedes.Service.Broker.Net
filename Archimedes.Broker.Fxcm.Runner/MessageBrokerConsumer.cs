@@ -2,6 +2,7 @@
 using System;
 using System.Configuration;
 using System.Diagnostics;
+using Fx.Broker.Fxcm;
 
 
 namespace Archimedes.Broker.Fxcm.Runner
@@ -34,6 +35,12 @@ namespace Archimedes.Broker.Fxcm.Runner
                 var session = BrokerSession.GetInstance();
 
                 session.Connect();
+
+                if (session.State == SessionState.Disconnected)
+                {
+                    _logger.Error("Unable to connect to FXCM");
+                    return;
+                }
 
                 _logger.Info($"Connected to URL:{url}");
 

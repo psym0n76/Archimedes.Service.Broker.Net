@@ -33,8 +33,8 @@ namespace Archimedes.Service.Broker.Net
                 _logger.Info("Started running Price testing");
                 runner.Run();
 
-                _logger.Info("Started running Test Price testing");
-                testRunner.Run();
+                //_logger.Info("Started running Test Price testing");
+                //testRunner.Run();
 
             }
             catch (Exception e)
