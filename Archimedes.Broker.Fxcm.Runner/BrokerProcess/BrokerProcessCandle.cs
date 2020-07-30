@@ -30,6 +30,8 @@ namespace Archimedes.Broker.Fxcm.Runner
             {
                 var session = BrokerSession.GetInstance();
 
+                _logger.Info($"Current connection status: {session.State}");
+
                 if (session.State == SessionState.Disconnected)
                 {
                     session.Connect();
@@ -37,13 +39,19 @@ namespace Archimedes.Broker.Fxcm.Runner
 
                 if (session.State == SessionState.Disconnected)
                 {
-                    _logger.Error($"Unable to connect to FXCM");
+                    _logger.Error($"Unable to connect to FXCM: {session.State}");
                     return;
                 }
 
-                _logger.Info($"Process Candle History: {request}");
+                if (session.State == SessionState.Connected)
+                {
+                    _logger.Info($"Connected to FXCM {session.State}");
+                    _logger.Info($"Process Candle History: {request}");
 
-                _netQPublish.PublishMessage(CandleHistory(session, request));
+                    _netQPublish.PublishMessage(CandleHistory(session, request));
+                }
+
+
 
             }).ConfigureAwait(false);
         }
