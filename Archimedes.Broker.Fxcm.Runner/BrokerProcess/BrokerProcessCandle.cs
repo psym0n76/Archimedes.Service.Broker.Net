@@ -70,15 +70,18 @@ namespace Archimedes.Broker.Fxcm.Runner
             if (offers ==null)
             {
                 _logger.Warn($"Null returned from Offers: {request}");
+                response.Text = $"Null returned from Offers: {request}";
+                return response;
             }
 
-            var offer = offers.FirstOrDefault(o => o.Currency == request.Market);
-
-            if (offer ==null)
+            foreach (var offer1 in offers)
             {
-                _logger.Warn($"Nothing returned for {request.Market}");
+                _logger.Info($"Offers Returned: {nameof(offer1.OfferId)}:{offer1.OfferId}  {nameof(offer1.Currency)}:{offer1.Currency} Rest:{offer1}");
             }
 
+
+            // returns no offers
+            var offer = offers.FirstOrDefault(o => o.Currency == request.Market);
 
             if (!ValidateRequest(request, offer, response))
                 return response;
@@ -128,7 +131,7 @@ namespace Archimedes.Broker.Fxcm.Runner
         {
             if (offer == null)
             {
-                var message = $"The instrument {request.Market} is not valid {request}";
+                var message = $"The instrument {request.Market} is not valid: {request}";
                 _logger.Info(message);
                 response.Status = message;
                 return false;

@@ -27,7 +27,6 @@ namespace Archimedes.Service.Broker.Net
 
                 var container = Container.For<DefaultRegistry>();
 
-                var testRunner = container.GetInstance<QueueTestRunner>();
                 var runner = container.GetInstance<MessageBrokerConsumer>();
 
                 _logger.Info("Started running Price testing");
