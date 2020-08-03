@@ -67,7 +67,7 @@ namespace Archimedes.Broker.Fxcm.Runner
 
             var offers = session.GetOffers();
 
-            if (offers ==null)
+            if (offers == null)
             {
                 _logger.Warn($"Null returned from Offers: {request}");
                 response.Text = $"Null returned from Offers: {request}";
@@ -76,7 +76,8 @@ namespace Archimedes.Broker.Fxcm.Runner
 
             foreach (var offer1 in offers)
             {
-                _logger.Info($"Offers Returned: {nameof(offer1.OfferId)}:{offer1.OfferId}  {nameof(offer1.Currency)}:{offer1.Currency} Rest:{offer1}");
+                _logger.Info(
+                    $"Offers Returned: {nameof(offer1.OfferId)}:{offer1.OfferId}  {nameof(offer1.Currency)}:{offer1.Currency} Rest:{offer1}");
             }
 
 
@@ -93,7 +94,15 @@ namespace Archimedes.Broker.Fxcm.Runner
             var candles = session.GetCandles(offer.OfferId, request.TimeFrameInterval, 1,
                 request.StartDate.BrokerDate(), request.EndDate.BrokerDate());
 
-            return BuildResponse(request, candles, response);
+
+            foreach (var candle in candles)
+            {
+                _logger.Info($" {nameof(candle.Timestamp)}:{candle.Timestamp} {nameof(candle.AskOpen)}:{candle.AskOpen} {nameof(candle.AskHigh)}:{candle.AskHigh} {nameof(candle.AskLow)}:{candle.AskLow} {nameof(candle.AskClose)}:{candle.AskClose}");
+            }
+
+            response = BuildResponse(request, candles, response);
+
+            return response;
         }
 
         private ResponseCandle BuildResponse(RequestCandle request, IList<Candle> candles, ResponseCandle response)
@@ -101,7 +110,7 @@ namespace Archimedes.Broker.Fxcm.Runner
             if (candles == null)
             {
                 string message = $"Candle response from Broker empty {request}";
-                _logger.Warn(message);
+                _logger.Error(message);
                 response.Status = message;
                 return response;
             }
