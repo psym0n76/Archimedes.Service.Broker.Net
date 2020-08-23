@@ -1,28 +1,25 @@
 ﻿using Archimedes.Library.Message;
 using Archimedes.Library.Message.Dto;
 using Fx.Broker.Fxcm;
-using NLog;
-using System;
 using System.Collections.Generic;
-using System.Threading;
 using System.Threading.Tasks;
-using Archimedes.Library.EasyNetQ;
-using Microsoft.Extensions.Primitives;
+using Archimedes.Library.RabbitMq;
 
 namespace Archimedes.Broker.Fxcm.Runner
 {
     public class BrokerProcessPrice : IBrokerProcessPrice
     {
-        private readonly INetQPublish<ResponsePrice> _netQPublish;
-        private readonly Logger _logger = LogManager.GetCurrentClassLogger();
+        private readonly IProducer<PriceMessage> _producer;
 
-        public BrokerProcessPrice(INetQPublish<ResponsePrice> netQPublish)
+        private static readonly NLog.Logger _logger = NLog.LogManager.GetCurrentClassLogger();
+
+        public BrokerProcessPrice(IProducer<PriceMessage> producer)
         {
-            _netQPublish = netQPublish;
+            _producer = producer;
         }
 
-        public void Run(RequestPrice request)
-        {   
+        public void Run(PriceMessage request)
+        {
             Task.Run(() =>
             {
                 var session = BrokerSession.GetInstance();
@@ -45,9 +42,9 @@ namespace Archimedes.Broker.Fxcm.Runner
 
                 session.PriceUpdate += priceUpdate =>
                 {
-                    var priceResponse = new ResponsePrice()
+                    var priceResponse = new PriceMessage()
                     {
-                        Payload = new List<PriceDto>()
+                        Prices = new List<PriceDto>()
                         {
                             new PriceDto()
                             {
@@ -62,7 +59,7 @@ namespace Archimedes.Broker.Fxcm.Runner
                         }
                     };
 
-                    _netQPublish.PublishMessage(priceResponse);
+                    _producer.PublishMessage(priceResponse, nameof(priceResponse));
                 };
 
                 while (true)
@@ -71,7 +68,7 @@ namespace Archimedes.Broker.Fxcm.Runner
                 }
 
                 //session.PriceUpdate -= Session_PriceUpdate;
-                session.UnsubscribeSymbol(request.Market);
+                //session.UnsubscribeSymbol(request.Market);
             }).ConfigureAwait(false);
         }
     }

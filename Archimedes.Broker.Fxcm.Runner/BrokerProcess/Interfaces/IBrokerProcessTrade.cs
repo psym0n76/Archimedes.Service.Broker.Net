@@ -4,6 +4,6 @@ namespace Archimedes.Broker.Fxcm.Runner
 {
     public interface IBrokerProcessTrade
     {
-        void Run(RequestTrade request);
+        void Run(TradeMessage request);
     }
 }

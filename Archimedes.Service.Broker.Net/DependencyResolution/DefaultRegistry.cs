@@ -18,15 +18,11 @@
 using Archimedes.Broker.Fxcm.Runner;
 
 using System.Configuration;
-using Archimedes.Library.EasyNetQ;
-using Archimedes.Library.Message;
+using Archimedes.Library.RabbitMq;
 using StructureMap;
 
 namespace Archimedes.Service.Broker.Net.DependencyResolution
 {
-    using StructureMap.Configuration.DSL;
-    using StructureMap.Graph;
-
     public class DefaultRegistry : Registry
     {
         #region Constructors and Destructors
@@ -42,22 +38,24 @@ namespace Archimedes.Service.Broker.Net.DependencyResolution
                     scan.With(new ControllerConvention());
                 });
 
-            For<INetQPublish<ResponsePrice>>().Use<NetQPublish<ResponsePrice>>()
-                .Ctor<string>("host").Is(ConfigurationManager.AppSettings["RabbitHutchConnection"]);
+
+            For<ICandleConsumer>().Use<CandleConsumer>()
+                .Ctor<string>("host").Is(ConfigurationManager.AppSettings["RabbitHost"])
+                .Ctor<string>("port").Is(ConfigurationManager.AppSettings["RabbitPort"])
+                .Ctor<string>("exchange").Is(ConfigurationManager.AppSettings["RabbitExchange"])
+                .Ctor<string>("queue").Is("CandleRequestQueue");
 
 
+            For<IPriceConsumer>().Use<PriceConsumer>()
+                .Ctor<string>("host").Is(ConfigurationManager.AppSettings["RabbitHost"])
+                .Ctor<string>("port").Is(ConfigurationManager.AppSettings["RabbitPort"])
+                .Ctor<string>("exchange").Is(ConfigurationManager.AppSettings["RabbitExchange"])
+                .Ctor<string>("queue").Is("PriceRequestQueue");
 
-            For<INetQPublish<ResponseCandle>>().Use<NetQPublish<ResponseCandle>>()
-                .Ctor<string>("host").Is(ConfigurationManager.AppSettings["RabbitHutchConnection"]);
 
-            For<INetQPublish<ResponseTrade>>().Use<NetQPublish<ResponseTrade>>()
-                .Ctor<string>("host").Is(ConfigurationManager.AppSettings["RabbitHutchConnection"]);
-
-            For<IQueueTesting>().Use<QueueTesting>();
             For<IPriceSubscriber>().Use<PriceSubscriber>();
             For<ICandleSubscriber>().Use<CandleSubscriber>();
             For<IBrokerProcessCandle>().Use<BrokerProcessCandle>();
-            For<IBrokerProcessPrice>().Use<BrokerProcessPriceTest>();
 
             For<IMessageBrokerConsumer>().Use<MessageBrokerConsumer>();
         }

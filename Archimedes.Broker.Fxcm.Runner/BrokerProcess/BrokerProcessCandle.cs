@@ -8,7 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Archimedes.Library.EasyNetQ;
+using Archimedes.Library.RabbitMq;
 
 
 // ReSharper disable once CheckNamespace
@@ -16,15 +16,15 @@ namespace Archimedes.Broker.Fxcm.Runner
 {
     public class BrokerProcessCandle : IBrokerProcessCandle
     {
-        private readonly INetQPublish<ResponseCandle> _netQPublish;
+        private readonly IProducer<CandleMessage> _producer;
         private readonly Logger _logger = LogManager.GetCurrentClassLogger();
 
-        public BrokerProcessCandle(INetQPublish<ResponseCandle> netQPublish)
+        public BrokerProcessCandle(IProducer<CandleMessage> producer)
         {
-            _netQPublish = netQPublish;
+            _producer = producer;
         }
 
-        public void Run(RequestCandle request)
+        public void Run(CandleMessage request)
         {
             Task.Run(() =>
             {
@@ -48,30 +48,30 @@ namespace Archimedes.Broker.Fxcm.Runner
                     _logger.Info($"Connected to FXCM {session.State}");
                     _logger.Info($"Process Candle History: {request}");
 
-                    _netQPublish.PublishMessage(CandleHistory(session, request));
+                    var response = CandleHistory(session, request);
+
+                    _producer.PublishMessage(response, nameof(response));
                 }
-
-
 
             }).ConfigureAwait(false);
         }
 
 
-        private ResponseCandle CandleHistory(Session session, RequestCandle request)
+        private CandleMessage CandleHistory(Session session, CandleMessage request)
         {
-            var response = new ResponseCandle
-            {
-                Text = "Candle Response from Broker", Payload = new List<CandleDto>(), Status = "Live",
-                Request = request
-            };
+            //var response = new CandleMessage
+            //{
+            //    Text = "Candle Response from Broker", Payload = new List<CandleDto>(), Status = "Live",
+            //    Request = request
+            //};
 
             var offers = session.GetOffers();
 
             if (offers == null)
             {
                 _logger.Warn($"Null returned from Offers: {request}");
-                response.Text = $"Null returned from Offers: {request}";
-                return response;
+                // response.Text = $"Null returned from Offers: {request}";
+                // return response;
             }
 
             foreach (var offer1 in offers)
@@ -84,35 +84,36 @@ namespace Archimedes.Broker.Fxcm.Runner
             // returns no offers
             var offer = offers.FirstOrDefault(o => o.Currency == request.Market);
 
-            if (!ValidateRequest(request, offer, response))
-                return response;
+            if (!ValidateRequest(request, offer))
+                return request;
 
             _logger.Info($" Broker Request parameters: " +
-                         $"\n  {nameof(offer.OfferId)}: {offer.OfferId} {nameof(request.TimeFrameInterval)}: {request.TimeFrameInterval}" +
+                         $"\n  {nameof(offer.OfferId)}: {offer.OfferId} {nameof(request.TimeFrame)}: {request.TimeFrame}" +
                          $"\n  {nameof(request.StartDate)}: {request.StartDate} {nameof(request.EndDate)}: {request.EndDate}");
 
-            var candles = session.GetCandles(offer.OfferId, request.TimeFrameInterval, 1,
+            var candles = session.GetCandles(offer.OfferId, request.TimeFrame, 1,
                 request.StartDate.BrokerDate(), request.EndDate.BrokerDate());
 
 
             foreach (var candle in candles)
             {
-                _logger.Info($" {nameof(candle.Timestamp)}:{candle.Timestamp} {nameof(candle.AskOpen)}:{candle.AskOpen} {nameof(candle.AskHigh)}:{candle.AskHigh} {nameof(candle.AskLow)}:{candle.AskLow} {nameof(candle.AskClose)}:{candle.AskClose}");
+                _logger.Info(
+                    $" {nameof(candle.Timestamp)}:{candle.Timestamp} {nameof(candle.AskOpen)}:{candle.AskOpen} {nameof(candle.AskHigh)}:{candle.AskHigh} {nameof(candle.AskLow)}:{candle.AskLow} {nameof(candle.AskClose)}:{candle.AskClose}");
             }
 
-            response = BuildResponse(request, candles, response);
+            BuildResponse(request, candles);
 
-            return response;
+            return request;
         }
 
-        private ResponseCandle BuildResponse(RequestCandle request, IList<Candle> candles, ResponseCandle response)
+        private CandleMessage BuildResponse(CandleMessage request, IList<Candle> candles)
         {
             if (candles == null)
             {
                 string message = $"Candle response from Broker empty {request}";
                 _logger.Error(message);
-                response.Status = message;
-                return response;
+                // response.Status = message;
+                //return response;
             }
 
             var candleDto = candles.Select(c => new CandleDto()
@@ -131,18 +132,18 @@ namespace Archimedes.Broker.Fxcm.Runner
                 })
                 .ToList();
 
-            response.Payload = candleDto;
+            request.Candles = candleDto;
 
-            return response;
+            return request;
         }
 
-        private bool ValidateRequest(RequestCandle request, Offer offer, ResponseCandle response)
+        private bool ValidateRequest(CandleMessage request, Offer offer)
         {
             if (offer == null)
             {
                 var message = $"The instrument {request.Market} is not valid: {request}";
                 _logger.Info(message);
-                response.Status = message;
+                //response.Status = message;
                 return false;
             }
 
@@ -151,7 +152,7 @@ namespace Archimedes.Broker.Fxcm.Runner
             {
                 var message = $"Incorrect Date formats {request.StartDate.BrokerDate()} {request.EndDate.BrokerDate()}";
                 _logger.Info(message);
-                response.Status = message;
+                //response.Status = message;
                 return false;
             }
 

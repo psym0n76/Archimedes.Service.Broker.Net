@@ -7,22 +7,22 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using Archimedes.Library.EasyNetQ;
+using Archimedes.Library.RabbitMq;
 
 namespace Archimedes.Broker.Fxcm.Runner
 {
     public class BrokerProcessTrade : IBrokerProcessTrade
     {
         private static readonly EventWaitHandle SyncResponseEvent = new EventWaitHandle(false, EventResetMode.AutoReset);
-        private readonly INetQPublish<ResponseTrade> _netQPublish;
+        private readonly IProducer<TradeMessage> _producer;
         private readonly Logger _logger = LogManager.GetCurrentClassLogger();
 
-        public BrokerProcessTrade(INetQPublish<ResponseTrade> netQPublish)
+        public BrokerProcessTrade(IProducer<TradeMessage> producer)
         {
-            _netQPublish = netQPublish;
+            _producer = producer;
         }
 
-        public void Run(RequestTrade request)
+        public void Run(TradeMessage request)
         {
 
             Task.Run(() =>
@@ -91,7 +91,7 @@ namespace Archimedes.Broker.Fxcm.Runner
         //    PostTradeIdToQueue(obj.TradeId);
         //}
 
-        private void CreateMarketOrder(Session session, RequestTrade request)
+        private void CreateMarketOrder(Session session, TradeMessage request)
         {
             _logger.Info("Create Market Order");
             var openTradeParams = new OpenTradeParams();
@@ -124,9 +124,9 @@ namespace Archimedes.Broker.Fxcm.Runner
         {
             _logger.Info($"Post Market Order {tradeId}");
 
-            var trade = new ResponseTrade()
+            var trade = new TradeMessage()
             {
-                Payload = new List<TradeDto>()
+                Trades = new List<TradeDto>()
                 {
                     new TradeDto()
                     {
@@ -135,7 +135,7 @@ namespace Archimedes.Broker.Fxcm.Runner
                 }
             };
 
-            _netQPublish.PublishMessage(trade);
+            _producer.PublishMessage(trade,nameof(trade));
         }
     }
 }

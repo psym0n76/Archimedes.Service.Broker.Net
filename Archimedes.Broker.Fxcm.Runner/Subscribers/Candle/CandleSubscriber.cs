@@ -1,10 +1,8 @@
 ﻿using Archimedes.Library.Message;
-using EasyNetQ;
 using Fx.Broker.Fxcm;
 using NLog;
-using System.Configuration;
-using System.Threading;
-using System.Threading.Tasks;
+using Archimedes.Library.RabbitMq;
+using Newtonsoft.Json;
 
 namespace Archimedes.Broker.Fxcm.Runner
 {
@@ -12,37 +10,26 @@ namespace Archimedes.Broker.Fxcm.Runner
     {
         private readonly Logger _logger = LogManager.GetCurrentClassLogger();
         private readonly IBrokerProcessCandle _brokerProcessCandle;
+        private readonly ICandleConsumer _consumer;
 
-        public CandleSubscriber(IBrokerProcessCandle brokerProcessCandle)
+        public CandleSubscriber(IBrokerProcessCandle brokerProcessCandle, ICandleConsumer consumer)
         {
             _brokerProcessCandle = brokerProcessCandle;
+            _consumer = consumer;
+            _consumer.HandleMessage += Consumer_HandleMessage;
+        }
+
+        private void Consumer_HandleMessage(object sender, MessageHandlerEventArgs args)
+        {
+            _logger.Info($"Receievd Candle Request {args.Message}");
+            var requestCandle = JsonConvert.DeserializeObject<CandleMessage>(args.Message);
+
+            _brokerProcessCandle.Run(requestCandle);
         }
 
         public void SubscribeCandleMessage(Session session)
         {
-            Task.Run(() =>
-            {
-                using (var bus = RabbitHutch.CreateBus(ConfigurationManager.AppSettings["RabbitHutchConnection"]))
-                {
-                    bus.Subscribe<RequestCandle>("Candle", @interface =>
-                    {
-                        if (@interface is RequestCandle candle)
-                        {
-                            _logger.Info($"Candle Message Recieved: {candle.Text}");
-
-                            _brokerProcessCandle.Run(candle);
-                        }
-                    });
-
-                    _logger.Info("Listening for Candle messages");
-
-                    while (true)
-                    {
-                        Thread.Sleep(1000);
-
-                    }
-                }
-            });
+            _consumer.Subscribe();
         }
     }
 }

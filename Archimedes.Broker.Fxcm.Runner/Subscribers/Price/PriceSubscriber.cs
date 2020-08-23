@@ -1,10 +1,8 @@
 ﻿using Archimedes.Library.Message;
-using EasyNetQ;
 using Fx.Broker.Fxcm;
 using NLog;
-using System.Configuration;
-using System.Threading;
-using System.Threading.Tasks;
+using Archimedes.Library.RabbitMq;
+using Newtonsoft.Json;
 
 namespace Archimedes.Broker.Fxcm.Runner
 {
@@ -12,36 +10,26 @@ namespace Archimedes.Broker.Fxcm.Runner
     {
         private readonly Logger _logger = LogManager.GetCurrentClassLogger();
         private readonly IBrokerProcessPrice _brokerProcessPrice;
+        private readonly IPriceConsumer _consumer;
 
-        public PriceSubscriber(IBrokerProcessPrice brokerProcessPrice)
+        public PriceSubscriber(IBrokerProcessPrice brokerProcessPrice, IPriceConsumer consumer)
         {
             _brokerProcessPrice = brokerProcessPrice;
+            _consumer = consumer;
+            _consumer.HandleMessage += Consumer_HandleMessage;
+        }
+
+        private void Consumer_HandleMessage(object sender, MessageHandlerEventArgs args)
+        {
+            _logger.Info($"Receievd Price Request {args.Message}");
+            var requestPrice = JsonConvert.DeserializeObject<PriceMessage>(args.Message);
+
+            _brokerProcessPrice.Run(requestPrice);
         }
 
         public void SubscribePriceMessage(Session session)
         {
-            Task.Run(() =>
-            {
-                using (var bus = RabbitHutch.CreateBus(ConfigurationManager.AppSettings["RabbitHutchConnection"]))
-                {
-                    bus.Subscribe<RequestPrice>("Price", @interface =>
-                    {
-                        if (@interface is RequestPrice price)
-                        {
-                            _logger.Info($"Price Message Recieved: {price.Text}");
-
-                            _brokerProcessPrice.Run(price);
-                        }
-                    });
-
-                    _logger.Info("Listening for Price messages");
-
-                    while (true)
-                    {
-                        Thread.Sleep(1000);
-                    }
-                }
-            });
+            _consumer.Subscribe();
         }
     }
 }

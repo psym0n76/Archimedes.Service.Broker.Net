@@ -4,6 +4,6 @@ namespace Archimedes.Broker.Fxcm.Runner
 {
     public interface IBrokerProcessCandle
     {
-        void Run(RequestCandle request);
+        void Run(CandleMessage request);
     }
 }
