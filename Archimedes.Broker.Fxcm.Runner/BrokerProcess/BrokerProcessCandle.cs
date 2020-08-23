@@ -89,11 +89,13 @@ namespace Archimedes.Broker.Fxcm.Runner
 
             _logger.Info($" Broker Request parameters: " +
                          $"\n  {nameof(offer.OfferId)}: {offer.OfferId} {nameof(request.TimeFrame)}: {request.TimeFrame}" +
+                         $"\n  {nameof(request.StartDate)}: {request.StartDate.BrokerDate()} {nameof(request.EndDate)}: {request.EndDate.BrokerDate()}" +
                          $"\n  {nameof(request.StartDate)}: {request.StartDate} {nameof(request.EndDate)}: {request.EndDate}");
 
             var candles = session.GetCandles(offer.OfferId, request.TimeFrame, 1,
                 request.StartDate.BrokerDate(), request.EndDate.BrokerDate());
 
+            _logger.Info($"Records returned from FXCM: {candles.Count}");
 
             foreach (var candle in candles)
             {
@@ -106,6 +108,9 @@ namespace Archimedes.Broker.Fxcm.Runner
 
         private void BuildResponse(CandleMessage request, IList<Candle> candles)
         {
+
+            _logger.Info($"Build response {candles.Count}");
+
             if (candles == null)
             {
                 var message = $"Candle response from Broker empty {request}";
