@@ -1,4 +1,5 @@
-﻿using Archimedes.Library.Message;
+﻿using System.Collections.Generic;
+using Archimedes.Library.Message;
 using Fx.Broker.Fxcm;
 using NLog;
 using Archimedes.Library.RabbitMq;
@@ -24,6 +25,7 @@ namespace Archimedes.Broker.Fxcm.Runner
             _logger.Info($"Receievd Price Request {args.Message}");
             var requestPrice = JsonConvert.DeserializeObject<PriceMessage>(args.Message);
 
+            requestPrice.Logs = new List<string>(){"Message received from Queue"};
             _brokerProcessPrice.Run(requestPrice);
         }
 

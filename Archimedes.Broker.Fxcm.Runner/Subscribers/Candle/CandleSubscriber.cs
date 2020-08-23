@@ -1,4 +1,5 @@
-﻿using Archimedes.Library.Message;
+﻿using System.Collections.Generic;
+using Archimedes.Library.Message;
 using Fx.Broker.Fxcm;
 using NLog;
 using Archimedes.Library.RabbitMq;
@@ -23,7 +24,7 @@ namespace Archimedes.Broker.Fxcm.Runner
         {
             _logger.Info($"Receievd Candle Request {args.Message}");
             var requestCandle = JsonConvert.DeserializeObject<CandleMessage>(args.Message);
-
+            requestCandle.Logs = new List<string>(){"Message received from Queue"};
             _brokerProcessCandle.Run(requestCandle);
         }
 
