@@ -39,9 +39,24 @@ namespace Archimedes.Service.Broker.Net.DependencyResolution
                     scan.With(new ControllerConvention());
                 });
 
-            For<IProducer<CandleMessage>>().Use<Producer<CandleMessage>>();
-            For<IProducer<PriceMessage>>().Use<Producer<PriceMessage>>();
-            For<IProducer<TradeMessage>>().Use<Producer<TradeMessage>>();
+            For<IProducer<CandleMessage>>().Use<Producer<CandleMessage>>()
+                .Ctor<string>("host").Is(ConfigurationManager.AppSettings["RabbitHost"])
+                .Ctor<string>("port").Is(ConfigurationManager.AppSettings["RabbitPort"])
+                .Ctor<string>("exchange").Is(ConfigurationManager.AppSettings["RabbitExchange"]);
+
+
+
+            For<IProducer<PriceMessage>>().Use<Producer<PriceMessage>>()
+                .Ctor<string>("host").Is(ConfigurationManager.AppSettings["RabbitHost"])
+                .Ctor<string>("port").Is(ConfigurationManager.AppSettings["RabbitPort"])
+                .Ctor<string>("exchange").Is(ConfigurationManager.AppSettings["RabbitExchange"]);
+
+            For<IProducer<TradeMessage>>().Use<Producer<TradeMessage>>()
+                .Ctor<string>("host").Is(ConfigurationManager.AppSettings["RabbitHost"])
+                .Ctor<string>("port").Is(ConfigurationManager.AppSettings["RabbitPort"])
+                .Ctor<string>("exchange").Is(ConfigurationManager.AppSettings["RabbitExchange"]);
+
+
 
             For<ICandleConsumer>().Use<CandleConsumer>()
                 .Ctor<string>("host").Is(ConfigurationManager.AppSettings["RabbitHost"])
