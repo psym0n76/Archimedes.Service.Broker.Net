@@ -51,7 +51,6 @@ namespace Archimedes.Broker.Fxcm.Runner
 
                     try
                     {
-
                         CandleHistory(session, message);
                     }
                     catch (Exception e)
@@ -103,7 +102,7 @@ namespace Archimedes.Broker.Fxcm.Runner
                          $"\n  {nameof(request.StartDate)}: {request.StartDate} {nameof(request.EndDate)}: {request.EndDate}");
 
             var candles = session.GetCandles(offer.OfferId, request.TimeFrame, 1,
-                request.StartDate.BrokerDate(), request.EndDate.BrokerDate());
+                request.StartDate, request.EndDate);
 
             _logger.Info($"Records returned from FXCM: {candles.Count}");
 
