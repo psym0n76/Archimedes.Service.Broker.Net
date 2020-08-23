@@ -18,6 +18,7 @@
 using Archimedes.Broker.Fxcm.Runner;
 
 using System.Configuration;
+using Archimedes.Library.Message;
 using Archimedes.Library.RabbitMq;
 using StructureMap;
 
@@ -38,6 +39,9 @@ namespace Archimedes.Service.Broker.Net.DependencyResolution
                     scan.With(new ControllerConvention());
                 });
 
+            For<IProducer<CandleMessage>>().Use<Producer<CandleMessage>>();
+            For<IProducer<PriceMessage>>().Use<Producer<PriceMessage>>();
+            For<IProducer<TradeMessage>>().Use<Producer<TradeMessage>>();
 
             For<ICandleConsumer>().Use<CandleConsumer>()
                 .Ctor<string>("host").Is(ConfigurationManager.AppSettings["RabbitHost"])
