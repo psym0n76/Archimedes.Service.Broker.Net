@@ -48,7 +48,17 @@ namespace Archimedes.Broker.Fxcm.Runner
                     _logger.Info($"Connected to FXCM {session.State}");
                     _logger.Info($"Process Candle History: {message}");
 
-                    CandleHistory(session, message);
+
+                    try
+                    {
+
+                        CandleHistory(session, message);
+                    }
+                    catch (Exception e)
+                    {
+                        _logger.Error($"Unknown error: Candle History: {e.Message} {e.StackTrace} {e.InnerException}");
+                    }
+
 
                     if (message.Success)
                     {
