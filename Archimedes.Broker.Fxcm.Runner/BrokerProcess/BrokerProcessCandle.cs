@@ -55,18 +55,18 @@ namespace Archimedes.Broker.Fxcm.Runner
                     }
                     catch (Exception e)
                     {
-                        _logger.Error($"Unknown error: Candle History: {e.Message} {e.StackTrace} {e.InnerException}");
+                        _logger.Error($"Candle Hisdtory: Unknown error returned from FXCM: {e.Message} {e.StackTrace} {e.InnerException}");
                     }
 
 
                     if (message.Success)
                     {
-                        
+
                         _producer.PublishMessage(message, "CandleResponseQueue");
                     }
                 }
 
-            }).ConfigureAwait(false);
+            });
         }
 
 
@@ -100,8 +100,9 @@ namespace Archimedes.Broker.Fxcm.Runner
                          $"\n  {nameof(offer.OfferId)}: {offer.OfferId} {nameof(request.TimeFrame)}: {request.TimeFrame}" +
                          $"\n  {nameof(request.StartDate)}: {request.StartDate.BrokerDate()} {nameof(request.EndDate)}: {request.EndDate.BrokerDate()}" +
                          $"\n  {nameof(request.StartDate)}: {request.StartDate} {nameof(request.EndDate)}: {request.EndDate}");
+            request.CountCandleIntervals();
 
-            var candles = session.GetCandles(offer.OfferId, request.TimeFrame, 1,
+            var candles = session.GetCandles(offer.OfferId, "m1", request.Intervals,
                 request.StartDate, request.EndDate);
 
             _logger.Info($"Records returned from FXCM: {candles.Count}");

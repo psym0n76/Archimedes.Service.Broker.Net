@@ -4,6 +4,7 @@ using NLog;
 using StructureMap;
 using System;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Mvc;
 
@@ -26,11 +27,13 @@ namespace Archimedes.Service.Broker.Net
                 GlobalConfiguration.Configure(WebApiConfig.Register);
 
                 var container = Container.For<DefaultRegistry>();
-
                 var runner = container.GetInstance<MessageBrokerConsumer>();
 
-                _logger.Info("Started running Price testing");
-                runner.Run();
+                Task.Run(() =>
+                {
+                    _logger.Info("Started running Price testing");
+                    runner.Run();
+                });
 
                 //_logger.Info("Started running Test Price testing");
                 //testRunner.Run();
