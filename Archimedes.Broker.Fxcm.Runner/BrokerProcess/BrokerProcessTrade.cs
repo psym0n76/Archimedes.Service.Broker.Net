@@ -38,7 +38,7 @@ namespace Archimedes.Broker.Fxcm.Runner
 
                 if (session.State == SessionState.Disconnected)
                 {
-                    _logger.Error("Unalbe to connect to FCXM");
+                    _logger.Error("Unable to connect to FCXM");
                     return;
                 }
 

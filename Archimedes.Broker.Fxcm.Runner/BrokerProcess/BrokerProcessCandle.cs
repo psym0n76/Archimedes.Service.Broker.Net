@@ -24,7 +24,7 @@ namespace Archimedes.Broker.Fxcm.Runner
             _producer = producer;
         }
 
-        public void Run(CandleMessage request)
+        public void Run(CandleMessage message)
         {
             Task.Run(() =>
             {
@@ -46,32 +46,32 @@ namespace Archimedes.Broker.Fxcm.Runner
                 if (session.State == SessionState.Connected)
                 {
                     _logger.Info($"Connected to FXCM {session.State}");
-                    _logger.Info($"Process Candle History: {request}");
+                    _logger.Info($"Process Candle History: {message}");
 
-                    var response = CandleHistory(session, request);
+                    CandleHistory(session, message);
 
-                    _producer.PublishMessage(response, nameof(response));
+                    if (message.Success)
+                    {
+                        
+                        _producer.PublishMessage(message, "CandleResponseQueue");
+                    }
                 }
 
             }).ConfigureAwait(false);
         }
 
 
-        private CandleMessage CandleHistory(Session session, CandleMessage request)
+        private void CandleHistory(Session session, CandleMessage request)
         {
-            //var response = new CandleMessage
-            //{
-            //    Text = "Candle Response from Broker", Payload = new List<CandleDto>(), Status = "Live",
-            //    Request = request
-            //};
+            request.Logs.Add("Candle Response from Broker");
 
             var offers = session.GetOffers();
 
             if (offers == null)
             {
                 _logger.Warn($"Null returned from Offers: {request}");
-                // response.Text = $"Null returned from Offers: {request}";
-                // return response;
+                request.Logs.Add($"Null returned from Offers: {request}");
+                return;
             }
 
             foreach (var offer1 in offers)
@@ -85,7 +85,7 @@ namespace Archimedes.Broker.Fxcm.Runner
             var offer = offers.FirstOrDefault(o => o.Currency == request.Market);
 
             if (!ValidateRequest(request, offer))
-                return request;
+                return;
 
             _logger.Info($" Broker Request parameters: " +
                          $"\n  {nameof(offer.OfferId)}: {offer.OfferId} {nameof(request.TimeFrame)}: {request.TimeFrame}" +
@@ -102,18 +102,16 @@ namespace Archimedes.Broker.Fxcm.Runner
             }
 
             BuildResponse(request, candles);
-
-            return request;
         }
 
-        private CandleMessage BuildResponse(CandleMessage request, IList<Candle> candles)
+        private void BuildResponse(CandleMessage request, IList<Candle> candles)
         {
             if (candles == null)
             {
-                string message = $"Candle response from Broker empty {request}";
+                var message = $"Candle response from Broker empty {request}";
                 _logger.Error(message);
-                // response.Status = message;
-                //return response;
+                request.Logs.Add(message);
+                return;
             }
 
             var candleDto = candles.Select(c => new CandleDto()
@@ -133,8 +131,7 @@ namespace Archimedes.Broker.Fxcm.Runner
                 .ToList();
 
             request.Candles = candleDto;
-
-            return request;
+            request.Success = true;
         }
 
         private bool ValidateRequest(CandleMessage request, Offer offer)

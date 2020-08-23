@@ -74,7 +74,12 @@ namespace Archimedes.Service.Broker.Net.DependencyResolution
 
             For<IPriceSubscriber>().Use<PriceSubscriber>();
             For<ICandleSubscriber>().Use<CandleSubscriber>();
+
             For<IBrokerProcessCandle>().Use<BrokerProcessCandle>();
+            For<IBrokerProcessTrade>().Use<BrokerProcessTrade>();
+            For<IBrokerProcessPrice>().Use<BrokerProcessPrice>();
+
+
 
             For<IMessageBrokerConsumer>().Use<MessageBrokerConsumer>();
         }
