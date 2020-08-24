@@ -102,7 +102,7 @@ namespace Archimedes.Broker.Fxcm.Runner
                          $"\n  {nameof(request.StartDate)}: {request.StartDate} {nameof(request.EndDate)}: {request.EndDate}");
             request.CountCandleIntervals();
 
-            var candles = session.GetCandles(offer.OfferId, "m1", request.Intervals,
+            var candles = session.GetCandles(offer.OfferId, request.TimeFrameBroker, request.Intervals,
                 request.StartDate, request.EndDate);
 
             _logger.Info($"Records returned from FXCM: {candles.Count}");
@@ -118,7 +118,6 @@ namespace Archimedes.Broker.Fxcm.Runner
 
         private void BuildResponse(CandleMessage request, IList<Candle> candles)
         {
-
             _logger.Info($"Build response {candles.Count}");
 
             if (candles == null)

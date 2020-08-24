@@ -24,7 +24,7 @@ namespace Archimedes.Broker.Fxcm.Runner
         {
             _logger.Info($"Receievd Candle Request {args.Message}");
             var requestCandle = JsonConvert.DeserializeObject<CandleMessage>(args.Message);
-            requestCandle.Logs = new List<string>(){"Message received from Queue"};
+            requestCandle.Logs = new List<string>(){"Message received from CandleRequestQueue"};
             _brokerProcessCandle.Run(requestCandle);
         }
 
