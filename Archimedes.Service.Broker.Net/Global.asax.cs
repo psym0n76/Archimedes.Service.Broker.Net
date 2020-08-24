@@ -31,12 +31,9 @@ namespace Archimedes.Service.Broker.Net
 
                 Task.Run(() =>
                 {
-                    _logger.Info("Started running Price testing");
+                    _logger.Info("Started running:");
                     runner.Run();
                 });
-
-                //_logger.Info("Started running Test Price testing");
-                //testRunner.Run();
 
             }
             catch (Exception e)
