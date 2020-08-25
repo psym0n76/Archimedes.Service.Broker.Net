@@ -7,6 +7,7 @@ using NLog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Archimedes.Library.RabbitMq;
 
@@ -28,6 +29,7 @@ namespace Archimedes.Broker.Fxcm.Runner
         {
             Task.Run(() =>
             {
+                var reconnect = 0;
                 var session = BrokerSession.GetInstance();
 
                 _logger.Info($"Current connection status: {session.State}");
@@ -36,6 +38,14 @@ namespace Archimedes.Broker.Fxcm.Runner
                 {
                     session.Connect();
                 }
+
+
+                while (session.State == SessionState.Reconnecting || reconnect == 10)
+                {
+                    _logger.Info($"Waiting to reconnect...{reconnect++}");
+                    Thread.Sleep(5000);
+                }
+
 
                 if (session.State == SessionState.Disconnected)
                 {
@@ -55,16 +65,23 @@ namespace Archimedes.Broker.Fxcm.Runner
                     catch (Exception e)
                     {
                         _logger.Error($"Candle Hisdtory: Unknown error returned from FXCM: {e.Message} {e.StackTrace} {e.InnerException}");
+                        return;
                     }
 
 
                     if (message.Success)
                     {
-                        _logger.Info($"Publish to CandleResponseQueue: {message}");
+
                         _producer.PublishMessage(message, "CandleResponseQueue");
+                        _logger.Info($"Published to CandleResponseQueue: {message}");
+                        return;
                     }
                 }
 
+                if (reconnect==10)
+                {
+                    _logger.Info($"Failed to BrokerProcessCandle TIMEOUT {reconnect} {session.State}");
+                }
             });
         }
 
