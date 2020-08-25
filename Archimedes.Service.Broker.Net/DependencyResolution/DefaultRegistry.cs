@@ -62,14 +62,14 @@ namespace Archimedes.Service.Broker.Net.DependencyResolution
                 .Ctor<string>("host").Is(ConfigurationManager.AppSettings["RabbitHost"])
                 .Ctor<string>("port").Is(ConfigurationManager.AppSettings["RabbitPort"])
                 .Ctor<string>("exchange").Is(ConfigurationManager.AppSettings["RabbitExchange"])
-                .Ctor<string>("queue").Is("CandleRequestQueue");
+                .Ctor<string>("queueName").Is("CandleRequestQueue");
 
 
             For<IPriceConsumer>().Use<PriceConsumer>()
                 .Ctor<string>("host").Is(ConfigurationManager.AppSettings["RabbitHost"])
                 .Ctor<string>("port").Is(ConfigurationManager.AppSettings["RabbitPort"])
                 .Ctor<string>("exchange").Is(ConfigurationManager.AppSettings["RabbitExchange"])
-                .Ctor<string>("queue").Is("PriceRequestQueue");
+                .Ctor<string>("queueName").Is("PriceRequestQueue");
 
 
             For<IPriceSubscriber>().Use<PriceSubscriber>();
