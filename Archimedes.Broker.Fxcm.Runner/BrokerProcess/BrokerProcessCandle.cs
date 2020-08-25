@@ -48,7 +48,6 @@ namespace Archimedes.Broker.Fxcm.Runner
                     _logger.Info($"Connected to FXCM {session.State}");
                     _logger.Info($"Process Candle History: {message}");
 
-
                     try
                     {
                         CandleHistory(session, message);
@@ -61,7 +60,6 @@ namespace Archimedes.Broker.Fxcm.Runner
 
                     if (message.Success)
                     {
-
                         _producer.PublishMessage(message, "CandleResponseQueue");
                     }
                 }
