@@ -60,6 +60,7 @@ namespace Archimedes.Broker.Fxcm.Runner
 
                     if (message.Success)
                     {
+                        _logger.Info($"Publish to CandleResponseQueue: {message}");
                         _producer.PublishMessage(message, "CandleResponseQueue");
                     }
                 }
