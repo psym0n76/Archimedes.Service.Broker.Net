@@ -1,7 +1,9 @@
-﻿namespace Archimedes.Broker.Fxcm.Runner
+﻿using System.Threading;
+
+namespace Archimedes.Broker.Fxcm.Runner
 {
     public interface IMessageBrokerConsumer
     {
-        void Run();
+        void Run(CancellationToken cancellationToken);
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading;
 using Archimedes.Library.Message;
 using Fx.Broker.Fxcm;
 using NLog;
@@ -24,13 +25,15 @@ namespace Archimedes.Broker.Fxcm.Runner
         {
             _logger.Info($"Receievd Candle Request {args.Message}");
             var requestCandle = JsonConvert.DeserializeObject<CandleMessage>(args.Message);
-            requestCandle.Logs = new List<string>(){"Message received from CandleRequestQueue"};
+            requestCandle.Logs = new List<string>() {"Message received from CandleRequestQueue"};
             _brokerProcessCandle.Run(requestCandle);
         }
 
-        public void SubscribeCandleMessage(Session session)
+        public void SubscribeCandleMessage(Session session, CancellationToken cancellationToken)
         {
-            _consumer.Subscribe();
+            _logger.Info($"Subscribed to CandleRequestQueue");
+            _consumer.Subscribe(cancellationToken);
+            _logger.Info($"Cancellation Token received: Token is {cancellationToken.IsCancellationRequested}");
         }
     }
 }

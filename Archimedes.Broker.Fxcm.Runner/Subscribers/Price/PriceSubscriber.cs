@@ -31,6 +31,7 @@ namespace Archimedes.Broker.Fxcm.Runner
 
         public void SubscribePriceMessage(Session session)
         {
+            _logger.Info($"Subscribed to PriceRequestQueue");
             _consumer.Subscribe();
         }
     }

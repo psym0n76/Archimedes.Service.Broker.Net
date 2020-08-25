@@ -2,6 +2,7 @@
 using System;
 using System.Configuration;
 using System.Diagnostics;
+using System.Threading;
 using Fx.Broker.Fxcm;
 
 
@@ -20,7 +21,7 @@ namespace Archimedes.Broker.Fxcm.Runner
             _priceSubscriber = priceSubscriber;
         }
 
-        public void Run()
+        public void Run(CancellationToken cancellationToken)
         {
             var stopWatch = new Stopwatch();
             stopWatch.Start();
@@ -44,7 +45,7 @@ namespace Archimedes.Broker.Fxcm.Runner
 
                 _logger.Info($"Connected to URL:{url}");
 
-                _subscriber.SubscribeCandleMessage(session);
+                _subscriber.SubscribeCandleMessage(session,cancellationToken);
                 //_priceSubscriber.SubscribePriceMessage(session);
 
             }
