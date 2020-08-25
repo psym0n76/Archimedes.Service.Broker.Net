@@ -49,6 +49,7 @@ namespace Archimedes.Service.Broker.Net
                 _logger.Info($"CancelationToken Raised {_cancellationToken.IsCancellationRequested}");
                 _logger.Info("Application End: Waiting 5 secs to shut down");
                 Thread.Sleep(5000);
+                _logger.Info("Application End: SHUTDOWN");
             }
             catch (Exception e)
             {
