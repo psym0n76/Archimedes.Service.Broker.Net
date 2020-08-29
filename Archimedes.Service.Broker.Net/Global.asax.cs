@@ -31,27 +31,29 @@ namespace Archimedes.Service.Broker.Net
 
                 if (!BrokerSession.ValidateConnection())
                 {
-                    throw new UnauthorizedAccessException(
-                        $"Unable to connect to FXCM URL - Max Retries hit 5");
+                    throw new UnauthorizedAccessException();
                 }
-
 
                 _logger.Info("Validating FXCM Connection - CONNNECTED");
 
                 runner.Run(_cancellationToken.Token);
 
-
             }
 
             catch (UnauthorizedAccessException e)
             {
-                _logger.Error(e.Message);
-                _logger.Error(BrokerSessionExceptionLogs.Print);
+                _logger.Error(BrokerSessionExceptionLogs.Print("Unable to connect to FXCM URL:"));
             }
 
             catch (Exception e)
             {
                 _logger.Error($"Termination Error: Message:{e.Message} StackTrade: {e.StackTrace}");
+            }
+
+            finally
+            {
+                _logger.Info("Application End:");
+                Application_End();
             }
         }
 
