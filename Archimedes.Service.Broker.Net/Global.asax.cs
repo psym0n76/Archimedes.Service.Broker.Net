@@ -20,24 +20,26 @@ namespace Archimedes.Service.Broker.Net
             {
                 _logger.Info("Application Start:");
 
-
                 AreaRegistration.RegisterAllAreas();
                 GlobalConfiguration.Configure(WebApiConfig.Register);
 
                 var container = Container.For<DefaultRegistry>();
                 var runner = container.GetInstance<MessageBrokerConsumer>();
 
-                Task.Run(() =>
+                _logger.Info("Started running");
+                _logger.Info("Validating FXCM Connection");
+
+                if (!BrokerSession.ValidateConnection())
                 {
-                    _logger.Info("Started running");
-                    _logger.Info("Validating FXCM Connection");
+                    throw new UnauthorizedAccessException(
+                        $"Unable to connect to FXCM URL - Max Retries hit 5");
+                }
 
-                    BrokerSession.ValidateConnection();
 
-                    _logger.Info("Validating FXCM Connection - CONNNECTED");
+                _logger.Info("Validating FXCM Connection - CONNNECTED");
 
-                    runner.Run(_cancellationToken.Token);
-                });
+                runner.Run(_cancellationToken.Token);
+
 
             }
 

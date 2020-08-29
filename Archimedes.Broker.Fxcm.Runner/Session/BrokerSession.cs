@@ -27,7 +27,7 @@ namespace Archimedes.Broker.Fxcm.Runner
             return _instance;
         }
 
-        public static void ValidateConnection()
+        public static bool ValidateConnection()
         {
             var url = ConfigurationManager.AppSettings["URL"];
             var accessToken = ConfigurationManager.AppSettings["AccessToken"];
@@ -40,11 +40,7 @@ namespace Archimedes.Broker.Fxcm.Runner
                 retry++;
             }
 
-            if (retry == 2)
-            {
-                throw new UnauthorizedAccessException(
-                    $"Unable to connect to FXCM URL:{url} Port:{accessToken} - Max Retries hit 5");
-            }
+            return retry != 2;
         }
 
         private static bool ConnectionSuccessful(string url, string accessToken)

@@ -20,7 +20,7 @@ namespace Archimedes.Broker.Fxcm.Runner
 
         public static string Print()
         {
-            return Logs.Aggregate(string.Empty, (current, log) => current + log.Message + "\n");
+            return Logs.Aggregate(string.Empty, (current, log) => current + "Unable to connect to FXCM:" + log.Message + "\n");
         }
     }
 }
