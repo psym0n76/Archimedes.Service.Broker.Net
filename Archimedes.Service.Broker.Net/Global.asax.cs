@@ -29,11 +29,24 @@ namespace Archimedes.Service.Broker.Net
 
                 Task.Run(() =>
                 {
-                    _logger.Info("Started running:");
+                    _logger.Info("Started running");
+                    _logger.Info("Validating FXCM Connection");
+
+                    BrokerSession.ValidateConnection();
+
+                    _logger.Info("Validating FXCM Connection - CONNNECTED");
+
                     runner.Run(_cancellationToken.Token);
                 });
 
             }
+
+            catch (UnauthorizedAccessException e)
+            {
+                _logger.Error(e.Message);
+                _logger.Error(BrokerSessionExceptionLogs.Print);
+            }
+
             catch (Exception e)
             {
                 _logger.Error($"Termination Error: Message:{e.Message} StackTrade: {e.StackTrace}");
