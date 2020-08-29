@@ -62,9 +62,14 @@ namespace Archimedes.Broker.Fxcm.Runner
                     {
                         CandleHistory(session, message);
                     }
+
+                    catch (InvalidOperationException e)
+                    {
+                        _logger.Error($"Candle History: FXCM Connection Failed: {e.Message}");
+                    }
                     catch (Exception e)
                     {
-                        _logger.Error($"Candle Hisdtory: Unknown error returned from FXCM: {e.Message} {e.StackTrace} {e.InnerException}");
+                        _logger.Error($"Candle History: Unknown error returned from FXCM: {e.Message} {e.StackTrace} {e.InnerException}");
                         return;
                     }
 
