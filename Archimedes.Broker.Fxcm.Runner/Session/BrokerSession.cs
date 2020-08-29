@@ -49,8 +49,9 @@ namespace Archimedes.Broker.Fxcm.Runner
             {
                 var session = GetInstance();
                 session.Connect();
+                session.Close();
 
-                return session.State == SessionState.Connected;
+                return true;
             }
             catch (InvalidOperationException exception)
             {
