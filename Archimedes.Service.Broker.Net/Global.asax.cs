@@ -4,7 +4,6 @@ using NLog;
 using StructureMap;
 using System;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Mvc;
 
@@ -48,12 +47,6 @@ namespace Archimedes.Service.Broker.Net
             catch (Exception e)
             {
                 _logger.Error($"Termination Error: Message:{e.Message} StackTrade: {e.StackTrace}");
-            }
-
-            finally
-            {
-                _logger.Info("Application End:");
-                Application_End();
             }
         }
 
