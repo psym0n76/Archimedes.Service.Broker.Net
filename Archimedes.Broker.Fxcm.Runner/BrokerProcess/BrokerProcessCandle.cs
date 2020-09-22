@@ -141,17 +141,11 @@ namespace Archimedes.Broker.Fxcm.Runner
         {
             _logger.Info($"Build response {candles.Count}");
 
-            if (candles == null)
-            {
-                var message = $"Candle response from Broker empty {request}";
-                _logger.Error(message);
-                request.Logs.Add(message);
-                return;
-            }
-
             var candleDto = candles.Select(c => new CandleDto()
                 {
-                    Timestamp = c.Timestamp,
+                    TimeStamp = c.Timestamp,
+                    ToDate = c.Timestamp,
+                    FromDate = c.Timestamp.AddMinutes(-request.Interval),
                     BidOpen = c.BidOpen,
                     BidHigh = c.BidHigh,
                     BidLow = c.BidLow,
