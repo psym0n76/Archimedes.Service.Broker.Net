@@ -2,6 +2,7 @@
 using System.Web.Http;
 using Microsoft.Extensions.Logging;
 using System.Configuration;
+using Archimedes.Library.Message.Dto;
 
 namespace Archimedes.Service.Candle.Controllers
 {
@@ -21,10 +22,19 @@ namespace Archimedes.Service.Candle.Controllers
             var appName = ConfigurationManager.AppSettings["ApplicationName"];
             var appVersion = ConfigurationManager.AppSettings["Version"];
 
+            var health = new HealthMonitorDto()
+            {
+                Version = appVersion,
+                LastActiveVersion = appVersion,
+                Status = true,
+                LastUpdated = DateTime.Now,
+                LastActive = DateTime.Now
+            };
+
             try
             {
                 _logger.LogInformation($"{appName} Version: {appVersion}");
-                return Ok($"{appName} Version: {appVersion}");
+                return Ok(health);
             }
             catch (Exception e)
             {
