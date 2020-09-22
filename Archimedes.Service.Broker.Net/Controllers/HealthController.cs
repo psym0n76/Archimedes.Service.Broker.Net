@@ -24,6 +24,7 @@ namespace Archimedes.Service.Candle.Controllers
 
             var health = new HealthMonitorDto()
             {
+                AppName = appName,
                 Version = appVersion,
                 LastActiveVersion = appVersion,
                 Status = true,
