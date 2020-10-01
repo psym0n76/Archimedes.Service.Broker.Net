@@ -153,7 +153,7 @@ namespace Archimedes.Broker.Fxcm.Runner
                     TickQty = c.TickQty,
                     Market = request.Market,
                     MarketId = request.MarketId,
-                    Granularity = request.TimeFrame
+                    Granularity = $"{request.Interval}{request.TimeFrame}"
                 })
                 .ToList();
 
