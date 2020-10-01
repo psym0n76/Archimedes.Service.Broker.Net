@@ -3,18 +3,16 @@ using System.Web.Http;
 using Microsoft.Extensions.Logging;
 using System.Configuration;
 using Archimedes.Library.Message.Dto;
+using NLog;
 
 namespace Archimedes.Service.Candle.Controllers
 {
     [System.Web.Mvc.Route("api/[controller]")]
     public class HealthController : ApiController
     {
-        private readonly ILogger<HealthController> _logger;
+        private readonly Logger _logger = LogManager.GetCurrentClassLogger();
 
-        public HealthController(ILogger<HealthController> logger)
-        {
-            _logger = logger;
-        }
+        // this is not picke dup
 
         [HttpGet()]
         public IHttpActionResult Get()
@@ -34,12 +32,12 @@ namespace Archimedes.Service.Candle.Controllers
 
             try
             {
-                _logger.LogInformation($"{appName} Version: {appVersion}");
+                _logger.Info($"{appName} Version: {appVersion}");
                 return Ok(health);
             }
             catch (Exception e)
             {
-                _logger.LogError($"Error {e.Message} {e.StackTrace}");
+                _logger.Error($"Error {e.Message} {e.StackTrace}");
                 return BadRequest("Error");
             }
         }
