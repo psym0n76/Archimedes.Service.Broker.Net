@@ -32,7 +32,6 @@ namespace Archimedes.Service.Candle.Controllers
 
             try
             {
-                _logger.Info($"{appName} Version: {appVersion}");
                 return Ok(health);
             }
             catch (Exception e)
