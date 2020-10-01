@@ -152,7 +152,8 @@ namespace Archimedes.Broker.Fxcm.Runner
                     AskClose = c.AskClose,
                     TickQty = c.TickQty,
                     Market = request.Market,
-                    MarketId = request.MarketId
+                    MarketId = request.MarketId,
+                    Granularity = request.TimeFrame
                 })
                 .ToList();
 
