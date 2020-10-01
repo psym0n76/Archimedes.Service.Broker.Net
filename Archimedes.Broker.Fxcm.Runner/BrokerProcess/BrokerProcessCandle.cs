@@ -27,6 +27,7 @@ namespace Archimedes.Broker.Fxcm.Runner
 
         public void Run(CandleMessage message)
         {
+            //todo potentially move to sequential
             Task.Run(() =>
             {
                 var reconnect = 0;
@@ -104,12 +105,7 @@ namespace Archimedes.Broker.Fxcm.Runner
                 return;
             }
 
-            foreach (var offer1 in offers)
-            {
-                _logger.Info(
-                    $"Offers Returned: {nameof(offer1.OfferId)}:{offer1.OfferId}  {nameof(offer1.Currency)}:{offer1.Currency} Rest:{offer1}");
-            }
-
+            _logger.Info($"Offers retunred {offers.Count}");
 
             // returns no offers
             var offer = offers.FirstOrDefault(o => o.Currency == request.Market);
@@ -128,11 +124,11 @@ namespace Archimedes.Broker.Fxcm.Runner
 
             _logger.Info($"Records returned from FXCM: {candles.Count}");
 
-            foreach (var candle in candles)
-            {
-                _logger.Info(
-                    $" {nameof(candle.Timestamp)}:{candle.Timestamp} {nameof(candle.AskOpen)}:{candle.AskOpen} {nameof(candle.AskHigh)}:{candle.AskHigh} {nameof(candle.AskLow)}:{candle.AskLow} {nameof(candle.AskClose)}:{candle.AskClose}");
-            }
+            //foreach (var candle in candles)
+            //{
+            //    _logger.Info(
+            //        $" {nameof(candle.Timestamp)}:{candle.Timestamp} {nameof(candle.AskOpen)}:{candle.AskOpen} {nameof(candle.AskHigh)}:{candle.AskHigh} {nameof(candle.AskLow)}:{candle.AskLow} {nameof(candle.AskClose)}:{candle.AskClose}");
+            //}
 
             BuildResponse(request, candles);
         }

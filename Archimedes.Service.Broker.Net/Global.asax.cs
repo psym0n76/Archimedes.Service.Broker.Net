@@ -4,6 +4,7 @@ using NLog;
 using StructureMap;
 using System;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Mvc;
 
@@ -14,6 +15,11 @@ namespace Archimedes.Service.Broker.Net
         private readonly Logger _logger = LogManager.GetCurrentClassLogger();
         private readonly CancellationTokenSource _cancellationToken = new CancellationTokenSource();
         protected void Application_Start()
+        {
+            Task.Run(ApplicationRunner);
+        }
+
+        private void ApplicationRunner()
         {
             try
             {
@@ -36,7 +42,6 @@ namespace Archimedes.Service.Broker.Net
                 _logger.Info("Validating FXCM Connection - CONNNECTED");
 
                 runner.Run(_cancellationToken.Token);
-
             }
 
             catch (UnauthorizedAccessException e)
