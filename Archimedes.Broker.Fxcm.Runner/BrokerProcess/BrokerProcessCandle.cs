@@ -41,7 +41,7 @@ namespace Archimedes.Broker.Fxcm.Runner
                 }
 
 
-                while (session.State == SessionState.Reconnecting || reconnect == 10)
+                while (session.State == SessionState.Reconnecting && reconnect < 10)
                 {
                     _logger.Info($"Waiting to reconnect...{reconnect++}");
                     Thread.Sleep(5000);
