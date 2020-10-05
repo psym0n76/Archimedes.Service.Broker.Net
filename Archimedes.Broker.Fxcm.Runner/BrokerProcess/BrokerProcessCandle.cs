@@ -131,7 +131,7 @@ namespace Archimedes.Broker.Fxcm.Runner
             var candleDto = candles.Select(c => new CandleDto()
                 {
                     TimeStamp = c.Timestamp,
-                    ToDate = c.Timestamp,
+                    ToDate = c.Timestamp.AddMinutes(request.Interval),
                     FromDate = c.Timestamp.AddMinutes(-request.Interval),
                     BidOpen = c.BidOpen,
                     BidHigh = c.BidHigh,
