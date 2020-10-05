@@ -122,12 +122,6 @@ namespace Archimedes.Broker.Fxcm.Runner
 
             _logger.Info($"FXCM Records returned: {candles.Count}");
 
-            //foreach (var candle in candles)
-            //{
-            //    _logger.Info(
-            //        $" {nameof(candle.Timestamp)}:{candle.Timestamp} {nameof(candle.AskOpen)}:{candle.AskOpen} {nameof(candle.AskHigh)}:{candle.AskHigh} {nameof(candle.AskLow)}:{candle.AskLow} {nameof(candle.AskClose)}:{candle.AskClose}");
-            //}
-
             BuildResponse(request, candles);
         }
 
