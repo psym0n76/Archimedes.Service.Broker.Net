@@ -115,8 +115,7 @@ namespace Archimedes.Broker.Fxcm.Runner
 
             _logger.Info($" Broker Request parameters: " +
                          $"\n  {nameof(offer.OfferId)}: {offer.OfferId} {nameof(request.TimeFrame)}: {request.TimeFrame}" +
-                         $"\n  {nameof(request.StartDate)}: {request.StartDate.BrokerDate()} {nameof(request.EndDate)}: {request.EndDate.BrokerDate()}" +
-                         $"\n  {nameof(request.StartDate)}: {request.StartDate} {nameof(request.EndDate)}: {request.EndDate}");
+                         $"\n  {nameof(request.StartDate)}: {request.StartDate.BrokerDate()} {nameof(request.EndDate)}: {request.EndDate.BrokerDate()}");
             request.CountCandleIntervals();
 
             var candles = session.GetCandles(offer.OfferId, request.TimeFrameBroker, request.Intervals,
