@@ -16,7 +16,6 @@ namespace Archimedes.Service.Broker.Net
         private readonly CancellationTokenSource _cancellationToken = new CancellationTokenSource();
         protected void Application_Start()
         {
-            //Task.Run(ApplicationRunner);
             ApplicationRunner();
         }
 
@@ -42,7 +41,6 @@ namespace Archimedes.Service.Broker.Net
 
                 _logger.Info("Validating FXCM Connection - CONNNECTED");
 
-                
                 Task.Run(()=>
                 {
                     runner.Run(_cancellationToken.Token);
