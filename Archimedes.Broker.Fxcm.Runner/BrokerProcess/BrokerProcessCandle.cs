@@ -57,7 +57,6 @@ namespace Archimedes.Broker.Fxcm.Runner
                 if (session.State == SessionState.Connected)
                 {
                     _logger.Info($"Connected to FXCM {session.State}");
-                    _logger.Info($"Process Candle History: {message}");
 
                     try
                     {
@@ -105,7 +104,7 @@ namespace Archimedes.Broker.Fxcm.Runner
                 return;
             }
 
-            _logger.Info($"FXCM Offers returned {offers.Count}");
+            _logger.Info($"FXCM Offers returned: {offers.Count}");
 
             // returns no offers
             var offer = offers.FirstOrDefault(o => o.Currency == request.Market);
@@ -121,7 +120,7 @@ namespace Archimedes.Broker.Fxcm.Runner
             var candles = session.GetCandles(offer.OfferId, request.TimeFrameBroker, request.Intervals,
                 request.StartDate, request.EndDate);
 
-            _logger.Info($"Records returned from FXCM: {candles.Count}");
+            _logger.Info($"FXCM Records returned: {candles.Count}");
 
             //foreach (var candle in candles)
             //{
@@ -134,7 +133,6 @@ namespace Archimedes.Broker.Fxcm.Runner
 
         private void BuildResponse(CandleMessage request, IList<Candle> candles)
         {
-            _logger.Info($"Build response for {candles.Count} candles");
 
             var candleDto = candles.Select(c => new CandleDto()
                 {
