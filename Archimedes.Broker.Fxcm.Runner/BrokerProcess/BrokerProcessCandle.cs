@@ -112,7 +112,7 @@ namespace Archimedes.Broker.Fxcm.Runner
             if (!ValidateRequest(request, offer))
                 return;
 
-            _logger.Info($" Broker Request parameters: " +
+            _logger.Info($"Broker Request parameters: " +
                          $"\n  {nameof(offer.OfferId)}: {offer.OfferId} {nameof(request.TimeFrame)}: {request.TimeFrame}" +
                          $"\n  {nameof(request.StartDate)}: {request.StartDate.BrokerDate()} {nameof(request.EndDate)}: {request.EndDate.BrokerDate()}");
             request.CountCandleIntervals();
