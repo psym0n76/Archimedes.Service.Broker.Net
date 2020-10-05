@@ -122,6 +122,7 @@ namespace Archimedes.Broker.Fxcm.Runner
 
             _logger.Info($"FXCM Records returned: {candles.Count}");
 
+
             BuildResponse(request, candles);
         }
 
@@ -132,7 +133,7 @@ namespace Archimedes.Broker.Fxcm.Runner
                 {
                     TimeStamp = c.Timestamp,
                     ToDate = c.Timestamp.AddMinutes(request.Interval),
-                    FromDate = c.Timestamp.AddMinutes(-request.Interval),
+                    FromDate = c.Timestamp,
                     BidOpen = c.BidOpen,
                     BidHigh = c.BidHigh,
                     BidLow = c.BidLow,
