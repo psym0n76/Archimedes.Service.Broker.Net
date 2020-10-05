@@ -31,7 +31,7 @@ namespace Archimedes.Broker.Fxcm.Runner
 
             try
             {
-                _logger.Info($"Get Session Token:{accessToken} URL:{url}");
+                _logger.Info($"Get Session Token: {accessToken} URL: {url}");
 
                 var session = BrokerSession.GetInstance();
 
@@ -43,7 +43,7 @@ namespace Archimedes.Broker.Fxcm.Runner
                     return;
                 }
 
-                _logger.Info($"Connected to URL:{url}");
+                _logger.Info($"Connected to URL: {url}");
 
                 _subscriber.SubscribeCandleMessage(session, cancellationToken);
                 //_priceSubscriber.SubscribePriceMessage(session);

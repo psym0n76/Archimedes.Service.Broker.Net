@@ -34,7 +34,7 @@ namespace Archimedes.Broker.Fxcm.Runner
         {
             _logger.Info($"Subscribed to CandleRequestQueue");
             _consumer.Subscribe(cancellationToken);
-            _logger.Info($"Cancellation Token received: Token is {cancellationToken.IsCancellationRequested}");
+            _logger.Info($"Cancellation Token received: Token {cancellationToken.IsCancellationRequested}");
         }
     }
 }

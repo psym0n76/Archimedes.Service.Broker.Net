@@ -24,7 +24,7 @@ namespace Archimedes.Service.Broker.Net
         {
             try
             {
-                _logger.Info("Application Start:");
+                _logger.Info("Application Start");
 
                 AreaRegistration.RegisterAllAreas();
                 GlobalConfiguration.Configure(WebApiConfig.Register);
