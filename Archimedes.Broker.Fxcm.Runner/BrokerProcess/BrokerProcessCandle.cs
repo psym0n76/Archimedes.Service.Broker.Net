@@ -105,7 +105,7 @@ namespace Archimedes.Broker.Fxcm.Runner
                 return;
             }
 
-            _logger.Info($"Offers retunred {offers.Count}");
+            _logger.Info($"FXCM Offers returned {offers.Count}");
 
             // returns no offers
             var offer = offers.FirstOrDefault(o => o.Currency == request.Market);
@@ -135,7 +135,7 @@ namespace Archimedes.Broker.Fxcm.Runner
 
         private void BuildResponse(CandleMessage request, IList<Candle> candles)
         {
-            _logger.Info($"Build response {candles.Count}");
+            _logger.Info($"Build response for {candles.Count} candles");
 
             var candleDto = candles.Select(c => new CandleDto()
                 {
