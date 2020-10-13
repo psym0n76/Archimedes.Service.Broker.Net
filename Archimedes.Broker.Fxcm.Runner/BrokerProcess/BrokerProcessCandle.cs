@@ -110,7 +110,7 @@ namespace Archimedes.Broker.Fxcm.Runner
             if (!ValidateRequest(request, offer))
                 return;
 
-            _logger.Info($"\n FXCM Broker Request: " +
+            _logger.Info($"\n\n FXCM Broker Request " +
                          $"\n  {nameof(offer.OfferId)}: {offer.OfferId} {nameof(request.Market)}: {request.Market} {nameof(request.Interval)}: {request.Interval} {nameof(request.TimeFrame)}: {request.TimeFrame}" +
                          $"\n  {nameof(request.StartDate)}: {request.StartDate} {nameof(request.EndDate)}: {request.EndDate}\n");
 
