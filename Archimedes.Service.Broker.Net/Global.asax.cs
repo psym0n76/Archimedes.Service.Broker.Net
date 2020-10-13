@@ -31,7 +31,6 @@ namespace Archimedes.Service.Broker.Net
                 var container = Container.For<DefaultRegistry>();
                 var runner = container.GetInstance<MessageBrokerConsumer>();
 
-                _logger.Info("Started running");
                 _logger.Info("FXCM Validating Connection");
 
                 if (!BrokerSession.ValidateConnection())
