@@ -32,14 +32,14 @@ namespace Archimedes.Service.Broker.Net
                 var runner = container.GetInstance<MessageBrokerConsumer>();
 
                 _logger.Info("Started running");
-                _logger.Info("Validating FXCM Connection");
+                _logger.Info("FXCM Validating Connection");
 
                 if (!BrokerSession.ValidateConnection())
                 {
                     throw new UnauthorizedAccessException();
                 }
 
-                _logger.Info("Validating FXCM Connection - CONNNECTED");
+                _logger.Info("FXCM Validating Connection - CONNNECTED");
 
                 Task.Run(()=>
                 {
