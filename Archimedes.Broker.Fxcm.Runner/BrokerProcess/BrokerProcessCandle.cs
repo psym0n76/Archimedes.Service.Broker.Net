@@ -33,7 +33,7 @@ namespace Archimedes.Broker.Fxcm.Runner
                 var reconnect = 0;
                 var session = BrokerSession.GetInstance();
 
-                _logger.Info($"Current connection status: {session.State}");
+                _logger.Info($"FXCM Connection status: {session.State}");
 
                 if (session.State == SessionState.Disconnected)
                 {
@@ -56,7 +56,7 @@ namespace Archimedes.Broker.Fxcm.Runner
 
                 if (session.State == SessionState.Connected)
                 {
-                    _logger.Info($"Connected to FXCM {session.State}");
+                    _logger.Info($"FXCM Connection status: {session.State}");
 
                     try
                     {
@@ -119,7 +119,7 @@ namespace Archimedes.Broker.Fxcm.Runner
             var candles = session.GetCandles(offer.OfferId, request.TimeFrameBroker, request.Intervals,
                 request.StartDate, request.EndDate);
 
-            _logger.Info($"FXCM Records returned: {candles.Count}");
+            _logger.Info($"FXCM Candles returned: {candles.Count}");
 
 
             BuildResponse(request, candles);
