@@ -5,7 +5,6 @@ using System.Diagnostics;
 using System.Threading;
 using Fx.Broker.Fxcm;
 
-
 namespace Archimedes.Broker.Fxcm.Runner
 {
     public class MessageBrokerConsumer : IMessageBrokerConsumer

@@ -73,10 +73,8 @@ namespace Archimedes.Broker.Fxcm.Runner
                         return;
                     }
 
-
                     if (message.Success)
                     {
-
                         _producer.PublishMessage(message, "CandleResponseQueue");
                         _logger.Info($"Published to CandleResponseQueue: {message}");
                         return;
@@ -115,6 +113,7 @@ namespace Archimedes.Broker.Fxcm.Runner
             _logger.Info($"\n Broker Request parameters: " +
                          $"\n  {nameof(offer.OfferId)}: {offer.OfferId} {nameof(request.TimeFrame)}: {request.TimeFrame}" +
                          $"\n  {nameof(request.StartDate)}: {request.StartDate.BrokerDate()} {nameof(request.EndDate)}: {request.EndDate.BrokerDate()}");
+
             request.CountCandleIntervals();
 
             var candles = session.GetCandles(offer.OfferId, request.TimeFrameBroker, request.Intervals,
@@ -159,7 +158,6 @@ namespace Archimedes.Broker.Fxcm.Runner
             {
                 var message = $"The instrument {request.Market} is not valid: {request}";
                 _logger.Info(message);
-                //response.Status = message;
                 return false;
             }
 
@@ -168,7 +166,13 @@ namespace Archimedes.Broker.Fxcm.Runner
             {
                 var message = $"Incorrect Date formats {request.StartDate.BrokerDate()} {request.EndDate.BrokerDate()}";
                 _logger.Info(message);
-                //response.Status = message;
+                return false;
+            }
+
+            if (request.StartDate > request.EndDate)
+            {
+                var message = $"Start Date greater then End Date {request.StartDate} {request.EndDate}";
+                _logger.Info(message);
                 return false;
             }
 
