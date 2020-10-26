@@ -3,6 +3,7 @@ using System;
 using System.Configuration;
 using System.Diagnostics;
 using System.Threading;
+using System.Threading.Tasks;
 using Fx.Broker.Fxcm;
 
 namespace Archimedes.Broker.Fxcm.Runner
@@ -44,8 +45,21 @@ namespace Archimedes.Broker.Fxcm.Runner
 
                 _logger.Info($"FXCM Connected: {url}");
 
-                _subscriber.SubscribeCandleMessage(session, cancellationToken);
-                _priceSubscriber.SubscribePriceMessage(session);
+                _logger.Info($"FXCM Connected and Subscribed to CandleMessage");
+                Task.Run(() => { _subscriber.SubscribeCandleMessage(session, cancellationToken); }, cancellationToken);
+
+                _logger.Info($"FXCM Connected and Subscribed to PriceMessage");
+                Task.Run(() => { _priceSubscriber.SubscribePriceMessage(session); }, cancellationToken);
+
+                while (true)
+                {
+                    if (cancellationToken.IsCancellationRequested)
+                    {
+                        return;
+                    }
+
+                    Thread.Sleep(3000);
+                }
 
             }
             catch (Exception e)
