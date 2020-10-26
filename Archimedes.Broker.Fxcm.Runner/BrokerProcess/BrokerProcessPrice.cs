@@ -57,8 +57,9 @@ namespace Archimedes.Broker.Fxcm.Runner
                     
                     request.Prices.Add(price);
 
-                    _producer.PublishMessage(request, "PriceResponseQueue");
                     _logger.Info($"Published to Queue: {request}");
+                    _producer.PublishMessage(request, "PriceResponseQueue");
+                    _logger.Info($"Published to Queue2: {request}");
                 };
 
                 while (true)
