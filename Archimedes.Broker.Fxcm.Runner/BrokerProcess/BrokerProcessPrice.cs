@@ -46,7 +46,6 @@ namespace Archimedes.Broker.Fxcm.Runner
 
                 session.PriceUpdate += priceUpdate =>
                 {
-                    
                     _logger.Info($"Process Price Update: receievd update {priceUpdate.Ask} : {priceUpdate.Bid} : {priceUpdate.High} : {priceUpdate.Low} : {priceUpdate.Symbol} : {priceUpdate.Updated}");
 
                     try
@@ -59,20 +58,20 @@ namespace Archimedes.Broker.Fxcm.Runner
                             AskOpen = priceUpdate.Ask,
                             AskClose = priceUpdate.Ask,
 
-                            Market = request.Market
+                            Market = request.Market,
+                            TimeStamp = priceUpdate.Updated,
+                            LastUpdated = DateTime.Now
                         };
                     
                         request.Prices.Add(price);
 
-                        _logger.Info($"Published to Queue: {request}");
                         _producer.PublishMessage(request, "PriceResponseQueue");
-                        _logger.Info($"Published to Queue2: {request}");
+                        _logger.Info($"Published to Queue: {request}");
                     }
                     catch (Exception e)
                     {
                         _logger.Error($"Error in subscription: {e.Message} {e.StackTrace}");  
                     }
-
                 };
 
                 while (true)
