@@ -1,10 +1,12 @@
-﻿using Archimedes.Library.Message;
+﻿using System;
+using Archimedes.Library.Message;
 using Archimedes.Library.Message.Dto;
 using Fx.Broker.Fxcm;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Archimedes.Library.RabbitMq;
+using NLog;
 
 namespace Archimedes.Broker.Fxcm.Runner
 {
@@ -40,26 +42,37 @@ namespace Archimedes.Broker.Fxcm.Runner
 
                 session.SubscribeSymbol(request.Market);
 
+                request.Prices = new List<PriceDto>();
+
                 session.PriceUpdate += priceUpdate =>
                 {
                     
                     _logger.Info($"Process Price Update: receievd update {priceUpdate.Ask} : {priceUpdate.Bid} : {priceUpdate.High} : {priceUpdate.Low} : {priceUpdate.Symbol} : {priceUpdate.Updated}");
-                    var price = new PriceDto()
+
+                    try
                     {
-                        BidOpen = priceUpdate.Bid,
-                        BidClose = priceUpdate.Bid,
+                        var price = new PriceDto()
+                        {
+                            BidOpen = priceUpdate.Bid,
+                            BidClose = priceUpdate.Bid,
 
-                        AskOpen = priceUpdate.Ask,
-                        AskClose = priceUpdate.Ask,
+                            AskOpen = priceUpdate.Ask,
+                            AskClose = priceUpdate.Ask,
 
-                        Market = request.Market
-                    };
+                            Market = request.Market
+                        };
                     
-                    request.Prices.Add(price);
+                        request.Prices.Add(price);
 
-                    _logger.Info($"Published to Queue: {request}");
-                    _producer.PublishMessage(request, "PriceResponseQueue");
-                    _logger.Info($"Published to Queue2: {request}");
+                        _logger.Info($"Published to Queue: {request}");
+                        _producer.PublishMessage(request, "PriceResponseQueue");
+                        _logger.Info($"Published to Queue2: {request}");
+                    }
+                    catch (Exception e)
+                    {
+                        _logger.Error($"Error in subscription: {e.Message} {e.StackTrace}");  
+                    }
+
                 };
 
                 while (true)
