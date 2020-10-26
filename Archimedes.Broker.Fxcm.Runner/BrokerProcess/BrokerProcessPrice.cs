@@ -2,6 +2,7 @@
 using Archimedes.Library.Message.Dto;
 using Fx.Broker.Fxcm;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Archimedes.Library.RabbitMq;
 
@@ -24,7 +25,7 @@ namespace Archimedes.Broker.Fxcm.Runner
             {
                 var session = BrokerSession.GetInstance();
 
-                _logger.Info("Process Price Update");
+                _logger.Info($"Process Price Update: {request}");
 
                 if (session.State == SessionState.Disconnected)
                 {
@@ -33,38 +34,37 @@ namespace Archimedes.Broker.Fxcm.Runner
 
                 if (session.State == SessionState.Disconnected)
                 {
-                    _logger.Error("Unalbe to connect to FCXM");
+                    _logger.Error("Unable to connect to FCXM");
                     return;
                 }
 
                 session.SubscribeSymbol(request.Market);
-                //session.PriceUpdate += Session_PriceUpdate;
 
                 session.PriceUpdate += priceUpdate =>
                 {
-                    var priceResponse = new PriceMessage()
+                    
+                    _logger.Info($"Process Price Update: receievd update {priceUpdate.Ask} : {priceUpdate.Bid} : {priceUpdate.High} : {priceUpdate.Low} : {priceUpdate.Symbol} : {priceUpdate.Updated}");
+                    var price = new PriceDto()
                     {
-                        Prices = new List<PriceDto>()
-                        {
-                            new PriceDto()
-                            {
-                                BidOpen = priceUpdate.Bid,
-                                BidClose = priceUpdate.Bid,
+                        BidOpen = priceUpdate.Bid,
+                        BidClose = priceUpdate.Bid,
 
-                                AskOpen = priceUpdate.Ask,
-                                AskClose = priceUpdate.Ask,
+                        AskOpen = priceUpdate.Ask,
+                        AskClose = priceUpdate.Ask,
 
-                                Market = request.Market
-                            }
-                        }
+                        Market = request.Market
                     };
+                    
+                    request.Prices.Add(price);
 
-                    _producer.PublishMessage(priceResponse, nameof(priceResponse));
+                    _producer.PublishMessage(request, "PriceResponseQueue");
+                    _logger.Info($"Published to Queue: {request}");
                 };
 
                 while (true)
                 {
                     //loop tpo keep session open
+                    Thread.Sleep(3000);
                 }
 
                 //session.PriceUpdate -= Session_PriceUpdate;

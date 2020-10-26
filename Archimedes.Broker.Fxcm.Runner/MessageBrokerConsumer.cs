@@ -45,7 +45,7 @@ namespace Archimedes.Broker.Fxcm.Runner
                 _logger.Info($"FXCM Connected: {url}");
 
                 _subscriber.SubscribeCandleMessage(session, cancellationToken);
-                //_priceSubscriber.SubscribePriceMessage(session);
+                _priceSubscriber.SubscribePriceMessage(session);
 
             }
             catch (Exception e)
