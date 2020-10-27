@@ -46,62 +46,50 @@ namespace Archimedes.Broker.Fxcm.Runner
 
                 var counter = 0;
 
-                session.PriceUpdate += priceUpdate =>
-                {
-                    if (counter < 5)
-                    {
-                        _logger.Info($"Process Price Update: receievd update {priceUpdate.Ask} : {priceUpdate.Bid} : {priceUpdate.High} : {priceUpdate.Low} : {priceUpdate.Symbol} : {priceUpdate.Updated}");    
-                    }
-
-                    else if(counter==500)
-                    {
-                        _logger.Info($"Process Price Update: receievd 500 updates ");
-                        counter = 0;
-                    }
-
-                    try
-                    {
-                        var price = new PriceDto()
-                        {
-                            BidOpen = priceUpdate.Bid,
-                            BidClose = priceUpdate.Bid,
-
-                            AskOpen = priceUpdate.Ask,
-                            AskClose = priceUpdate.Ask,
-
-                            Market = request.Market,
-                            TimeStamp = priceUpdate.Updated,
-                            LastUpdated = DateTime.Now
-                        };
-                    
-                        request.Prices.Add(price);
-                        counter++;
-
-                        _producer.PublishMessage(request, "PriceResponseQueue");
-
-                        if (counter < 5)
-                        {
-                            _logger.Info($"Process Price Update: receievd update {priceUpdate.Ask} : {priceUpdate.Bid} : {priceUpdate.High} : {priceUpdate.Low} : {priceUpdate.Symbol} : {priceUpdate.Updated}");    
-                        }
-
-
-                        _logger.Info($"Published to Queue: {request}");
-                    }
-                    catch (Exception e)
-                    {
-                        _logger.Error($"Error in subscription: {e.Message} {e.StackTrace}");  
-                    }
-                };
+                session.PriceUpdate += priceUpdate => { ProcessMessage(request, counter, priceUpdate); };
 
                 while (true)
                 {
-                    //loop tpo keep session open
                     Thread.Sleep(3000);
                 }
 
-                //session.PriceUpdate -= Session_PriceUpdate;
-                //session.UnsubscribeSymbol(request.Market);
             }).ConfigureAwait(false);
+        }
+
+        private void ProcessMessage(PriceMessage request, int counter, PriceUpdate priceUpdate)
+        {
+            counter++;
+            if (counter < 5)
+            {
+                _logger.Info(
+                    $"Process Price Update: receievd update {priceUpdate.Ask} : {priceUpdate.Bid} : {priceUpdate.High} : {priceUpdate.Low} : {priceUpdate.Symbol} : {priceUpdate.Updated}");
+            }
+
+            else if (counter == 500)
+            {
+                _logger.Info($"Process Price Update: receievd 500 updates ");
+                counter = 0;
+            }
+
+            request.Prices.Add(new PriceDto()
+            {
+                BidOpen = priceUpdate.Bid,
+                BidClose = priceUpdate.Bid,
+
+                AskOpen = priceUpdate.Ask,
+                AskClose = priceUpdate.Ask,
+
+                Market = request.Market,
+                TimeStamp = priceUpdate.Updated,
+                LastUpdated = DateTime.Now
+            });
+
+            _producer.PublishMessage(request, "PriceResponseQueue");
+
+            if (counter < 5)
+            {
+                _logger.Info($"Published to Queue: {request}");
+            }
         }
     }
 }
