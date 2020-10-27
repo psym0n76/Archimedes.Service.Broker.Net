@@ -78,6 +78,13 @@ namespace Archimedes.Broker.Fxcm.Runner
                         counter++;
 
                         _producer.PublishMessage(request, "PriceResponseQueue");
+
+                        if (counter < 5)
+                        {
+                            _logger.Info($"Process Price Update: receievd update {priceUpdate.Ask} : {priceUpdate.Bid} : {priceUpdate.High} : {priceUpdate.Low} : {priceUpdate.Symbol} : {priceUpdate.Updated}");    
+                        }
+
+
                         _logger.Info($"Published to Queue: {request}");
                     }
                     catch (Exception e)
