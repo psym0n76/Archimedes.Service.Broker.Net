@@ -45,10 +45,8 @@ namespace Archimedes.Broker.Fxcm.Runner
 
                 _logger.Info($"FXCM Connected: {url}");
 
-                _logger.Info($"FXCM Connected and Subscribed to CandleMessage");
                 Task.Run(() => { _subscriber.SubscribeCandleMessage(session, cancellationToken); }, cancellationToken);
 
-                _logger.Info($"FXCM Connected and Subscribed to PriceMessage");
                 Task.Run(() => { _priceSubscriber.SubscribePriceMessage(session); }, cancellationToken);
 
                 while (true)
@@ -66,6 +64,7 @@ namespace Archimedes.Broker.Fxcm.Runner
             {
                 _logger.Error($"Error message:{e.Message} StackTrace:{e.StackTrace}");
             }
+
             finally
             {
                 _logger.Info($"Disconnected:{url} - Elapsed: {stopWatch.Elapsed:dd\\.hh\\:mm\\:ss}");
