@@ -29,12 +29,9 @@ namespace Archimedes.Broker.Fxcm.Runner
 
         public static bool ValidateConnection()
         {
-            var url = ConfigurationManager.AppSettings["URL"];
-            var accessToken = ConfigurationManager.AppSettings["AccessToken"];
-
             var retry = 0;
 
-            while (!ConnectionSuccessful(url, accessToken) && retry < 2)
+            while (!ConnectionSuccessful() && retry < 2)
             {
                 Thread.Sleep(2000);
                 retry++;
@@ -43,7 +40,7 @@ namespace Archimedes.Broker.Fxcm.Runner
             return retry != 2;
         }
 
-        private static bool ConnectionSuccessful(string url, string accessToken)
+        private static bool ConnectionSuccessful()
         {
             try
             {
