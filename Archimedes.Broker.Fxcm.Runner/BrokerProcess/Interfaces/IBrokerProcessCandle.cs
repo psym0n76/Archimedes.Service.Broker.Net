@@ -1,9 +1,11 @@
-﻿using Archimedes.Library.Message;
+﻿using System.Threading.Tasks;
+using Archimedes.Library.Message;
 
 namespace Archimedes.Broker.Fxcm.Runner
 {
     public interface IBrokerProcessCandle
     {
-        void Run(CandleMessage message);
+        //void Run(CandleMessage message);
+        Task Run(CandleMessage message);
     }
 }

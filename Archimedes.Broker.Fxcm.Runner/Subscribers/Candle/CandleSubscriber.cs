@@ -1,5 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
 using System.Threading;
+using System.Threading.Tasks;
 using Archimedes.Library.Message;
 using Fx.Broker.Fxcm;
 using NLog;
@@ -24,10 +25,21 @@ namespace Archimedes.Broker.Fxcm.Runner
         private void Consumer_HandleMessage(object sender, MessageHandlerEventArgs args)
         {
             var requestCandle = JsonConvert.DeserializeObject<CandleMessage>(args.Message);
-            _logger.Info($"Receieved Candle request: {requestCandle}");
-            requestCandle.Logs = new List<string>() {"Message received from CandleRequestQueue"};
+            _logger.Info($"Received CandleRequest: {requestCandle}");
 
-            _brokerProcessCandle.Run(requestCandle);
+            try
+            {
+                Task.Run(() =>
+                {
+                    _brokerProcessCandle.Run(requestCandle);
+                });
+
+            }
+            catch (Exception e)
+            {
+                _logger.Error($"Error returned from BrokerProcessCandle: RequestCandle: {requestCandle}\n ERROR {e.Message} {e.StackTrace}");
+            }
+
         }
 
         public void SubscribeCandleMessage(Session session, CancellationToken cancellationToken)
