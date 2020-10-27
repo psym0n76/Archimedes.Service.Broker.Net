@@ -27,10 +27,10 @@ namespace Archimedes.Broker.Fxcm.Runner
 
         public Task Run(CandleMessage message)
         {
-            var reconnect = 0;
+            var reconnect = 1;
             var session = BrokerSession.GetInstance();
 
-            _logger.Info($"FXCM Connection status: {session.State}");
+            _logger.Info($"FXCM Connection status: {session.State} Market: {message.Market} Timeframe: {message.TimeFrame} Interval: {message.Interval}");
 
             if (session.State == SessionState.Disconnected)
             {
@@ -39,7 +39,8 @@ namespace Archimedes.Broker.Fxcm.Runner
 
             while (session.State == SessionState.Reconnecting && reconnect < 10)
             {
-                _logger.Info($"Waiting to reconnect...{reconnect++}");
+                _logger.Info($"Waiting to reconnect for CandleRequest...{reconnect} Market: {message.Market} Timeframe: {message.TimeFrame} Interval: {message.Interval}");
+                reconnect++;
                 Thread.Sleep(5000);
             }
 
