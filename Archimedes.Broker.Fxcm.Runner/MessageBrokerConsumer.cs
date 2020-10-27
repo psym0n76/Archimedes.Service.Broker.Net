@@ -47,7 +47,7 @@ namespace Archimedes.Broker.Fxcm.Runner
 
                 Task.Run(() => { _subscriber.SubscribeCandleMessage(session, cancellationToken); }, cancellationToken);
 
-                Task.Run(() => { _priceSubscriber.SubscribePriceMessage(session); }, cancellationToken);
+                Task.Run(() => { _priceSubscriber.SubscribePriceMessage(session, cancellationToken); }, cancellationToken);
 
                 while (true)
                 {

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading;
 using Archimedes.Library.Message;
 using Fx.Broker.Fxcm;
 using NLog;
@@ -29,7 +30,7 @@ namespace Archimedes.Broker.Fxcm.Runner
             _brokerProcessPrice.Run(requestPrice);
         }
 
-        public void SubscribePriceMessage(Session session)
+        public void SubscribePriceMessage(Session session, CancellationToken cancellationToken)
         {
             _logger.Info($"Subscribed to PriceRequestQueue");
             _consumer.Subscribe();

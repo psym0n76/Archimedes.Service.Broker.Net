@@ -63,7 +63,6 @@ namespace Archimedes.Service.Broker.Net
             {
                 _logger.Info("Application End:");
                 _cancellationToken.Cancel();
-                _logger.Info("Application End: SHUTDOWN");
             }
             catch (Exception e)
             {
