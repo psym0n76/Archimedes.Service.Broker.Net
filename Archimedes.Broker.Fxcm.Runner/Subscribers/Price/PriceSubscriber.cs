@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Threading;
+﻿using System.Threading;
 using Archimedes.Library.Message;
 using Fx.Broker.Fxcm;
 using NLog;
@@ -23,7 +22,7 @@ namespace Archimedes.Broker.Fxcm.Runner
 
         private void Consumer_HandleMessage(object sender, MessageHandlerEventArgs args)
         {
-            _logger.Info($"Receievd Price Request {args.Message}");
+            _logger.Info($"Received Price Request {args.Message}");
             var requestPrice = JsonConvert.DeserializeObject<PriceMessage>(args.Message);
 
             _brokerProcessPrice.Run(requestPrice);
