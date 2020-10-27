@@ -44,9 +44,20 @@ namespace Archimedes.Broker.Fxcm.Runner
 
                 request.Prices = new List<PriceDto>();
 
+                var counter = 0;
+
                 session.PriceUpdate += priceUpdate =>
                 {
-                    _logger.Info($"Process Price Update: receievd update {priceUpdate.Ask} : {priceUpdate.Bid} : {priceUpdate.High} : {priceUpdate.Low} : {priceUpdate.Symbol} : {priceUpdate.Updated}");
+                    if (counter < 5)
+                    {
+                        _logger.Info($"Process Price Update: receievd update {priceUpdate.Ask} : {priceUpdate.Bid} : {priceUpdate.High} : {priceUpdate.Low} : {priceUpdate.Symbol} : {priceUpdate.Updated}");    
+                    }
+
+                    else if(counter==500)
+                    {
+                        _logger.Info($"Process Price Update: receievd 500 updates ");
+                        counter = 0;
+                    }
 
                     try
                     {
@@ -64,6 +75,7 @@ namespace Archimedes.Broker.Fxcm.Runner
                         };
                     
                         request.Prices.Add(price);
+                        counter++;
 
                         _producer.PublishMessage(request, "PriceResponseQueue");
                         _logger.Info($"Published to Queue: {request}");
