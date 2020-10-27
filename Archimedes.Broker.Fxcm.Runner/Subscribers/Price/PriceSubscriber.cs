@@ -26,7 +26,6 @@ namespace Archimedes.Broker.Fxcm.Runner
             _logger.Info($"Receievd Price Request {args.Message}");
             var requestPrice = JsonConvert.DeserializeObject<PriceMessage>(args.Message);
 
-            requestPrice.Logs = new List<string>(){"Message received from PriceRequestQueue"};
             _brokerProcessPrice.Run(requestPrice);
         }
 
