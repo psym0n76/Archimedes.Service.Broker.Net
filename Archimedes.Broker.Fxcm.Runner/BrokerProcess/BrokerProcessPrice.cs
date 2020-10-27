@@ -42,11 +42,14 @@ namespace Archimedes.Broker.Fxcm.Runner
 
                 session.SubscribeSymbol(request.Market);
 
+                _logger.Info($"Process Price Request: SUBSCRIBED");
+
                 request.Prices = new List<PriceDto>();
 
-                var counter = 0;
-
-                session.PriceUpdate += priceUpdate => { ProcessMessage(request, counter, priceUpdate); };
+                session.PriceUpdate += priceUpdate =>
+                {
+                    ProcessMessage(request, priceUpdate);
+                };
 
                 while (true)
                 {
@@ -56,40 +59,28 @@ namespace Archimedes.Broker.Fxcm.Runner
             }).ConfigureAwait(false);
         }
 
-        private void ProcessMessage(PriceMessage request, int counter, PriceUpdate priceUpdate)
+        private void ProcessMessage(PriceMessage request, PriceUpdate priceUpdate)
         {
-            counter++;
-            if (counter < 5)
-            {
-                _logger.Info(
-                    $"Process Price Update: receievd update {priceUpdate.Ask} : {priceUpdate.Bid} : {priceUpdate.High} : {priceUpdate.Low} : {priceUpdate.Symbol} : {priceUpdate.Updated}");
-            }
-
-            else if (counter == 500)
-            {
-                _logger.Info($"Process Price Update: receievd 500 updates ");
-                counter = 0;
-            }
-
             request.Prices.Add(new PriceDto()
             {
+                Market = request.Market,
                 BidOpen = priceUpdate.Bid,
                 BidClose = priceUpdate.Bid,
+                BidHigh = priceUpdate.Bid,
+                BidLow = priceUpdate.Bid,
 
                 AskOpen = priceUpdate.Ask,
                 AskClose = priceUpdate.Ask,
+                AskHigh = priceUpdate.Ask,
+                AskLow = priceUpdate.Ask,
 
-                Market = request.Market,
                 TimeStamp = priceUpdate.Updated,
-                LastUpdated = DateTime.Now
+                LastUpdated = DateTime.Now,
+                Granularity = "0Min",
+                
             });
 
             _producer.PublishMessage(request, "PriceResponseQueue");
-
-            if (counter < 5)
-            {
-                _logger.Info($"Published to Queue: {request}");
-            }
         }
     }
 }
