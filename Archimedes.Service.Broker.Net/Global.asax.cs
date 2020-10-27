@@ -8,7 +8,6 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Mvc;
 using Archimedes.Broker.Fxcm.Runner.Http;
-using Archimedes.Library.Domain;
 using Microsoft.Extensions.Options;
 
 namespace Archimedes.Service.Broker.Net
@@ -21,7 +20,7 @@ namespace Archimedes.Service.Broker.Net
 
         protected void Application_Start()
         {
-            var test = _client.GetMarketAsync();
+            //var test = _client.GetMarketAsync();
             ApplicationRunner();
 
         }
@@ -69,7 +68,7 @@ namespace Archimedes.Service.Broker.Net
             try
             {
                 _logger.Info("Application End:");
-                _client.UpdateMarketStatusAsync();
+                //_client.UpdateMarketStatusAsync();
                 _cancellationToken.Cancel();
             }
             catch (Exception e)

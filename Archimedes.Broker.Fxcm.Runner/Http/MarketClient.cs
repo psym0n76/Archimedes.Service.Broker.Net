@@ -40,7 +40,7 @@ namespace Archimedes.Broker.Fxcm.Runner.Http
         public async Task UpdateMarketStatusAsync(CancellationToken ct = default)
         {
 
-            var url = ConfigurationManager.AppSettings["ApiRepositoryUrl"].ToString();
+            var url = ConfigurationManager.AppSettings["ApiRepositoryUrl"];
 
             var marketDto = new MarketDto() {Active = false, Id = 21};
 
