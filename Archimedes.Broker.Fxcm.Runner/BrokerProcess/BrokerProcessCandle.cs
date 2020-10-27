@@ -30,10 +30,9 @@ namespace Archimedes.Broker.Fxcm.Runner
             var reconnect = 1;
             var session = BrokerSession.GetInstance();
 
-            _logger.Info($"FXCM Connection status: {session.State} Market: {message.Market} Timeframe: {message.TimeFrame} Interval: {message.Interval}");
-
             if (session.State == SessionState.Disconnected)
             {
+                _logger.Info($"FXCM Connection status: {session.State}");
                 session.Connect();
             }
 
