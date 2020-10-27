@@ -18,8 +18,11 @@
 using Archimedes.Broker.Fxcm.Runner;
 
 using System.Configuration;
+using Archimedes.Broker.Fxcm.Runner.Http;
+using Archimedes.Library.Domain;
 using Archimedes.Library.Message;
 using Archimedes.Library.RabbitMq;
+using Microsoft.Extensions.Options;
 using StructureMap;
 
 namespace Archimedes.Service.Broker.Net.DependencyResolution
@@ -79,7 +82,8 @@ namespace Archimedes.Service.Broker.Net.DependencyResolution
             For<IBrokerProcessTrade>().Use<BrokerProcessTrade>();
             For<IBrokerProcessPrice>().Use<BrokerProcessPrice>();
 
-
+            For<IMarketClient>().Use<MarketClient>()
+                .Ctor<IOptions<Config>>();
 
             For<IMessageBrokerConsumer>().Use<MessageBrokerConsumer>();
         }
