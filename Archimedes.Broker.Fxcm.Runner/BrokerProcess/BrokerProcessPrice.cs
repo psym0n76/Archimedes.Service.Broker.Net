@@ -81,6 +81,7 @@ namespace Archimedes.Broker.Fxcm.Runner
             });
 
             _producer.PublishMessage(request, "PriceResponseQueue");
+            request.Prices = new List<PriceDto>();
         }
     }
 }
