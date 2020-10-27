@@ -42,7 +42,7 @@ namespace Archimedes.Broker.Fxcm.Runner
 
                 session.SubscribeSymbol(request.Market);
 
-                _logger.Info($"Process Price Request: SUBSCRIBED");
+                _logger.Info($"Process Price Request: SUBSCRIBED {request.Market} - no logs are published");
 
                 request.Prices = new List<PriceDto>();
 
