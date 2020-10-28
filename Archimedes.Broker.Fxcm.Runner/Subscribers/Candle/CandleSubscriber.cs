@@ -31,7 +31,15 @@ namespace Archimedes.Broker.Fxcm.Runner
             {
                 Task.Run(() =>
                 {
-                    _brokerProcessCandle.Run(requestCandle);
+                    try
+                    {
+                        _brokerProcessCandle.Run(requestCandle);
+                    }
+                    catch (Exception e)
+                    {
+                        _logger.Error($"Error returned from BrokerProcessCandle: RequestCandle: {requestCandle}\n ERROR {e.Message} {e.StackTrace}");
+                    }
+
                 });
 
             }
