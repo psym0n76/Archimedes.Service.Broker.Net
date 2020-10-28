@@ -60,6 +60,7 @@ namespace Archimedes.Broker.Fxcm.Runner
 
                     catch (Exception e)
                     {
+                        throw;
                         return Task.FromException<long>(
                             new ApplicationException($"Candle History: FXCM Connection Failed: {e.Message}"));
                     }
