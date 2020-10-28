@@ -96,14 +96,14 @@ namespace Archimedes.Broker.Fxcm.Runner
 
         private int GetBrokerOfferId(Session session, CandleMessage request)
         {
-            request.Logs.Add("Candle Response from Broker");
+            //request.Logs.Add("Candle Response from Broker");
 
             var offers = session.GetOffers();
 
             if (offers == null)
             {
                 _logger.Warn($"Null returned from Offers: {request}");
-                request.Logs.Add($"Null returned from Offers: {request}");
+               // request.Logs.Add($"Null returned from Offers: {request}");
                 return default;
             }
 

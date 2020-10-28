@@ -31,14 +31,14 @@ namespace Archimedes.Broker.Fxcm.Runner
             {
                 Task.Run(() =>
                 {
-                    try
-                    {
+                    //try
+                   // {
                         _brokerProcessCandle.Run(requestCandle);
-                    }
-                    catch (Exception e)
-                    {
-                        _logger.Error($"Error returned from BrokerProcessCandle: RequestCandle: {requestCandle}\n ERROR {e.Message} {e.StackTrace}");
-                    }
+                   // }
+                    //catch (Exception e)
+                    //{
+                    //    _logger.Error($"Error returned from BrokerProcessCandle: RequestCandle: {requestCandle}\n ERROR {e.Message} {e.StackTrace}");
+                    //}
 
                 });
 
