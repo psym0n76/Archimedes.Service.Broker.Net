@@ -40,6 +40,7 @@ namespace Archimedes.Broker.Fxcm.Runner
                     return;
                 }
 
+                session.UnsubscribeSymbol(request.Market);
                 session.SubscribeSymbol(request.Market);
 
                 _logger.Info($"Process Price Request: SUBSCRIBED {request.Market} - no logs are published");
