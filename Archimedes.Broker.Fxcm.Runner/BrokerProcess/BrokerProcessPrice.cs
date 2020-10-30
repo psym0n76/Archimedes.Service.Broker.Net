@@ -13,7 +13,6 @@ namespace Archimedes.Broker.Fxcm.Runner
     public class BrokerProcessPrice : IBrokerProcessPrice
     {
         private readonly IProducer<PriceMessage> _producer;
-        public static List<string> Subscribed = new List<string>();
         private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
 
         public BrokerProcessPrice(IProducer<PriceMessage> producer)
@@ -40,7 +39,7 @@ namespace Archimedes.Broker.Fxcm.Runner
                     return;
                 }
 
-                if (IsPriceSubscribed(request.Market))
+                if (SubscribedMarkets.IsSubscribed(request.Market))
                 {
                     _logger.Info($"Process Price Request: ALREADY SUBSCRIBED  {request.Market}");
                     return;
@@ -48,7 +47,7 @@ namespace Archimedes.Broker.Fxcm.Runner
 
                 session.SubscribeSymbol(request.Market);
 
-                Subscribed.Add(request.Market);
+                SubscribedMarkets.Add(request.Market);
 
                 _logger.Info($"Process Price Request: SUBSCRIBED {request.Market} - no logs are published");
 
@@ -56,7 +55,7 @@ namespace Archimedes.Broker.Fxcm.Runner
 
                 session.PriceUpdate += priceUpdate =>
                 {
-                    if (IsPriceSubscribed(request.Market))
+                    if (SubscribedMarkets.IsSubscribed(request.Market))
                     {
                         ProcessMessage(request, priceUpdate);
                     }
@@ -76,10 +75,7 @@ namespace Archimedes.Broker.Fxcm.Runner
             }).ConfigureAwait(false);
         }
 
-        private static bool IsPriceSubscribed(string market)
-        {
-            return Subscribed.Contains(market);
-        }
+
 
         private void ProcessMessage(PriceMessage request, PriceUpdate priceUpdate)
         {

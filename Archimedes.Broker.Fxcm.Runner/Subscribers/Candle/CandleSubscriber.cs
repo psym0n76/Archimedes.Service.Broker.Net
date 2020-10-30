@@ -29,25 +29,13 @@ namespace Archimedes.Broker.Fxcm.Runner
 
             try
             {
-                Task.Run(() =>
-                {
-                    //try
-                   // {
-                        _brokerProcessCandle.Run(requestCandle);
-                   // }
-                    //catch (Exception e)
-                    //{
-                    //    _logger.Error($"Error returned from BrokerProcessCandle: RequestCandle: {requestCandle}\n ERROR {e.Message} {e.StackTrace}");
-                    //}
-
-                });
-
+                Task.Run(() => { _brokerProcessCandle.Run(requestCandle); });
             }
             catch (Exception e)
             {
-                _logger.Error($"Error returned from BrokerProcessCandle: RequestCandle: {requestCandle}\n ERROR {e.Message} {e.StackTrace}");
+                _logger.Error(
+                    $"Error returned from BrokerProcessCandle: RequestCandle: {requestCandle}\n ERROR {e.Message} {e.StackTrace}");
             }
-
         }
 
         public void SubscribeCandleMessage(Session session, CancellationToken cancellationToken)

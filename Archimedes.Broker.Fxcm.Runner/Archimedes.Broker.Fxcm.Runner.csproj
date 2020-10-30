@@ -104,6 +104,7 @@
     <Compile Include="IMessageBrokerConsumer.cs" />
     <Compile Include="Session\BrokerSession.cs" />
     <Compile Include="Session\BrokerSessionExceptionLogs.cs" />
+    <Compile Include="SubscribedMarkets.cs" />
     <Compile Include="Subscribers\Candle\CandleSubscriber.cs" />
     <Compile Include="BrokerProcess\BrokerProcessCandle.cs" />
     <Compile Include="BrokerProcess\BrokerProcessPrice.cs" />
