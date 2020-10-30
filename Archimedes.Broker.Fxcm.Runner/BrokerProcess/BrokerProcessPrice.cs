@@ -13,8 +13,8 @@ namespace Archimedes.Broker.Fxcm.Runner
     public class BrokerProcessPrice : IBrokerProcessPrice
     {
         private readonly IProducer<PriceMessage> _producer;
-
-        private static readonly NLog.Logger _logger = NLog.LogManager.GetCurrentClassLogger();
+        public static List<string> Subscribed = new List<string>();
+        private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
 
         public BrokerProcessPrice(IProducer<PriceMessage> producer)
         {
@@ -40,8 +40,15 @@ namespace Archimedes.Broker.Fxcm.Runner
                     return;
                 }
 
-                session.UnsubscribeSymbol(request.Market);
+                if (IsPriceSubscribed(request.Market))
+                {
+                    _logger.Info($"Process Price Request: ALREADY SUBSCRIBED  {request.Market}");
+                    return;
+                }
+
                 session.SubscribeSymbol(request.Market);
+
+                Subscribed.Add(request.Market);
 
                 _logger.Info($"Process Price Request: SUBSCRIBED {request.Market} - no logs are published");
 
@@ -49,7 +56,16 @@ namespace Archimedes.Broker.Fxcm.Runner
 
                 session.PriceUpdate += priceUpdate =>
                 {
-                    ProcessMessage(request, priceUpdate);
+                    if (IsPriceSubscribed(request.Market))
+                    {
+                        ProcessMessage(request, priceUpdate);
+                    }
+                    else
+                    {
+                        _logger.Info($"Process Price Request: UNSUBSCRIBED {request.Market}");
+                        session.UnsubscribeSymbol(request.Market);
+                    }
+
                 };
 
                 while (true)
@@ -58,6 +74,11 @@ namespace Archimedes.Broker.Fxcm.Runner
                 }
 
             }).ConfigureAwait(false);
+        }
+
+        private static bool IsPriceSubscribed(string market)
+        {
+            return Subscribed.Contains(market);
         }
 
         private void ProcessMessage(PriceMessage request, PriceUpdate priceUpdate)
