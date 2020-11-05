@@ -74,7 +74,6 @@ namespace Archimedes.Service.Broker.Net.DependencyResolution
                 .Ctor<string>("exchange").Is(ConfigurationManager.AppSettings["RabbitExchange"])
                 .Ctor<string>("queueName").Is("PriceRequestQueue");
 
-
             For<IPriceSubscriber>().Use<PriceSubscriber>();
             For<ICandleSubscriber>().Use<CandleSubscriber>();
 
