@@ -37,24 +37,24 @@ namespace Archimedes.Broker.Fxcm.Runner.Http
             return Array.Empty<MarketDto>();
         }
 
-        public async Task UpdateMarketStatusAsync(CancellationToken ct = default)
-        {
+        //public async Task UpdateMarketStatusAsync(CancellationToken ct = default)
+        //{
 
-            var url = ConfigurationManager.AppSettings["ApiRepositoryUrl"];
+        //    var url = ConfigurationManager.AppSettings["ApiRepositoryUrl"];
 
-            var marketDto = new MarketDto() {Active = false, Id = 21};
+        //    var marketDto = new MarketDto() {Active = false, Id = 21};
 
-            var payload = new JsonContent(marketDto);
+        //    var payload = new JsonContent(marketDto);
 
-            var response = await Client.PutAsync($"{url}/market_status", payload, ct);
+        //    var response = await Client.PutAsync($"{url}/market_status", payload, ct);
 
-            if (response.IsSuccessStatusCode)
-            {
-                _logger.Info($"Successfully updated MarketStatus {marketDto.Active}");
-                return;
-            }
+        //    if (response.IsSuccessStatusCode)
+        //    {
+        //        _logger.Info($"Successfully updated MarketStatus {marketDto.Active}");
+        //        return;
+        //    }
 
-            _logger.Warn($"Failed to Get {response.ReasonPhrase} from {url}/market_status");
-        }
+        //    _logger.Warn($"Failed to Get {response.ReasonPhrase} from {url}/market_status");
+        //}
     }
 }
