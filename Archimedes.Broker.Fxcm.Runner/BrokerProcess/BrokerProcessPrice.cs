@@ -13,12 +13,14 @@ namespace Archimedes.Broker.Fxcm.Runner
     public class BrokerProcessPrice : IBrokerProcessPrice
     {
         private readonly IProducer<PriceMessage> _producer;
+        private readonly IProducerFanout<PriceMessage> _fanoutProducer;
 
         private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
 
-        public BrokerProcessPrice(IProducer<PriceMessage> producer)
+        public BrokerProcessPrice(IProducer<PriceMessage> producer, IProducerFanout<PriceMessage> fanoutProducer)
         {
             _producer = producer;
+            _fanoutProducer = fanoutProducer;
         }
 
         public void Run(PriceMessage request)
@@ -100,7 +102,7 @@ namespace Archimedes.Broker.Fxcm.Runner
             });
 
             _producer.PublishMessage(request, "PriceResponseQueue");
-            _producer.PublishFanoutMessage(request);
+            _fanoutProducer.PublishMessage(request,"Archimedes_Price");
             request.Prices = new List<PriceDto>();
         }
     }

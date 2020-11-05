@@ -54,6 +54,10 @@ namespace Archimedes.Service.Broker.Net.DependencyResolution
                 .Ctor<string>("port").Is(ConfigurationManager.AppSettings["RabbitPort"])
                 .Ctor<string>("exchange").Is(ConfigurationManager.AppSettings["RabbitExchange"]);
 
+            For<IProducerFanout<PriceMessage>>().Use<ProducerFanout<PriceMessage>>()
+                .Ctor<string>("host").Is(ConfigurationManager.AppSettings["RabbitHost"])
+                .Ctor<string>("port").Is(ConfigurationManager.AppSettings["RabbitPort"]);
+
             For<IProducer<TradeMessage>>().Use<Producer<TradeMessage>>()
                 .Ctor<string>("host").Is(ConfigurationManager.AppSettings["RabbitHost"])
                 .Ctor<string>("port").Is(ConfigurationManager.AppSettings["RabbitPort"])
