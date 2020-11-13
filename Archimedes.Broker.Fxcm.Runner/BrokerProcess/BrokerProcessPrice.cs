@@ -1,8 +1,8 @@
-﻿using System;
-using Archimedes.Library.Message;
+﻿using Archimedes.Library.Message;
 using Archimedes.Library.Message.Dto;
 using Fx.Broker.Fxcm;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
 using Archimedes.Library.RabbitMq;
@@ -12,9 +12,7 @@ namespace Archimedes.Broker.Fxcm.Runner
 {
     public class BrokerProcessPrice : IBrokerProcessPrice
     {
-        //private readonly IProducer<PriceMessage> _producer;
         private readonly IProducerFanout<PriceMessage> _fanoutProducer;
-
         private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
 
         public BrokerProcessPrice(IProducerFanout<PriceMessage> fanoutProducer)
@@ -78,26 +76,16 @@ namespace Archimedes.Broker.Fxcm.Runner
         }
 
 
-
         private void ProcessMessage(PriceMessage request, PriceUpdate priceUpdate)
         {
             request.Prices.Add(new PriceDto()
             {
                 Market = request.Market,
-                BidOpen = priceUpdate.Bid,
-                BidClose = priceUpdate.Bid,
-                BidHigh = priceUpdate.Bid,
-                BidLow = priceUpdate.Bid,
-
-                AskOpen = priceUpdate.Ask,
-                AskClose = priceUpdate.Ask,
-                AskHigh = priceUpdate.Ask,
-                AskLow = priceUpdate.Ask,
+                Bid = decimal.Parse(priceUpdate.Bid.ToString(CultureInfo.InvariantCulture)),
+                Ask = decimal.Parse(priceUpdate.Ask.ToString(CultureInfo.InvariantCulture)),
 
                 TimeStamp = priceUpdate.Updated,
-                LastUpdated = DateTime.Now,
                 Granularity = "0Min",
-                
             });
 
             //_producer.PublishMessage(request, "PriceResponseQueue");

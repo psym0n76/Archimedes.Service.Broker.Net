@@ -6,6 +6,7 @@ using Fx.Broker.Fxcm.Models;
 using NLog;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -125,14 +126,14 @@ namespace Archimedes.Broker.Fxcm.Runner
                     TimeStamp = c.Timestamp,
                     ToDate = c.Timestamp.AddMinutes(request.Interval),
                     FromDate = c.Timestamp,
-                    BidOpen = c.BidOpen,
-                    BidHigh = c.BidHigh,
-                    BidLow = c.BidLow,
-                    BidClose = c.BidClose,
-                    AskOpen = c.AskOpen,
-                    AskHigh = c.AskHigh,
-                    AskLow = c.AskLow,
-                    AskClose = c.AskClose,
+                    BidOpen = decimal.Parse(c.BidOpen.ToString(CultureInfo.InvariantCulture)),
+                    BidHigh = decimal.Parse(c.BidHigh.ToString(CultureInfo.InvariantCulture)),
+                    BidLow = decimal.Parse(c.BidLow.ToString(CultureInfo.InvariantCulture)),
+                    BidClose = decimal.Parse(c.BidClose.ToString(CultureInfo.InvariantCulture)),
+                    AskOpen = decimal.Parse(c.AskOpen.ToString(CultureInfo.InvariantCulture)),
+                    AskHigh = decimal.Parse(c.AskLow.ToString(CultureInfo.InvariantCulture)),
+                    AskLow = decimal.Parse(c.AskLow.ToString(CultureInfo.InvariantCulture)),
+                    AskClose = decimal.Parse(c.AskClose.ToString(CultureInfo.InvariantCulture)),
                     TickQty = c.TickQty,
                     Market = request.Market,
                     MarketId = request.MarketId,
