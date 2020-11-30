@@ -16,14 +16,13 @@
 // --------------------------------------------------------------------------------------------------------------------
 
 using Archimedes.Broker.Fxcm.Runner;
-
-using System.Configuration;
 using Archimedes.Broker.Fxcm.Runner.Http;
 using Archimedes.Library.Domain;
 using Archimedes.Library.Message;
 using Archimedes.Library.RabbitMq;
 using Microsoft.Extensions.Options;
 using StructureMap;
+using System.Configuration;
 
 namespace Archimedes.Service.Broker.Net.DependencyResolution
 {
@@ -42,10 +41,14 @@ namespace Archimedes.Service.Broker.Net.DependencyResolution
                     scan.With(new ControllerConvention());
                 });
 
-            For<IProducer<CandleMessage>>().Use<Producer<CandleMessage>>()
+            For<IProducerFanout<CandleMessage>>().Use<ProducerFanout<CandleMessage>>()
                 .Ctor<string>("host").Is(ConfigurationManager.AppSettings["RabbitHost"])
-                .Ctor<string>("port").Is(ConfigurationManager.AppSettings["RabbitPort"])
-                .Ctor<string>("exchange").Is(ConfigurationManager.AppSettings["RabbitExchange"]);
+                .Ctor<string>("port").Is(ConfigurationManager.AppSettings["RabbitPort"]);
+
+
+            For<IProducerFanout<PriceMessage>>().Use<ProducerFanout<PriceMessage>>()
+                .Ctor<string>("host").Is(ConfigurationManager.AppSettings["RabbitHost"])
+                .Ctor<string>("port").Is(ConfigurationManager.AppSettings["RabbitPort"]);
 
 
             //For<IProducer<PriceMessage>>().Use<Producer<PriceMessage>>()
