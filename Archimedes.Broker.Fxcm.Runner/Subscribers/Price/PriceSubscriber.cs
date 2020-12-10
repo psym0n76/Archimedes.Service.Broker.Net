@@ -20,18 +20,19 @@ namespace Archimedes.Broker.Fxcm.Runner
             _consumer.HandleMessage += Consumer_HandleMessage;
         }
 
-        private void Consumer_HandleMessage(object sender, MessageHandlerEventArgs args)
+        private void Consumer_HandleMessage(object sender, PriceMessageHandlerEventArgs e)
         {
-            _logger.Info($"Received Price Request {args.Message}");
-            var requestPrice = JsonConvert.DeserializeObject<PriceMessage>(args.Message);
+            _logger.Info($"Received Price Request {e.Message}");
+            var requestPrice = JsonConvert.DeserializeObject<PriceMessage>(e.Message);
 
             _brokerProcessPrice.Run(requestPrice);
         }
 
+
         public void SubscribePriceMessage(Session session, CancellationToken cancellationToken)
         {
             _logger.Info($"Subscribed to PriceRequestQueue");
-            _consumer.Subscribe();
+            _consumer.Subscribe(cancellationToken);
         }
     }
 }

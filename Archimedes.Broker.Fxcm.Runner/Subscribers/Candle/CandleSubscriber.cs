@@ -22,19 +22,19 @@ namespace Archimedes.Broker.Fxcm.Runner
             _consumer.HandleMessage += Consumer_HandleMessage;
         }
 
-        private void Consumer_HandleMessage(object sender, MessageHandlerEventArgs args)
+        private void Consumer_HandleMessage(object sender, CandleMessageHandlerEventArgs e)
         {
-            var requestCandle = JsonConvert.DeserializeObject<CandleMessage>(args.Message);
+            var requestCandle = JsonConvert.DeserializeObject<CandleMessage>(e.Message);
             _logger.Info($"Received CandleRequest: {requestCandle}");
 
             try
             {
                 Task.Run(() => { _brokerProcessCandle.Run(requestCandle); });
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
                 _logger.Error(
-                    $"Error returned from BrokerProcessCandle: RequestCandle: {requestCandle}\n ERROR {e.Message} {e.StackTrace}");
+                    $"Error returned from BrokerProcessCandle: RequestCandle: {requestCandle}\n ERROR {ex.Message} {ex.StackTrace}");
             }
         }
 
