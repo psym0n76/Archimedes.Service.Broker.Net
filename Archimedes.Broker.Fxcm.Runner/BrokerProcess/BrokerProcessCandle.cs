@@ -85,7 +85,7 @@ namespace Archimedes.Broker.Fxcm.Runner
             var candles = session.GetCandles(offerId, request.TimeFrameBroker, request.Intervals,
                 request.StartDate, request.EndDate);
 
-            _batchLog.Update($"FXCM Candles returned on Market: {request.Market} Granularity: {request.Interval}{request.TimeFrame} Count:{candles.Count}");
+            _batchLog.Update($"FXCM Candles returned on Market: {request.Market} Granularity: {request.Interval}{request.TimeFrame} Count: {candles.Count}");
             //_logger.Info($"FXCM Items returned for Market: {request.Market} Granularity: {request.TimeFrame} Count:{candles.Count}");
 
             BuildResponse(request, candles);
@@ -107,7 +107,7 @@ namespace Archimedes.Broker.Fxcm.Runner
             // returns no offers
             var offer = offers.FirstOrDefault(o => o.Currency == request.Market);
 
-            _batchLog.Update($"FXCM Candle Request {nameof(offer.OfferId)}: {offer.OfferId} {nameof(request.Market)}: {request.Market}  {nameof(request.TimeFrame)}{request.Interval}{request.TimeFrame} {nameof(request.StartDate)}: {request.StartDate} {nameof(request.EndDate)}: {request.EndDate}\n");
+            _batchLog.Update($"FXCM Candle Request Id: {offer.OfferId} {nameof(request.Market)}: {request.Market}  {nameof(request.TimeFrame)}: {request.Interval}{request.TimeFrame} {nameof(request.StartDate)}: {request.StartDate} {nameof(request.EndDate)}: {request.EndDate}\n");
 
             //_logger.Info($"\n\n FXCM BrokerOffer " +
             //             $"\n  {nameof(offer.OfferId)}: {offer.OfferId} {nameof(request.Market)}: {request.Market} {nameof(request.Interval)}: {request.Interval} {nameof(request.TimeFrame)}: {request.TimeFrame}" +
