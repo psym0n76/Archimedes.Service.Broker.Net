@@ -55,12 +55,13 @@ namespace Archimedes.Broker.Fxcm.Runner
                         new ApplicationException($"Unable to connect to FXCM: {session.State}"));
 
                 case SessionState.Connected:
+                    _batchLog.Update($"FXCM Connection status: {session.State}");
                     _logger.Info($"FXCM Connection status: {session.State}");
 
                     GetCandleHistory(session, message);
                         
                     _producer.PublishMessage(message, "Archimedes_Candle");
-                    _logger.Info(_batchLog.PrintLog);
+                    _logger.Info(_batchLog.Print);
                     break;
 
                 case SessionState.Reconnecting:
@@ -98,7 +99,7 @@ namespace Archimedes.Broker.Fxcm.Runner
             if (offers == null)
             {
                 _batchLog.Update($"Null returned from Offers: {request}");
-                _logger.Warn($"{_batchLog.PrintLog()}");
+                _logger.Warn($"{_batchLog.Print()}");
 
                 return default;
             }
