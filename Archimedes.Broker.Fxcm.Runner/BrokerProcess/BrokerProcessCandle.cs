@@ -37,7 +37,6 @@ namespace Archimedes.Broker.Fxcm.Runner
             if (session.State == SessionState.Disconnected)
             {
                 _batchLog.Update(_logId, $"FXCM Connection status: {session.State}");
-                //_logger.Info($"FXCM Connection status: {session.State}");
                 session.Connect();
             }
 
@@ -61,6 +60,7 @@ namespace Archimedes.Broker.Fxcm.Runner
                     GetCandleHistory(session, message);
 
                     _producer.PublishMessage(message, "Archimedes_Candle");
+                    _batchLog.Update(_logId, $"Publish to Archimedes_Candle: {message.Market}");
                     _logger.Info(_batchLog.Print(_logId));
                     break;
 
