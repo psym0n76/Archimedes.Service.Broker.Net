@@ -112,7 +112,7 @@ namespace Archimedes.Broker.Fxcm.Runner
             var offer = offers.FirstOrDefault(o => o.Currency == request.Market);
 
             _batchLog.Update(_logId,
-                $"FXCM Candle Request: {request.Market} {request.Interval}{request.TimeFrame} {nameof(request.StartDate)}: {request.StartDate} {nameof(request.EndDate)}: {request.EndDate}\n");
+                $"FXCM Candle Request: {request.Market} {request.Interval}{request.TimeFrame} {nameof(request.StartDate)}: {request.StartDate} {nameof(request.EndDate)}: {request.EndDate}");
 
             return offer.OfferId;
         }
