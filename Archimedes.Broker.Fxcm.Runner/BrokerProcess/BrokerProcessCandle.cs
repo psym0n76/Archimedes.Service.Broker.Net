@@ -91,7 +91,7 @@ namespace Archimedes.Broker.Fxcm.Runner
                 request.StartDate, request.EndDate);
 
             _batchLog.Update(_logId,
-                $"FXCM Candle Response: {request.Market} TimeFrame: {request.Interval}{request.TimeFrame} Records: {candles.Count}");
+                $"FXCM Candle Response: Records: {candles.Count}");
 
             BuildResponse(request, candles);
         }
@@ -112,7 +112,7 @@ namespace Archimedes.Broker.Fxcm.Runner
             var offer = offers.FirstOrDefault(o => o.Currency == request.Market);
 
             _batchLog.Update(_logId,
-                $"FXCM Candle Request: {request.Market} TimeFrame: {request.Interval}{request.TimeFrame} {nameof(request.StartDate)}: {request.StartDate} {nameof(request.EndDate)}: {request.EndDate}\n");
+                $"FXCM Candle Request: {request.Market} {request.Interval}{request.TimeFrame} {nameof(request.StartDate)}: {request.StartDate} {nameof(request.EndDate)}: {request.EndDate}\n");
 
             return offer.OfferId;
         }
