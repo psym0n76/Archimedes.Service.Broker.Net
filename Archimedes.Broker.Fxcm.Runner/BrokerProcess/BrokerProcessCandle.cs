@@ -60,7 +60,7 @@ namespace Archimedes.Broker.Fxcm.Runner
                     GetCandleHistory(session, message);
 
                     _producer.PublishMessage(message, "Archimedes_Candle");
-                    _batchLog.Update(_logId, $"Publish to Archimedes_Candle: {message.Market}");
+                    _batchLog.Update(_logId, $"Publish to Archimedes_Candle: {message.Market} {message.Interval}{message.TimeFrame}");
                     _logger.Info(_batchLog.Print(_logId));
                     break;
 
