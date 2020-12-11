@@ -36,15 +36,15 @@ namespace Archimedes.Broker.Fxcm.Runner
 
             if (session.State == SessionState.Disconnected)
             {
-                _batchLog.Update(_logId,$"FXCM Connection status: {session.State}");
-                _logger.Info($"FXCM Connection status: {session.State}");
+                _batchLog.Update(_logId, $"FXCM Connection status: {session.State}");
+                //_logger.Info($"FXCM Connection status: {session.State}");
                 session.Connect();
             }
 
             while (session.State == SessionState.Reconnecting && reconnect < 10)
             {
-                _batchLog.Update(_logId,$"Waiting to reconnect for CandleRequest...{reconnect} Market: {message.Market} Timeframe: {message.TimeFrame} Interval: {message.Interval}");
-                _logger.Info($"Waiting to reconnect for CandleRequest...{reconnect} Market: {message.Market} Timeframe: {message.TimeFrame} Interval: {message.Interval}");
+                _batchLog.Update(_logId,
+                    $"Waiting to reconnect for CandleRequest...{reconnect} Market: {message.Market} Timeframe: {message.TimeFrame} Interval: {message.Interval}");
                 reconnect++;
                 Thread.Sleep(5000);
             }
@@ -56,11 +56,10 @@ namespace Archimedes.Broker.Fxcm.Runner
                         new ApplicationException($"Unable to connect to FXCM: {session.State}"));
 
                 case SessionState.Connected:
-                    _batchLog.Update(_logId,$"FXCM Connection status: {session.State}");
-                    _logger.Info($"FXCM Connection status: {session.State}");
+                    _batchLog.Update(_logId, $"FXCM Connection status: {session.State}");
 
                     GetCandleHistory(session, message);
-                        
+
                     _producer.PublishMessage(message, "Archimedes_Candle");
                     _logger.Info(_batchLog.Print(_logId));
                     break;
@@ -81,13 +80,18 @@ namespace Archimedes.Broker.Fxcm.Runner
         {
             var offerId = GetBrokerOfferId(session, request);
 
+            if (offerId == 0)
+            {
+                return;
+            }
+
             request.CountCandleIntervals();
 
             var candles = session.GetCandles(offerId, request.TimeFrameBroker, request.Intervals,
                 request.StartDate, request.EndDate);
 
-            _batchLog.Update(_logId,$"FXCM Candles returned on Market: {request.Market} Granularity: {request.Interval}{request.TimeFrame} Count: {candles.Count}");
-            //_logger.Info($"FXCM Items returned for Market: {request.Market} Granularity: {request.TimeFrame} Count:{candles.Count}");
+            _batchLog.Update(_logId,
+                $"FXCM Candles returned on Market: {request.Market} Granularity: {request.Interval}{request.TimeFrame} Count: {candles.Count}");
 
             BuildResponse(request, candles);
         }
@@ -99,20 +103,16 @@ namespace Archimedes.Broker.Fxcm.Runner
 
             if (offers == null)
             {
-                _batchLog.Update(_logId,$"Null returned from Offers: {request}");
+                _batchLog.Update(_logId, $"Null returned from Offers: {request}");
                 _logger.Warn($"{_batchLog.Print(_logId)}");
 
-                return default;
+                return 0;
             }
 
-            // returns no offers
             var offer = offers.FirstOrDefault(o => o.Currency == request.Market);
 
-            _batchLog.Update(_logId,$"FXCM Candle Request Id: {offer.OfferId} {nameof(request.Market)}: {request.Market}  {nameof(request.TimeFrame)}: {request.Interval}{request.TimeFrame} {nameof(request.StartDate)}: {request.StartDate} {nameof(request.EndDate)}: {request.EndDate}\n");
-
-            //_logger.Info($"\n\n FXCM BrokerOffer " +
-            //             $"\n  {nameof(offer.OfferId)}: {offer.OfferId} {nameof(request.Market)}: {request.Market} {nameof(request.Interval)}: {request.Interval} {nameof(request.TimeFrame)}: {request.TimeFrame}" +
-            //             $"\n  {nameof(request.StartDate)}: {request.StartDate} {nameof(request.EndDate)}: {request.EndDate}\n");
+            _batchLog.Update(_logId,
+                $"FXCM Candle Request {nameof(request.Market)}: {request.Market}  {nameof(request.TimeFrame)}: {request.Interval}{request.TimeFrame} {nameof(request.StartDate)}: {request.StartDate} {nameof(request.EndDate)}: {request.EndDate}\n");
 
             return offer.OfferId;
         }
@@ -120,24 +120,24 @@ namespace Archimedes.Broker.Fxcm.Runner
         private static void BuildResponse(CandleMessage request, IEnumerable<Candle> candles)
         {
             var candleDto = candles.Select(c => new CandleDto()
-            {
-                TimeStamp = c.Timestamp,
-                ToDate = c.Timestamp.AddMinutes(request.Interval),
-                FromDate = c.Timestamp,
-                BidOpen = decimal.Parse(c.BidOpen.ToString(CultureInfo.InvariantCulture)),
-                BidHigh = decimal.Parse(c.BidHigh.ToString(CultureInfo.InvariantCulture)),
-                BidLow = decimal.Parse(c.BidLow.ToString(CultureInfo.InvariantCulture)),
-                BidClose = decimal.Parse(c.BidClose.ToString(CultureInfo.InvariantCulture)),
-                AskOpen = decimal.Parse(c.AskOpen.ToString(CultureInfo.InvariantCulture)),
-                AskHigh = decimal.Parse(c.AskLow.ToString(CultureInfo.InvariantCulture)),
-                AskLow = decimal.Parse(c.AskLow.ToString(CultureInfo.InvariantCulture)),
-                AskClose = decimal.Parse(c.AskClose.ToString(CultureInfo.InvariantCulture)),
-                TickQty = c.TickQty,
-                Market = request.Market,
-                MarketId = request.MarketId,
-                Granularity = $"{request.Interval}{request.TimeFrame}",
-                LastUpdated = DateTime.Now
-            })
+                {
+                    TimeStamp = c.Timestamp,
+                    ToDate = c.Timestamp.AddMinutes(request.Interval),
+                    FromDate = c.Timestamp,
+                    BidOpen = decimal.Parse(c.BidOpen.ToString(CultureInfo.InvariantCulture)),
+                    BidHigh = decimal.Parse(c.BidHigh.ToString(CultureInfo.InvariantCulture)),
+                    BidLow = decimal.Parse(c.BidLow.ToString(CultureInfo.InvariantCulture)),
+                    BidClose = decimal.Parse(c.BidClose.ToString(CultureInfo.InvariantCulture)),
+                    AskOpen = decimal.Parse(c.AskOpen.ToString(CultureInfo.InvariantCulture)),
+                    AskHigh = decimal.Parse(c.AskLow.ToString(CultureInfo.InvariantCulture)),
+                    AskLow = decimal.Parse(c.AskLow.ToString(CultureInfo.InvariantCulture)),
+                    AskClose = decimal.Parse(c.AskClose.ToString(CultureInfo.InvariantCulture)),
+                    TickQty = c.TickQty,
+                    Market = request.Market,
+                    MarketId = request.MarketId,
+                    Granularity = $"{request.Interval}{request.TimeFrame}",
+                    LastUpdated = DateTime.Now
+                })
                 .ToList();
 
             request.Candles = candleDto;
