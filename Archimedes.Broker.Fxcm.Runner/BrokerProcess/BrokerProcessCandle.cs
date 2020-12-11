@@ -21,6 +21,7 @@ namespace Archimedes.Broker.Fxcm.Runner
         private readonly IProducerFanout<CandleMessage> _producer;
         private readonly Logger _logger = LogManager.GetCurrentClassLogger();
         private readonly BatchLog _batchLog = new BatchLog();
+        private string _logId;
 
         public BrokerProcessCandle(IProducerFanout<CandleMessage> producer)
         {
@@ -29,20 +30,20 @@ namespace Archimedes.Broker.Fxcm.Runner
 
         public Task Run(CandleMessage message)
         {
-            _batchLog.Start();
+            _logId = _batchLog.Start();
             var reconnect = 1;
             var session = BrokerSession.GetInstance();
 
             if (session.State == SessionState.Disconnected)
             {
-                _batchLog.Update($"FXCM Connection status: {session.State}");
+                _batchLog.Update(_logId,$"FXCM Connection status: {session.State}");
                 _logger.Info($"FXCM Connection status: {session.State}");
                 session.Connect();
             }
 
             while (session.State == SessionState.Reconnecting && reconnect < 10)
             {
-                _batchLog.Update($"Waiting to reconnect for CandleRequest...{reconnect} Market: {message.Market} Timeframe: {message.TimeFrame} Interval: {message.Interval}");
+                _batchLog.Update(_logId,$"Waiting to reconnect for CandleRequest...{reconnect} Market: {message.Market} Timeframe: {message.TimeFrame} Interval: {message.Interval}");
                 _logger.Info($"Waiting to reconnect for CandleRequest...{reconnect} Market: {message.Market} Timeframe: {message.TimeFrame} Interval: {message.Interval}");
                 reconnect++;
                 Thread.Sleep(5000);
@@ -55,13 +56,13 @@ namespace Archimedes.Broker.Fxcm.Runner
                         new ApplicationException($"Unable to connect to FXCM: {session.State}"));
 
                 case SessionState.Connected:
-                    _batchLog.Update($"FXCM Connection status: {session.State}");
+                    _batchLog.Update(_logId,$"FXCM Connection status: {session.State}");
                     _logger.Info($"FXCM Connection status: {session.State}");
 
                     GetCandleHistory(session, message);
                         
                     _producer.PublishMessage(message, "Archimedes_Candle");
-                    _logger.Info(_batchLog.Print);
+                    _logger.Info(_batchLog.Print(_logId));
                     break;
 
                 case SessionState.Reconnecting:
@@ -85,7 +86,7 @@ namespace Archimedes.Broker.Fxcm.Runner
             var candles = session.GetCandles(offerId, request.TimeFrameBroker, request.Intervals,
                 request.StartDate, request.EndDate);
 
-            _batchLog.Update($"FXCM Candles returned on Market: {request.Market} Granularity: {request.Interval}{request.TimeFrame} Count: {candles.Count}");
+            _batchLog.Update(_logId,$"FXCM Candles returned on Market: {request.Market} Granularity: {request.Interval}{request.TimeFrame} Count: {candles.Count}");
             //_logger.Info($"FXCM Items returned for Market: {request.Market} Granularity: {request.TimeFrame} Count:{candles.Count}");
 
             BuildResponse(request, candles);
@@ -98,8 +99,8 @@ namespace Archimedes.Broker.Fxcm.Runner
 
             if (offers == null)
             {
-                _batchLog.Update($"Null returned from Offers: {request}");
-                _logger.Warn($"{_batchLog.Print()}");
+                _batchLog.Update(_logId,$"Null returned from Offers: {request}");
+                _logger.Warn($"{_batchLog.Print(_logId)}");
 
                 return default;
             }
@@ -107,7 +108,7 @@ namespace Archimedes.Broker.Fxcm.Runner
             // returns no offers
             var offer = offers.FirstOrDefault(o => o.Currency == request.Market);
 
-            _batchLog.Update($"FXCM Candle Request Id: {offer.OfferId} {nameof(request.Market)}: {request.Market}  {nameof(request.TimeFrame)}: {request.Interval}{request.TimeFrame} {nameof(request.StartDate)}: {request.StartDate} {nameof(request.EndDate)}: {request.EndDate}\n");
+            _batchLog.Update(_logId,$"FXCM Candle Request Id: {offer.OfferId} {nameof(request.Market)}: {request.Market}  {nameof(request.TimeFrame)}: {request.Interval}{request.TimeFrame} {nameof(request.StartDate)}: {request.StartDate} {nameof(request.EndDate)}: {request.EndDate}\n");
 
             //_logger.Info($"\n\n FXCM BrokerOffer " +
             //             $"\n  {nameof(offer.OfferId)}: {offer.OfferId} {nameof(request.Market)}: {request.Market} {nameof(request.Interval)}: {request.Interval} {nameof(request.TimeFrame)}: {request.TimeFrame}" +
