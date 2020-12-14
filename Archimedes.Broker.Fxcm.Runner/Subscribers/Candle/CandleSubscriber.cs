@@ -48,7 +48,7 @@ namespace Archimedes.Broker.Fxcm.Runner
         public void SubscribeCandleMessage(Session session, CancellationToken cancellationToken)
         {
             _logger.Info($"Subscribed to CandleRequestQueue");
-            _consumer.Subscribe(cancellationToken);
+            _consumer.Subscribe(cancellationToken, 100);
         }
     }
 }
