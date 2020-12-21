@@ -23,9 +23,8 @@ namespace Archimedes.Broker.Fxcm.Runner
         private void Consumer_HandleMessage(object sender, PriceMessageHandlerEventArgs e)
         {
             _logger.Info($"Received Price Request {e.Message}");
-            var requestPrice = JsonConvert.DeserializeObject<PriceMessage>(e.Message);
-
-            _brokerProcessPrice.Run(requestPrice);
+            //var requestPrice = JsonConvert.DeserializeObject<PriceMessage>(e.Message);
+            _brokerProcessPrice.Run(e.Message);
         }
 
 

@@ -27,13 +27,13 @@ namespace Archimedes.Broker.Fxcm.Runner
         private async void Consumer_HandleMessage(object sender, CandleMessageHandlerEventArgs e)
         {
             _logId = _batchLog.Start();
-            var requestCandle = JsonConvert.DeserializeObject<CandleMessage>(e.Message);
+            //var requestCandle = JsonConvert.DeserializeObject<CandleMessage>(e);
 
-            _batchLog.Update(_logId, $"Received CandleRequest: {requestCandle.Market} {requestCandle.Interval}{requestCandle.TimeFrame}");
+            _batchLog.Update(_logId, $"Received CandleRequest: {e.Message.Market} {e.Message.Interval}{e.Message.TimeFrame}");
 
             try
             {
-                await _brokerProcessCandle.Run(requestCandle);
+                await _brokerProcessCandle.Run(e.Message);
                 _batchLog.Update(_logId, $"Finished Processing Candle");
                 _logger.Info(_batchLog.Print(_logId));
                 //Task.Run(() => { _brokerProcessCandle.Run(requestCandle); });
@@ -41,7 +41,7 @@ namespace Archimedes.Broker.Fxcm.Runner
             catch (Exception ex)
             {
                 _logger.Error(
-                    $"Error returned from BrokerProcessCandle: RequestCandle: {requestCandle}\n ERROR {ex.Message} {ex.StackTrace}");
+                    $"Error returned from BrokerProcessCandle: RequestCandle: {e.Message}\n ERROR {ex.Message} {ex.StackTrace}");
             }
         }
 
