@@ -18,14 +18,14 @@ namespace Archimedes.Broker.Fxcm.Runner
 {
     public class BrokerProcessCandle : IBrokerProcessCandle
     {
-        private readonly IProducerFanout<CandleMessage> _producer;
+        private readonly IProducerFanout<CandleMessage> _producerFanout;
         private readonly Logger _logger = LogManager.GetCurrentClassLogger();
         private readonly BatchLog _batchLog = new BatchLog();
         private string _logId;
 
-        public BrokerProcessCandle(IProducerFanout<CandleMessage> producer)
+        public BrokerProcessCandle(IProducerFanout<CandleMessage> producerFanout)
         {
-            _producer = producer;
+            _producerFanout = producerFanout;
         }
 
         public Task Run(CandleMessage message)
@@ -78,12 +78,8 @@ namespace Archimedes.Broker.Fxcm.Runner
 
         private void PublishCandles(CandleMessage message)
         {
-            _producer.PublishMessage(message, "Archimedes_Candle");
-
-            if ( $"{message.Interval}{message.TimeFrame}" == "5Min" && message.Market == "GBP/USD")
-            {
-                _producer.PublishMessage(message,"GBPUSD.5Min");
-            }
+            _producerFanout.PublishMessage(message, "Archimedes_Candle");
+            _producerFanout.PublishMessage(message,message.QueueName);
             _batchLog.Update(_logId, $"Publish to Archimedes_Candle: {message.Market} {message.Interval}{message.TimeFrame}");
         }
 
