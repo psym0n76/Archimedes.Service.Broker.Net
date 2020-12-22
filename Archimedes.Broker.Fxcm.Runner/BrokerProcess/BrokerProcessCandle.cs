@@ -59,8 +59,9 @@ namespace Archimedes.Broker.Fxcm.Runner
 
                     GetCandleHistory(session, message);
 
-                    _producer.PublishMessage(message, "Archimedes_Candle");
-                    _batchLog.Update(_logId, $"Publish to Archimedes_Candle: {message.Market} {message.Interval}{message.TimeFrame}");
+                    //todo post to a different queue = GBPUSD.15Min
+                    PublishCandles(message);
+                    
                     _logger.Info(_batchLog.Print(_logId));
                     break;
 
@@ -73,6 +74,17 @@ namespace Archimedes.Broker.Fxcm.Runner
             }
 
             return Task.CompletedTask;
+        }
+
+        private void PublishCandles(CandleMessage message)
+        {
+            _producer.PublishMessage(message, "Archimedes_Candle");
+
+            if ( $"{message.Interval}{message.TimeFrame}" == "5Min" && message.Market == "GBP/USD")
+            {
+                _producer.PublishMessage(message,"GBPUSD.5Min");
+            }
+            _batchLog.Update(_logId, $"Publish to Archimedes_Candle: {message.Market} {message.Interval}{message.TimeFrame}");
         }
 
 
