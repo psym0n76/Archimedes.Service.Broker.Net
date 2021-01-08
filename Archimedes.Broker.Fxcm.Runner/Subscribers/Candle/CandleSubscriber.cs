@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Threading;
 using Archimedes.Library.Logger;
-using Archimedes.Library.Message;
 using Fx.Broker.Fxcm;
 using NLog;
 using Archimedes.Library.RabbitMq;
-using Newtonsoft.Json;
 
 namespace Archimedes.Broker.Fxcm.Runner
 {
@@ -27,7 +25,6 @@ namespace Archimedes.Broker.Fxcm.Runner
         private async void Consumer_HandleMessage(object sender, CandleMessageHandlerEventArgs e)
         {
             _logId = _batchLog.Start();
-            //var requestCandle = JsonConvert.DeserializeObject<CandleMessage>(e);
 
             _batchLog.Update(_logId, $"Received CandleRequest: {e.Message.Market} {e.Message.Interval}{e.Message.TimeFrame}");
 
