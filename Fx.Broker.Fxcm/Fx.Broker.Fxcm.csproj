@@ -34,7 +34,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Archimedes.Library, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Archimedes.Library.1.0.334\lib\netstandard2.0\Archimedes.Library.dll</HintPath>
+      <HintPath>..\packages\Archimedes.Library.1.0.337\lib\netstandard2.0\Archimedes.Library.dll</HintPath>
     </Reference>
     <Reference Include="EngineIoClientDotNet, Version=1.0.7.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\EngineIoClientDotNet.1.0.7\lib\net45\EngineIoClientDotNet.dll</HintPath>

@@ -26,19 +26,19 @@ namespace Archimedes.Broker.Fxcm.Runner
         {
             _logId = _batchLog.Start();
 
-            _batchLog.Update(_logId, $"Received CandleRequest: {e.Message.Market} {e.Message.Interval}{e.Message.TimeFrame}");
+            _batchLog.Update(_logId,
+                $"Received CandleRequest mmm yes{e.Message.Market} {e.Message.Interval} {e.Message.TimeFrame}");
 
             try
             {
+                _batchLog.Update(_logId, $"Processing Candle");
                 await _brokerProcessCandle.Run(e.Message);
-                _batchLog.Update(_logId, $"Finished Processing Candle");
+                _batchLog.Update(_logId, $"Processing Candle FINISHED");
                 _logger.Info(_batchLog.Print(_logId));
-                //Task.Run(() => { _brokerProcessCandle.Run(requestCandle); });
             }
             catch (Exception ex)
             {
-                _logger.Error(
-                    $"Error returned from BrokerProcessCandle: RequestCandle: {e.Message}\n ERROR {ex.Message} {ex.StackTrace}");
+                _logger.Error(_batchLog.Print(_logId, "Error Returned from CandleSubscriber", ex));
             }
         }
 

@@ -36,7 +36,7 @@ namespace Archimedes.Broker.Fxcm.Runner
 
             if (session.State == SessionState.Disconnected)
             {
-                _batchLog.Update(_logId, $"FXCM Connection status: {session.State}");
+                _batchLog.Update(_logId, $"Connection status: {session.State}");
                 session.Connect();
             }
 
@@ -51,78 +51,61 @@ namespace Archimedes.Broker.Fxcm.Runner
             switch (session.State)
             {
                 case SessionState.Disconnected:
-                    return Task.FromException<long>(
-                        new ApplicationException($"Unable to connect to FXCM: {session.State}"));
+
+                    _logger.Error(_batchLog.Print(_logId, $"Unable to connect: {session.State}"));
+                    return Task.CompletedTask;
 
                 case SessionState.Connected:
-                    _batchLog.Update(_logId, $"FXCM Connection status: {session.State}");
 
-                    GetCandleHistory(session, message);
+                    _batchLog.Update(_logId, $"Connection status: {session.State}");
 
-                    //todo post to a different queue = GBPUSD.15Min
+                    CandleHistory(session, message);
                     PublishCandles(message);
-                    
+
                     _logger.Info(_batchLog.Print(_logId));
-                    break;
+                    
+                    return Task.CompletedTask;
 
                 case SessionState.Reconnecting:
-                    return Task.FromException<long>(
-                        new ApplicationException($"Candle History: FXCM Reconnection limit hit : {reconnect}"));
+
+                    _logger.Error(_batchLog.Print(_logId,
+                        $"Candle History: FXCM Reconnection limit hit : {reconnect}"));
+                    return Task.CompletedTask;
+
 
                 default:
-                    throw new ArgumentOutOfRangeException();
-            }
+                    _logger.Error(_batchLog.Print(_logId, $"Unknown SessionState : {session.State}"));
+                    return Task.CompletedTask;
 
-            return Task.CompletedTask;
+            }
         }
 
         private void PublishCandles(CandleMessage message)
         {
-            _producerFanout.PublishMessage(message, "Archimedes_Candle");
-            _producerFanout.PublishMessage(message,message.QueueName);
-            _batchLog.Update(_logId, $"Publish to Archimedes_Candle: {message.Market} {message.Interval}{message.TimeFrame}");
+            _producerFanout.PublishMessage(message, message.QueueName);
+            _batchLog.Update(_logId,
+                $"Publish to {message.QueueName}: {message.Market} {message.Interval}{message.TimeFrame}");
         }
 
 
-        private void GetCandleHistory(Session session, CandleMessage request)
+        private void CandleHistory(Session session, CandleMessage request)
         {
-            var offerId = GetBrokerOfferId(session, request);
-
-            if (offerId == 0)
+            try
             {
-                return;
+                request.CountCandleIntervals();
+
+                var candles = session.GetCandles(request.ExternalMarketId, request.TimeFrameBroker, request.Intervals,
+                    request.StartDate, request.EndDate);
+
+                _batchLog.Update(_logId,
+                    $"FXCM Candle Response: Records: {candles.Count}");
+
+                BuildResponse(request, candles);
             }
-
-            request.CountCandleIntervals();
-
-            var candles = session.GetCandles(offerId, request.TimeFrameBroker, request.Intervals,
-                request.StartDate, request.EndDate);
-
-            _batchLog.Update(_logId,
-                $"FXCM Candle Response: Records: {candles.Count}");
-
-            BuildResponse(request, candles);
-        }
-
-        private int GetBrokerOfferId(Session session, CandleMessage request)
-        {
-
-            var offers = session.GetOffers();
-
-            if (offers == null)
+            catch (Exception e)
             {
-                _batchLog.Update(_logId, $"Null returned from Offers: {request}");
-                _logger.Warn($"{_batchLog.Print(_logId)}");
-
-                return 0;
+                _logger.Error(_batchLog.Print(_logId, $"Error from BrokerProcessCandle", e));
             }
-
-            var offer = offers.FirstOrDefault(o => o.Currency == request.Market);
-
-            _batchLog.Update(_logId,
-                $"FXCM Candle Request: {request.Market} {request.Interval}{request.TimeFrame} {nameof(request.StartDate)}: {request.StartDate} {nameof(request.EndDate)}: {request.EndDate}");
-
-            return offer.OfferId;
         }
 
         private static void BuildResponse(CandleMessage request, IEnumerable<Candle> candles)
