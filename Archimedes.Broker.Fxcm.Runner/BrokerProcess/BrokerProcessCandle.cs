@@ -9,7 +9,6 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using Archimedes.Library.Logger;
 
@@ -28,7 +27,7 @@ namespace Archimedes.Broker.Fxcm.Runner
             _producerFanout = producerFanout;
         }
 
-        public Task Run(CandleMessage message)
+        public async Task Run(CandleMessage message)
         {
             _logId = _batchLog.Start();
             var reconnect = 1;
@@ -45,7 +44,7 @@ namespace Archimedes.Broker.Fxcm.Runner
                 _batchLog.Update(_logId,
                     $"Waiting to reconnect for CandleRequest...{reconnect} Market: {message.Market} Timeframe: {message.TimeFrame} Interval: {message.Interval}");
                 reconnect++;
-                Thread.Sleep(5000);
+                await Task.Delay(5000);
             }
 
             switch (session.State)
@@ -53,7 +52,7 @@ namespace Archimedes.Broker.Fxcm.Runner
                 case SessionState.Disconnected:
 
                     _logger.Error(_batchLog.Print(_logId, $"Unable to connect: {session.State}"));
-                    return Task.CompletedTask;
+                    break;
 
                 case SessionState.Connected:
 
@@ -63,19 +62,19 @@ namespace Archimedes.Broker.Fxcm.Runner
                     PublishCandles(message);
 
                     _logger.Info(_batchLog.Print(_logId));
-                    
-                    return Task.CompletedTask;
+
+                    break;
 
                 case SessionState.Reconnecting:
 
                     _logger.Error(_batchLog.Print(_logId,
                         $"Candle History: FXCM Reconnection limit hit : {reconnect}"));
-                    return Task.CompletedTask;
+                    break;
 
 
                 default:
                     _logger.Error(_batchLog.Print(_logId, $"Unknown SessionState : {session.State}"));
-                    return Task.CompletedTask;
+                    break;
 
             }
         }
