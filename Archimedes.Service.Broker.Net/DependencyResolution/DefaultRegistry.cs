@@ -87,8 +87,11 @@ namespace Archimedes.Service.Broker.Net.DependencyResolution
             For<IBrokerProcessTrade>().Use<BrokerProcessTrade>();
             For<IBrokerProcessPrice>().Use<BrokerProcessPrice>();
 
-            For<IMarketClient>().Use<MarketClient>()
-                .Ctor<IOptions<Config>>();
+            //For<IMarketClient>().Use<MarketClient>()
+            //    .Ctor<IOptions<Config>>();
+
+            For<IMarketClient>().Use<MarketClient>();
+            
 
             For<IMessageBrokerConsumer>().Use<MessageBrokerConsumer>();
         }

@@ -27,7 +27,7 @@ namespace Archimedes.Broker.Fxcm.Runner
             _logId = _batchLog.Start();
 
             _batchLog.Update(_logId,
-                $"Received CandleRequest mmm yes{e.Message.Market} {e.Message.Interval} {e.Message.TimeFrame}");
+                $"Received CandleRequest {e.Message.Market} {e.Message.Interval} {e.Message.TimeFrame}");
 
             try
             {

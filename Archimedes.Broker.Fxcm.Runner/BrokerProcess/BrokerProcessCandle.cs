@@ -94,6 +94,12 @@ namespace Archimedes.Broker.Fxcm.Runner
             {
                 request.CountCandleIntervals();
 
+                var offers = session.GetOffers();
+
+                var offer = offers.FirstOrDefault(o => o.Currency == request.Market);
+
+                _batchLog.Update(_logId,$"OfferId for {request.Market} {offer.OfferId}");
+
                 var candles = session.GetCandles(request.ExternalMarketId, request.TimeFrameBroker, request.Intervals,
                     request.StartDate, request.EndDate);
 
