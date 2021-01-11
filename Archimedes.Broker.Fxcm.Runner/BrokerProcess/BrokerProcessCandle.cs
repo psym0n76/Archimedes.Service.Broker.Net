@@ -49,8 +49,6 @@ namespace Archimedes.Broker.Fxcm.Runner
                 session.Connect();
             }
             
-
-
             while (session.State == SessionState.Reconnecting && reconnect < 10)
             {
                 _batchLog.Update(_logId,
@@ -132,7 +130,9 @@ namespace Archimedes.Broker.Fxcm.Runner
 
         private static void BuildResponse(CandleMessage request, IEnumerable<Candle> candles)
         {
-            var candleDto = candles.Select(c => new CandleDto()
+            var distinctCandle = candles.Distinct();
+            
+            var candleDto = distinctCandle.Select(c => new CandleDto()
                 {
                     TimeStamp = c.Timestamp,
                     ToDate = c.Timestamp.AddMinutes(request.Interval),
