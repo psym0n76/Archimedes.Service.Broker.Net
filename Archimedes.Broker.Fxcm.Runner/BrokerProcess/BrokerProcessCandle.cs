@@ -38,6 +38,8 @@ namespace Archimedes.Broker.Fxcm.Runner
                 _batchLog.Update(_logId, $"Connection status: {session.State}");
                 session.Connect();
             }
+            
+            _batchLog.Update(_logId,$"CandleRequest: {message.Market} {message.TimeFrame} {message.StartDate} to {message.EndDate}");
 
             while (session.State == SessionState.Reconnecting && reconnect < 10)
             {
@@ -85,7 +87,7 @@ namespace Archimedes.Broker.Fxcm.Runner
             _producerFanout.PublishMessage(message, message.QueueName);
             _producerFanout.PublishMessage(message,"Archimedes_Candle");
             _batchLog.Update(_logId,
-                $"Publish to {message.QueueName}: {message.Market} {message.Interval}{message.TimeFrame}");
+                $"Publish to {message.QueueName} {message.Market} {message.Interval}{message.TimeFrame}");
         }
 
 

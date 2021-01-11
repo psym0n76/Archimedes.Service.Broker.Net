@@ -69,6 +69,7 @@ namespace Archimedes.Service.Broker.Net
         {
             try
             {
+                _logId = _batchLog.Start();
                 _logger.Info(_batchLog.Print(_logId, "Application End:"));
                 _cancellationToken.Cancel();
             }
