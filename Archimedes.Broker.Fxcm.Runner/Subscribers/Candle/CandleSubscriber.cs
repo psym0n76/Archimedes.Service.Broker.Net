@@ -14,6 +14,7 @@ namespace Archimedes.Broker.Fxcm.Runner
         private readonly ICandleConsumer _consumer;
         private readonly BatchLog _batchLog = new BatchLog();
         private string _logId;
+        private readonly object LockingObject = new object();
 
         public CandleSubscriber(IBrokerProcessCandle brokerProcessCandle, ICandleConsumer consumer)
         {
@@ -22,7 +23,7 @@ namespace Archimedes.Broker.Fxcm.Runner
             _consumer.HandleMessage += Consumer_HandleMessage;
         }
 
-        private async void Consumer_HandleMessage(object sender, CandleMessageHandlerEventArgs e)
+        private void Consumer_HandleMessage(object sender, CandleMessageHandlerEventArgs e)
         {
             _logId = _batchLog.Start();
 
@@ -31,10 +32,14 @@ namespace Archimedes.Broker.Fxcm.Runner
 
             try
             {
-                _batchLog.Update(_logId, $"Processing Candle");
-                await _brokerProcessCandle.Run(e.Message);
-                _batchLog.Update(_logId, $"Processing Candle FINISHED");
-                _logger.Info(_batchLog.Print(_logId));
+                lock (LockingObject)
+                {
+                    _batchLog.Update(_logId, $"Processing Candle");
+                    _brokerProcessCandle.Run(e.Message).ConfigureAwait(false);
+                    _batchLog.Update(_logId, $"Processing Candle FINISHED");
+                    _logger.Info(_batchLog.Print(_logId));
+                }
+
             }
             catch (Exception ex)
             {
