@@ -39,7 +39,7 @@ namespace Archimedes.Broker.Fxcm.Runner
                 session.Connect();
             }
             
-            _batchLog.Update(_logId,$"CandleRequest: {message.Market} {message.TimeFrame} {message.StartDate} to {message.EndDate}");
+            _batchLog.Update(_logId,$"CandleRequest: {message.Market} {message.Interval}{message.TimeFrame} {message.StartDate} to {message.EndDate}");
 
             while (session.State == SessionState.Reconnecting && reconnect < 10)
             {
