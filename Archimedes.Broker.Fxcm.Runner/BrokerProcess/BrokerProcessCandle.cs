@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Archimedes.Library.Logger;
 
@@ -55,7 +56,7 @@ namespace Archimedes.Broker.Fxcm.Runner
                 _batchLog.Update(_logId,
                     $"Waiting to reconnect for CandleRequest...{reconnect} Market: {message.Market} Timeframe: {message.TimeFrame} Interval: {message.Interval}");
                 reconnect++;
-                await Task.Delay(5000);
+                Thread.Sleep(5000);
             }
 
             switch (session.State)
@@ -69,10 +70,11 @@ namespace Archimedes.Broker.Fxcm.Runner
 
                     _batchLog.Update(_logId, $"Connection status: {session.State}");
 
-                    CandleHistory(session, message);
-                    PublishCandles(message);
-
-                    _logger.Info(_batchLog.Print(_logId));
+                    if (CandleHistory(session,message))
+                    {
+                        PublishCandles(message);
+                        _logger.Info(_batchLog.Print(_logId));
+                    }
 
                     break;
 
@@ -99,8 +101,7 @@ namespace Archimedes.Broker.Fxcm.Runner
                 $"Publish to {message.QueueName} {message.Market} {message.Interval}{message.TimeFrame}");
         }
 
-
-        private void CandleHistory(Session session, CandleMessage request)
+        private bool CandleHistory(Session session, CandleMessage request)
         {
             try
             {
@@ -116,13 +117,16 @@ namespace Archimedes.Broker.Fxcm.Runner
                     request.StartDate, request.EndDate);
 
                 _batchLog.Update(_logId,
-                    $"FXCM Candle Response: Records: {candles.Count}");
+                    $"FXCM Candle Response: {candles.Count} Candle(s)");
 
                 BuildResponse(request, candles);
+
+                return true;
             }
             catch (Exception e)
             {
                 _logger.Error(_batchLog.Print(_logId, $"Error from BrokerProcessCandle", e));
+                return false;
             }
         }
 
