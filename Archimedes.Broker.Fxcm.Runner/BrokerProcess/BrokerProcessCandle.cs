@@ -30,6 +30,15 @@ namespace Archimedes.Broker.Fxcm.Runner
         public async Task Run(CandleMessage message)
         {
             _logId = _batchLog.Start();
+
+            _batchLog.Update(_logId, $"CandleRequest: {message.Market} {message.Interval}{message.TimeFrame} {message.StartDate} to {message.EndDate}");
+
+            if (message.StartDate > message.EndDate)
+            {
+                _logger.Warn(_batchLog.Print(_logId, $"Start Date greater then EndDate"));
+                return;
+            }
+            
             var reconnect = 1;
             var session = BrokerSession.GetInstance();
 
@@ -39,7 +48,7 @@ namespace Archimedes.Broker.Fxcm.Runner
                 session.Connect();
             }
             
-            _batchLog.Update(_logId,$"CandleRequest: {message.Market} {message.Interval}{message.TimeFrame} {message.StartDate} to {message.EndDate}");
+
 
             while (session.State == SessionState.Reconnecting && reconnect < 10)
             {
