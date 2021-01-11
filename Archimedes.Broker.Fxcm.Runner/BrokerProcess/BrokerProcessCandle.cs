@@ -82,7 +82,9 @@ namespace Archimedes.Broker.Fxcm.Runner
 
         private void PublishCandles(CandleMessage message)
         {
+            // we need to publish to both the individual candle queues for the trader service but also publish to the group for repo service
             _producerFanout.PublishMessage(message, message.QueueName);
+            _producerFanout.PublishMessage(message,"Archimedes_Candle");
             _batchLog.Update(_logId,
                 $"Publish to {message.QueueName}: {message.Market} {message.Interval}{message.TimeFrame}");
         }
