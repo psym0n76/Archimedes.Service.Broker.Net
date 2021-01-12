@@ -49,12 +49,12 @@ namespace Archimedes.Broker.Fxcm.Runner
                 session.Connect();
             }
             
-            while (session.State == SessionState.Reconnecting && reconnect < 20)
+            while (session.State == SessionState.Reconnecting && reconnect < 5)
             {
                 _batchLog.Update(_logId,
-                    $"Waiting to re-connect for CandleRequest... {session.State} {message.Market} {message.Interval}{message.TimeFrame} ({reconnect}/20)");
+                    $"Waiting to re-connect for CandleRequest... {session.State} {message.Market} {message.Interval}{message.TimeFrame} ({reconnect}/5)");
                 reconnect++;
-                Thread.Sleep(2000);
+                Thread.Sleep(1000);
             }
 
             switch (session.State)

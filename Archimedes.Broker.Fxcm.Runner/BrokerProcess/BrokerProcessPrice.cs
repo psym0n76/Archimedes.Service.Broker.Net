@@ -53,6 +53,8 @@ namespace Archimedes.Broker.Fxcm.Runner
                     session.Connect();
                 }
 
+                _batchLog.Update(_logId, $"Connection status: {session.State}");
+
                 if (session.State == SessionState.Disconnected)
                 {
                     _logger.Error(_batchLog.Print(_logId, "Unable to connect to FXCM"));
