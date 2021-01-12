@@ -20,7 +20,7 @@ namespace Archimedes.Broker.Fxcm.Runner
 
         public static string Print(string message)
         {
-            return Logs.Aggregate(string.Empty, (current, log) => current + "\n" + message + log.Message);
+            return Logs.Aggregate(string.Empty, (current, log) => current + $"\n {message}  {log.Message} {log.InnerException} {log.StackTrace}");
         }
     }
 }

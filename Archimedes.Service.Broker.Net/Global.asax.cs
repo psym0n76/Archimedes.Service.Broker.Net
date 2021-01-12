@@ -20,7 +20,13 @@ namespace Archimedes.Service.Broker.Net
 
         protected void Application_Start()
         {
-            _logId = _batchLog.Start();
+            var logId = _batchLog.Start();
+
+            _batchLog.Update(_logId, "===============================================================================================================================================");
+            _batchLog.Update(_logId, "Application Start Application Start Application Start Application Start Application Start Application Start Application Start Application Start");
+            _batchLog.Update(_logId, "===============================================================================================================================================");
+            _logger.Info(_batchLog.Print(logId));
+            
             ApplicationRunner();
         }
 
@@ -28,7 +34,9 @@ namespace Archimedes.Service.Broker.Net
         {
             try
             {
-                _batchLog.Update(_logId, "Application Start");
+                _logId = _batchLog.Start();
+                
+                _batchLog.Update(_logId,"Application Runner");
                 
                 AreaRegistration.RegisterAllAreas();
                 GlobalConfiguration.Configure(WebApiConfig.Register);
@@ -43,7 +51,8 @@ namespace Archimedes.Service.Broker.Net
                 {
                     if (!BrokerSession.ValidateConnection())
                     {
-                        _logger.Error(_batchLog.Print(_logId, $"FXCM Validating Connection - UNABLE TO CONNECT\n\n {BrokerSessionExceptionLogs.Print("Logs")}"));
+                        _logger.Warn($"FXCM Validating Connection - UNABLE TO CONNECT\n\n {BrokerSessionExceptionLogs.Print("BrokerSession Exception Logs")}");
+                        _batchLog.Update(_logId, $"FXCM Validating Connection - UNABLE TO CONNECT\n\n {BrokerSessionExceptionLogs.Print("BrokerSession Exception Logs")}");
                     }
                     else
                     {
@@ -77,7 +86,11 @@ namespace Archimedes.Service.Broker.Net
             try
             {
                 _logId = _batchLog.Start();
-                _logger.Info(_batchLog.Print(_logId, "Application End"));
+                _batchLog.Update(_logId, "===============================================================================================================================================");
+                _batchLog.Update(_logId, "Application End Application End Application End Application End Application End Application End Application End Application End Application End");
+                _batchLog.Update(_logId, "===============================================================================================================================================");
+                _logger.Info(_batchLog.Print(_logId));
+                
                 _cancellationToken.Cancel();
             }
             catch (Exception e)
