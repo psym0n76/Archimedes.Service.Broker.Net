@@ -31,8 +31,8 @@ namespace Archimedes.Broker.Fxcm.Runner
             
             try
             {
-                _batchLog.Update(_logId, $"Processing Price");
-                _brokerProcessPrice.Run(e.Message);
+                _batchLog.Update(_logId, $"Processing Price BLOCKED TEMP");
+                //_brokerProcessPrice.Run(e.Message);
                 _batchLog.Update(_logId, $"Processing Price FINISHED");
                 _logger.Info(_batchLog.Print(_logId));
             }
