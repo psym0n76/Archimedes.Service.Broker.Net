@@ -22,9 +22,9 @@ namespace Archimedes.Service.Broker.Net
         {
             var logId = _batchLog.Start();
 
-            _batchLog.Update(_logId, "===============================================================================================================================================");
-            _batchLog.Update(_logId, "Application Start Application Start Application Start Application Start Application Start Application Start Application Start Application Start");
-            _batchLog.Update(_logId, "===============================================================================================================================================");
+            _batchLog.Update(logId, "===============================================================================================================================================");
+            _batchLog.Update(logId, "Application Start Application Start Application Start Application Start Application Start Application Start Application Start Application Start");
+            _batchLog.Update(logId, "===============================================================================================================================================");
             _logger.Info(_batchLog.Print(logId));
             
             ApplicationRunner();
@@ -85,17 +85,17 @@ namespace Archimedes.Service.Broker.Net
         {
             try
             {
-                _logId = _batchLog.Start();
-                _batchLog.Update(_logId, "===============================================================================================================================================");
-                _batchLog.Update(_logId, "Application End Application End Application End Application End Application End Application End Application End Application End Application End");
-                _batchLog.Update(_logId, "===============================================================================================================================================");
-                _logger.Info(_batchLog.Print(_logId));
+                var logId = _batchLog.Start();
+                _batchLog.Update(logId, "===============================================================================================================================================");
+                _batchLog.Update(logId, "Application End Application End Application End Application End Application End Application End Application End Application End Application End");
+                _batchLog.Update(logId, "===============================================================================================================================================");
+                _logger.Info(_batchLog.Print(logId));
                 
                 _cancellationToken.Cancel();
             }
             catch (Exception e)
             {
-                _logger.Error(_batchLog.Print(_logId, "Error returned from Application Runner", e));
+                _logger.Error($"Error returned from Application_End \n\n{e.Message} \n\n{e.InnerException} \n\n{e.StackTrace}");
             }
         }
     }
