@@ -9,6 +9,7 @@ namespace Archimedes.Broker.Fxcm.Runner
 {
     public class PriceSubscriber : IPriceSubscriber
     {
+        private static readonly object LockingObject = new object();
         private readonly Logger _logger = LogManager.GetCurrentClassLogger();
         private readonly IBrokerProcessPrice _brokerProcessPrice;
         private readonly IPriceConsumer _consumer;
@@ -31,10 +32,13 @@ namespace Archimedes.Broker.Fxcm.Runner
             
             try
             {
-                _batchLog.Update(_logId, $"Processing Price");
-                _brokerProcessPrice.Run(e.Message);
-                _batchLog.Update(_logId, $"Processing Price FINISHED");
-                _logger.Info(_batchLog.Print(_logId));
+                lock (LockingObject)
+                {
+                    _batchLog.Update(_logId, $"Processing Price");
+                    _brokerProcessPrice.Run(e.Message);
+                    _batchLog.Update(_logId, $"Processing Price FINISHED");
+                    _logger.Info(_batchLog.Print(_logId));
+                }
             }
             catch (Exception ex)
             {

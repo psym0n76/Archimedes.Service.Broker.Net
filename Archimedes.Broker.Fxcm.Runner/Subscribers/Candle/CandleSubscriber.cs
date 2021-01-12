@@ -14,7 +14,7 @@ namespace Archimedes.Broker.Fxcm.Runner
         private readonly ICandleConsumer _consumer;
         private readonly BatchLog _batchLog = new BatchLog();
         private string _logId;
-        private readonly object LockingObject = new object();
+        private static readonly object LockingObject = new object();
 
         public CandleSubscriber(IBrokerProcessCandle brokerProcessCandle, ICandleConsumer consumer)
         {
