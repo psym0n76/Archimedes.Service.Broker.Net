@@ -44,6 +44,20 @@ namespace Archimedes.Service.Broker.Net
                     return;
                 }
 
+                var connected = false;
+                while (!connected)
+                {
+                    if (!BrokerSession.ValidateConnection())
+                    {
+                        _logger.Error(_batchLog.Print(_logId, "FXCM Validating Connection - UNABLE TO CONNECT"));
+                    }
+                    else
+                    {
+                        connected = true;
+                    }
+                }
+                
+                
                 _batchLog.Update(_logId, "FXCM Validating Connection - CONNECTED");
 
                 Task.Run(()=>
