@@ -49,12 +49,12 @@ namespace Archimedes.Broker.Fxcm.Runner
                 session.Connect();
             }
             
-            while (session.State == SessionState.Reconnecting && reconnect < 10)
+            while (session.State == SessionState.Reconnecting && reconnect < 20)
             {
                 _batchLog.Update(_logId,
-                    $"Waiting to reconnect for CandleRequest...{reconnect} Market: {message.Market} Timeframe: {message.TimeFrame} Interval: {message.Interval}");
+                    $"Waiting to re-connect for CandleRequest... {session.State} {message.Market} {message.Interval}{message.TimeFrame} ({reconnect}/20)");
                 reconnect++;
-                Thread.Sleep(5000);
+                Thread.Sleep(2000);
             }
 
             switch (session.State)
@@ -79,7 +79,7 @@ namespace Archimedes.Broker.Fxcm.Runner
                 case SessionState.Reconnecting:
 
                     _logger.Error(_batchLog.Print(_logId,
-                        $"Candle History: FXCM Reconnection limit hit : {reconnect}"));
+                        $"ERROR Candle History: FXCM Reconnection limit hit : {reconnect}"));
                     break;
 
 
