@@ -43,7 +43,7 @@ namespace Archimedes.Service.Broker.Net
                 {
                     if (!BrokerSession.ValidateConnection())
                     {
-                        _logger.Error(_batchLog.Print(_logId, "FXCM Validating Connection - UNABLE TO CONNECT"));
+                        _logger.Error(_batchLog.Print(_logId, $"FXCM Validating Connection - UNABLE TO CONNECT\n\n {BrokerSessionExceptionLogs.Print("Logs")}"));
                     }
                     else
                     {
@@ -77,7 +77,7 @@ namespace Archimedes.Service.Broker.Net
             try
             {
                 _logId = _batchLog.Start();
-                _logger.Info(_batchLog.Print(_logId, "Application End:"));
+                _logger.Info(_batchLog.Print(_logId, "Application End"));
                 _cancellationToken.Cancel();
             }
             catch (Exception e)
