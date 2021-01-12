@@ -1,9 +1,9 @@
-﻿using System.Threading;
-using Archimedes.Library.Message;
+﻿using System;
+using System.Threading;
+using Archimedes.Library.Logger;
 using Fx.Broker.Fxcm;
 using NLog;
 using Archimedes.Library.RabbitMq;
-using Newtonsoft.Json;
 
 namespace Archimedes.Broker.Fxcm.Runner
 {
@@ -12,6 +12,8 @@ namespace Archimedes.Broker.Fxcm.Runner
         private readonly Logger _logger = LogManager.GetCurrentClassLogger();
         private readonly IBrokerProcessPrice _brokerProcessPrice;
         private readonly IPriceConsumer _consumer;
+        private readonly BatchLog _batchLog = new BatchLog();
+        private string _logId;
 
         public PriceSubscriber(IBrokerProcessPrice brokerProcessPrice, IPriceConsumer consumer)
         {
@@ -22,11 +24,23 @@ namespace Archimedes.Broker.Fxcm.Runner
 
         private void Consumer_HandleMessage(object sender, PriceMessageHandlerEventArgs e)
         {
-            _logger.Info($"Received Price Request {e.Message}");
-            //var requestPrice = JsonConvert.DeserializeObject<PriceMessage>(e.Message);
-            _brokerProcessPrice.Run(e.Message);
-        }
+            _logId = _batchLog.Start();
 
+            _batchLog.Update(_logId,
+                $"Received PriceRequest {e.Message.Market}");
+            
+            try
+            {
+                _batchLog.Update(_logId, $"Processing Price");
+                _brokerProcessPrice.Run(e.Message);
+                _batchLog.Update(_logId, $"Processing Price FINISHED");
+                _logger.Info(_batchLog.Print(_logId));
+            }
+            catch (Exception ex)
+            {
+                _logger.Error(_batchLog.Print(_logId, "Error Returned from PriceSubscriber", ex));
+            }
+        }
 
         public void SubscribePriceMessage(Session session, CancellationToken cancellationToken)
         {
