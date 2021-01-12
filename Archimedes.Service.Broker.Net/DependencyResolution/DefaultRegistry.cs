@@ -17,10 +17,8 @@
 
 using Archimedes.Broker.Fxcm.Runner;
 using Archimedes.Broker.Fxcm.Runner.Http;
-using Archimedes.Library.Domain;
 using Archimedes.Library.Message;
 using Archimedes.Library.RabbitMq;
-using Microsoft.Extensions.Options;
 using StructureMap;
 using System.Configuration;
 
@@ -50,21 +48,16 @@ namespace Archimedes.Service.Broker.Net.DependencyResolution
                 .Ctor<string>("host").Is(ConfigurationManager.AppSettings["RabbitHost"])
                 .Ctor<string>("port").Is(ConfigurationManager.AppSettings["RabbitPort"]);
 
-
-            //For<IProducer<PriceMessage>>().Use<Producer<PriceMessage>>()
-            //    .Ctor<string>("host").Is(ConfigurationManager.AppSettings["RabbitHost"])
-            //    .Ctor<string>("port").Is(ConfigurationManager.AppSettings["RabbitPort"])
-            //    .Ctor<string>("exchange").Is(ConfigurationManager.AppSettings["RabbitExchange"]);
-
+            
             For<IProducerFanout<PriceMessage>>().Use<ProducerFanout<PriceMessage>>()
                 .Ctor<string>("host").Is(ConfigurationManager.AppSettings["RabbitHost"])
                 .Ctor<string>("port").Is(ConfigurationManager.AppSettings["RabbitPort"]);
 
+            
             For<IProducer<TradeMessage>>().Use<Producer<TradeMessage>>()
                 .Ctor<string>("host").Is(ConfigurationManager.AppSettings["RabbitHost"])
                 .Ctor<string>("port").Is(ConfigurationManager.AppSettings["RabbitPort"])
                 .Ctor<string>("exchange").Is(ConfigurationManager.AppSettings["RabbitExchange"]);
-
 
 
             For<ICandleConsumer>().Use<CandleConsumer>()
@@ -87,12 +80,7 @@ namespace Archimedes.Service.Broker.Net.DependencyResolution
             For<IBrokerProcessTrade>().Use<BrokerProcessTrade>();
             For<IBrokerProcessPrice>().Use<BrokerProcessPrice>();
 
-            //For<IMarketClient>().Use<MarketClient>()
-            //    .Ctor<IOptions<Config>>();
-
             For<IMarketClient>().Use<MarketClient>();
-            
-
             For<IMessageBrokerConsumer>().Use<MessageBrokerConsumer>();
         }
 
