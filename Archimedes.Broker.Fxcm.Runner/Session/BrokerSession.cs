@@ -34,7 +34,9 @@ namespace Archimedes.Broker.Fxcm.Runner
 
         public static Tuple<BatchLog, bool> ValidateConnection()
         {
-            LogId = BatchLog.Start(nameof(ValidateConnection));
+            
+            LogId = BatchLog.Start(nameof(BrokerSession));
+            BatchLog.Update(LogId, nameof(ValidateConnection));
 
             try
             {

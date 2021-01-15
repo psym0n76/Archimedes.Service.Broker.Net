@@ -32,7 +32,7 @@ namespace Archimedes.Broker.Fxcm.Runner
                 lock (LockingObject)
                 {
                     _batchLog.Update(_logId, $"Processing Candle");
-                    _brokerProcessCandle.Run(e.Message);
+                    _brokerProcessCandle.CandleProcessor(e.Message);
                     _batchLog.Update(_logId, $"Processing Candle FINISHED");
                     _logger.Info(_batchLog.Print(_logId));
                 }

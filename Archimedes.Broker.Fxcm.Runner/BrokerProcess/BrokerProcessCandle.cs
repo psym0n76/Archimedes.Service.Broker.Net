@@ -30,7 +30,7 @@ namespace Archimedes.Broker.Fxcm.Runner
             _producerFanout = producerFanout;
         }
 
-        public Task Run(CandleMessage request)
+        public Task CandleProcessor(CandleMessage request)
         {
             _logId = _batchLog.Start();
             _batchLog.Update(_logId, $"CandleRequest: {request.Id}");

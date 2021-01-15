@@ -26,11 +26,11 @@ namespace Archimedes.Broker.Fxcm.Runner
             _fanoutProducer = fanoutProducer;
         }
 
-        public void Run(PriceMessage request)
+        public void PriceProcessor(PriceMessage request)
         {
             try
             {
-                _logId = _batchLog.Start(nameof(Run));
+                _logId = _batchLog.Start(nameof(PriceProcessor));
                 SubscribeToPrice(request);
                 _logger.Info(_batchLog.Print(_logId));
             }
