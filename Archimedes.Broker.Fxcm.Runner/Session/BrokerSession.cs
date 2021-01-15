@@ -47,6 +47,7 @@ namespace Archimedes.Broker.Fxcm.Runner
 
                 if (session.State == SessionState.Connected)
                 {
+                    session.Close();
                     return new Tuple<BatchLog, bool>(BatchLog, true);
                 }
                 
