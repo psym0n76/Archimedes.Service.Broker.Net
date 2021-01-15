@@ -119,8 +119,15 @@ namespace Archimedes.Broker.Fxcm.Runner
                 var candles = session.GetCandles(request.ExternalMarketId, request.TimeFrameBroker, request.Intervals,
                     request.StartDate, request.EndDate);
 
+                if (candles==null)
+                {
+                    _batchLog.Update(_logId,
+                        $"Candle Response: Candle object is null {candles}");
+                    return false;
+                }
+                
                 _batchLog.Update(_logId,
-                    $"FXCM Candle Response: {candles.Count} Candle(s)");
+                    $"Candle Response: {candles.Count} Candle(s)");
 
                 BuildResponse(request, candles);
 

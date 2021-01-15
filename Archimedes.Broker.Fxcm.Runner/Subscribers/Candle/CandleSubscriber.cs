@@ -25,10 +25,7 @@ namespace Archimedes.Broker.Fxcm.Runner
 
         private void Consumer_HandleMessage(object sender, CandleMessageHandlerEventArgs e)
         {
-            _logId = _batchLog.Start();
-
-            _batchLog.Update(_logId,
-                $"Received CandleRequest {e.Message.Market} {e.Message.Interval} {e.Message.TimeFrame}");
+            _logId = _batchLog.Start($"Received CandleRequest {e.Message.Market} {e.Message.Interval} {e.Message.TimeFrame}");
 
             try
             {

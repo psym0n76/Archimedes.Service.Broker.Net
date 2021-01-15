@@ -16,7 +16,6 @@ namespace Archimedes.Service.Broker.Net
         private readonly Logger _logger = LogManager.GetCurrentClassLogger();
         private readonly CancellationTokenSource _cancellationToken = new CancellationTokenSource();
         private readonly BatchLog _batchLog = new BatchLog();
-        private string _logId;
 
         protected void Application_Start()
         {
@@ -32,43 +31,41 @@ namespace Archimedes.Service.Broker.Net
 
         private void ApplicationRunner()
         {
+            var logId = _batchLog.Start(nameof(ApplicationRunner));
+
             try
             {
-                _logId = _batchLog.Start();
-                
-                _batchLog.Update(_logId,"Application Runner");
-                
                 AreaRegistration.RegisterAllAreas();
                 GlobalConfiguration.Configure(WebApiConfig.Register);
 
                 var container = Container.For<DefaultRegistry>();
                 var runner = container.GetInstance<MessageBrokerConsumer>();
 
-                _batchLog.Update(_logId, "FXCM Validating Connection");
+                _batchLog.Update(logId, "FXCM Validating Connection");
 
                 var (logger, connected) = BrokerSession.ValidateConnection();
 
                 if (!connected)
                 {
-                    _batchLog.Update(_logId,logger.Print(BrokerSession.LogId));
-                    _logger.Error(_batchLog.Print(_logId, $"FXCM Validating Connection - UNABLE TO CONNECT\n\n{BrokerSessionExceptionLogs.Print("BrokerSession Exception Logs")}\n\n"));
+                    _batchLog.Update(logId,"FXCM Connection Failed - following log from BrokerSession");
+                    _logger.Error(_batchLog.Print(logId, logger.Print(BrokerSession.LogId)));
                     Application_End();
                     return;
                 }
                 
-                _batchLog.Update(_logId, "FXCM Validating Connection - CONNECTED");
+                _batchLog.Update(logId, "FXCM Validating Connection - CONNECTED");
 
                 Task.Run(()=>
                 {
                     runner.Run(_cancellationToken.Token);
                 });
                 
-                _logger.Info(_batchLog.Print(_logId));
+                _logger.Info(_batchLog.Print(logId));
             }
 
             catch (Exception e)
             {
-                _logger.Error(_batchLog.Print(_logId,"Error returned from Application Runner",e));
+                _logger.Error(_batchLog.Print(logId,"Error returned from Application Runner",e));
             }
         }
 

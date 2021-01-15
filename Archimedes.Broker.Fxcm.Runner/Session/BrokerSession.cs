@@ -3,7 +3,6 @@ using Fx.Broker.Fxcm;
 using System.Configuration;
 using System.Threading;
 using Archimedes.Library.Logger;
-using NLog;
 
 namespace Archimedes.Broker.Fxcm.Runner
 {
@@ -32,27 +31,6 @@ namespace Archimedes.Broker.Fxcm.Runner
 
             return _instance;
         }
-
-        //public static Session GetInstance()
-        //{
-        //    return new Session(ConfigurationManager.AppSettings["AccessToken"],
-        //        ConfigurationManager.AppSettings["URL"]);
-
-        //}
-
-        //public static bool ValidateConnection()
-        //{
-
-        //    var retry = 0;
-
-        //    while (!ValidateConnection() && retry < 5)
-        //    {
-        //        Thread.Sleep(2000);
-        //        retry++;
-        //    }
-
-        //    return retry != 5;
-        //}
 
         public static Tuple<BatchLog, bool> ValidateConnection()
         {
@@ -85,12 +63,12 @@ namespace Archimedes.Broker.Fxcm.Runner
             catch (InvalidOperationException exception)
             {
                 BatchLog.Update(LogId,
-                    $"InvalidOperationException \n\n{exception.Message} \n\n{exception.StackTrace}");
+                    $"InvalidOperationException {exception.Message}");
                 return new Tuple<BatchLog, bool>(BatchLog, false);
             }
             catch (Exception e)
             {
-                BatchLog.Update(LogId, $"Error returned from BrokeSession \n\n{e.Message} \n\n{e.StackTrace}");
+                BatchLog.Update(LogId, $"Error returned from BrokerSession: {e.Message}");
                 return new Tuple<BatchLog, bool>(BatchLog, false);
             }
         }
