@@ -44,6 +44,12 @@ namespace Archimedes.Broker.Fxcm.Runner
                 var session = GetInstance();
 
                 BatchLog.Update(LogId, "Attempt to Connect to FXCM");
+
+                if (session.State == SessionState.Connected)
+                {
+                    return new Tuple<BatchLog, bool>(BatchLog, true);
+                }
+                
                 session.Connect();
 
                 while (session.State == SessionState.Reconnecting && retry < RetryMax)
@@ -59,6 +65,8 @@ namespace Archimedes.Broker.Fxcm.Runner
                     return new Tuple<BatchLog, bool>(BatchLog, false);
                 }
 
+                BatchLog.Update(LogId,"Connected");
+                
                 session.Close();
                 return new Tuple<BatchLog, bool>(BatchLog, true);
             }
