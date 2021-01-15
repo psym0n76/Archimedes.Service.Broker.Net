@@ -33,6 +33,7 @@ namespace Archimedes.Broker.Fxcm.Runner
         public Task Run(CandleMessage message)
         {
             _logId = _batchLog.Start();
+            _batchLog.Update(_logId, $"CandleRequest: {message.Id}");
             _batchLog.Update(_logId, $"CandleRequest: {message.Market} {message.Interval}{message.TimeFrame} {message.StartDate} to {message.EndDate}");
 
             if (message.StartDate > message.EndDate)
