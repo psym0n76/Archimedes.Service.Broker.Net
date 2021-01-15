@@ -46,7 +46,7 @@ namespace Archimedes.Broker.Fxcm.Runner
 
             if (SubscribedMarkets.IsSubscribed(request.Market))
             {
-                _logger.Info(_batchLog.Print(_logId, $"ALREADY SUBSCRIBED  to {request.Market}"));
+                _logger.Info(_batchLog.Print(_logId, $"ALREADY SUBSCRIBED to {request.Market}"));
                 return;
             }
 
