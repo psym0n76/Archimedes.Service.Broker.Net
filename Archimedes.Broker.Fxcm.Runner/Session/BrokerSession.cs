@@ -38,13 +38,13 @@ namespace Archimedes.Broker.Fxcm.Runner
         {
             var retry = 0;
 
-            while (!ConnectionSuccessful() && retry < 10)
+            while (!ConnectionSuccessful() && retry < 5)
             {
                 Thread.Sleep(2000);
                 retry++;
             }
 
-            return retry != 10;
+            return retry != 5;
         }
 
         private static bool ConnectionSuccessful()
