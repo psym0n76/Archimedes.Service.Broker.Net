@@ -10,21 +10,28 @@ namespace Archimedes.Broker.Fxcm.Runner
         private static volatile Session _instance;
         private static readonly object _mutex = new object();
 
+        //public static Session GetInstance()
+        //{
+        //    if (_instance == null)
+        //    {
+        //        lock (_mutex)
+        //        {
+        //            if (_instance == null)
+        //            {
+        //                _instance = new Session(ConfigurationManager.AppSettings["AccessToken"],
+        //                    ConfigurationManager.AppSettings["URL"]);
+        //            }
+        //        }
+        //    }
+
+        //    return _instance;
+        //}
+
         public static Session GetInstance()
         {
-            if (_instance == null)
-            {
-                lock (_mutex)
-                {
-                    if (_instance == null)
-                    {
-                        _instance = new Session(ConfigurationManager.AppSettings["AccessToken"],
-                            ConfigurationManager.AppSettings["URL"]);
-                    }
-                }
-            }
+            return new Session(ConfigurationManager.AppSettings["AccessToken"],
+                ConfigurationManager.AppSettings["URL"]);
 
-            return _instance;
         }
 
         public static bool ValidateConnection()
