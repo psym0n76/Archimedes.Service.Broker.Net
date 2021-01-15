@@ -18,6 +18,8 @@ namespace Archimedes.Broker.Fxcm.Runner
         private static readonly Logger _logger = LogManager.GetCurrentClassLogger();
         private readonly BatchLog _batchLog = new BatchLog();
         private string _logId;
+        private const int RetryMax = 30;
+        private const int Timeout = 5;
 
         public BrokerProcessPrice(IProducerFanout<PriceMessage> fanoutProducer)
         {
@@ -41,52 +43,82 @@ namespace Archimedes.Broker.Fxcm.Runner
             Task.Run(() =>
             {
                 _logId = _batchLog.Start();
-                _batchLog.Update(_logId, $"Subscribing to {request.Market} for Prices");
+                _batchLog.Update(_logId, $"PriceRequest: {request.Market}");
 
+                var retry = 0;
                 var session = BrokerSession.GetInstance();
 
                 _batchLog.Update(_logId, $"Instance {request.Market} for Prices");
 
+
                 if (session.State == SessionState.Disconnected)
                 {
-                    _batchLog.Update(_logId, $"Reconnecting {session.State}");
+                    _batchLog.Update(_logId, $"Connection status: {session.State}");
                     session.Connect();
                 }
 
-                _batchLog.Update(_logId, $"Connection status: {session.State}");
 
-                if (session.State == SessionState.Disconnected)
+                while (session.State == SessionState.Reconnecting && retry < RetryMax)
                 {
-                    _logger.Error(_batchLog.Print(_logId, "Unable to connect to FXCM"));
-                    return;
+                    _batchLog.Update(_logId, $"Waiting to Connect: {session.State} elapsed {retry * Timeout} Sec(s)");
+                    Thread.Sleep(Timeout * 1000);
+                    retry++;
                 }
 
-                if (SubscribedMarkets.IsSubscribed(request.Market))
+
+                switch (session.State)
                 {
-                    _logger.Info(_batchLog.Print(_logId, $"ALREADY SUBSCRIBED  to {request.Market}"));
-                    return;
+                    case SessionState.Disconnected:
+
+                        _logger.Error(_batchLog.Print(_logId, $"Unable to connect: {session.State}"));
+                        break;
+
+                    case SessionState.Connected:
+
+                        _batchLog.Update(_logId, $"Connection status: {session.State}");
+
+
+                        if (SubscribedMarkets.IsSubscribed(request.Market))
+                        {
+                            _logger.Info(_batchLog.Print(_logId, $"ALREADY SUBSCRIBED  to {request.Market}"));
+                            return;
+                        }
+
+                        session.SubscribeSymbol(request.Market);
+
+                        SubscribedMarkets.Add(request.Market);
+
+                        _logger.Info(_batchLog.Print(_logId, $"SUBSCRIBED {request.Market} - NO logs are published"));
+
+                        request.Prices = new List<PriceDto>();
+
+                        session.PriceUpdate += priceUpdate =>
+                        {
+                            if (SubscribedMarkets.IsSubscribed(request.Market))
+                            {
+                                ProcessMessage(request, priceUpdate);
+                            }
+                            else
+                            {
+                                _logger.Info($"UNSUBSCRIBED {request.Market}");
+                                session.UnsubscribeSymbol(request.Market);
+                            }
+                        };
+
+                        break;
+
+                    case SessionState.Reconnecting:
+
+                        _logger.Error(_batchLog.Print(_logId,
+                            $"Reconnection limit hit : {retry}"));
+                        break;
+
+
+                    default:
+                        _logger.Error(_batchLog.Print(_logId, $"Unknown SessionState : {session.State}"));
+                        break;
+
                 }
-
-                session.SubscribeSymbol(request.Market);
-
-                SubscribedMarkets.Add(request.Market);
-
-                _logger.Info(_batchLog.Print(_logId, $"SUBSCRIBED {request.Market} - NO logs are published"));
-
-                request.Prices = new List<PriceDto>();
-
-                session.PriceUpdate += priceUpdate =>
-                {
-                    if (SubscribedMarkets.IsSubscribed(request.Market))
-                    {
-                        ProcessMessage(request, priceUpdate);
-                    }
-                    else
-                    {
-                        _logger.Info($"UNSUBSCRIBED {request.Market}");
-                        session.UnsubscribeSymbol(request.Market);
-                    }
-                };
 
                 while (true)
                 {

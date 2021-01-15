@@ -22,26 +22,29 @@ namespace Archimedes.Broker.Fxcm.Runner
         private readonly Logger _logger = LogManager.GetCurrentClassLogger();
         private readonly BatchLog _batchLog = new BatchLog();
         private string _logId;
+        private const int RetryMax = 30;
+        private const int Timeout = 5;
 
         public BrokerProcessCandle(IProducerFanout<CandleMessage> producerFanout)
         {
             _producerFanout = producerFanout;
         }
 
-        public async Task Run(CandleMessage message)
+        public Task Run(CandleMessage message)
         {
             _logId = _batchLog.Start();
-
             _batchLog.Update(_logId, $"CandleRequest: {message.Market} {message.Interval}{message.TimeFrame} {message.StartDate} to {message.EndDate}");
 
             if (message.StartDate > message.EndDate)
             {
                 _logger.Warn(_batchLog.Print(_logId, $"Start Date greater then EndDate"));
-                return;
+                return default;
             }
             
-            var reconnect = 1;
+            var retry = 1;
             var session = BrokerSession.GetInstance();
+
+            _batchLog.Update(_logId, $"Instance {message.Market} for Candles");
 
             if (session.State == SessionState.Disconnected)
             {
@@ -49,14 +52,14 @@ namespace Archimedes.Broker.Fxcm.Runner
                 session.Connect();
             }
             
-            while (session.State == SessionState.Reconnecting && reconnect < 5)
+            while (session.State == SessionState.Reconnecting && retry < RetryMax)
             {
-                _batchLog.Update(_logId,
-                    $"Waiting to re-connect for CandleRequest... {session.State} {message.Market} {message.Interval}{message.TimeFrame} ({reconnect}/5)");
-                reconnect++;
-                Thread.Sleep(1000);
+                _batchLog.Update(_logId, $"Waiting to Connect: {session.State} elapsed {retry * Timeout} Sec(s)");
+                Thread.Sleep(Timeout * 1000);
+                retry++;
             }
 
+            
             switch (session.State)
             {
                 case SessionState.Disconnected:
@@ -79,7 +82,7 @@ namespace Archimedes.Broker.Fxcm.Runner
                 case SessionState.Reconnecting:
 
                     _logger.Error(_batchLog.Print(_logId,
-                        $"ERROR Candle History: FXCM Reconnection limit hit : {reconnect}"));
+                        $"Reconnection limit hit : {retry}"));
                     break;
 
 
@@ -88,6 +91,8 @@ namespace Archimedes.Broker.Fxcm.Runner
                     break;
 
             }
+
+            return default;
         }
 
         private void PublishCandles(CandleMessage message)
