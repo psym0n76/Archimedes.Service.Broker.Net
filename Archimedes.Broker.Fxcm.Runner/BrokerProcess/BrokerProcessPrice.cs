@@ -32,7 +32,6 @@ namespace Archimedes.Broker.Fxcm.Runner
             {
                 _logId = _batchLog.Start(nameof(PriceProcessor));
                 SubscribeToPrice(request);
-                _logger.Info(_batchLog.Print(_logId));
             }
             catch (Exception e)
             {
