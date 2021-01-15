@@ -30,29 +30,30 @@ namespace Archimedes.Broker.Fxcm.Runner
             _producerFanout = producerFanout;
         }
 
-        public Task Run(CandleMessage message)
+        public Task Run(CandleMessage request)
         {
             _logId = _batchLog.Start();
-            _batchLog.Update(_logId, $"CandleRequest: {message.Id}");
-            _batchLog.Update(_logId, $"CandleRequest: {message.Market} {message.Interval}{message.TimeFrame} {message.StartDate} to {message.EndDate}");
+            _batchLog.Update(_logId, $"CandleRequest: {request.Id}");
+            _batchLog.Update(_logId,
+                $"CandleRequest: {request.Market} {request.Interval}{request.TimeFrame} {request.StartDate} to {request.EndDate}");
 
-            if (message.StartDate > message.EndDate)
+            if (request.StartDate > request.EndDate)
             {
                 _logger.Warn(_batchLog.Print(_logId, $"Start Date greater then EndDate"));
                 return default;
             }
-            
+
             var retry = 1;
             var session = BrokerSession.GetInstance();
 
-            _batchLog.Update(_logId, $"Instance {message.Market} for Candles");
+            _batchLog.Update(_logId, $"Instance {request.Market} for Candles");
 
             if (session.State == SessionState.Disconnected)
             {
                 _batchLog.Update(_logId, $"Connection status: {session.State}");
                 session.Connect();
             }
-            
+
             while (session.State == SessionState.Reconnecting && retry < RetryMax)
             {
                 _batchLog.Update(_logId, $"Waiting to Connect: {session.State} elapsed {retry * Timeout} Sec(s)");
@@ -60,7 +61,7 @@ namespace Archimedes.Broker.Fxcm.Runner
                 retry++;
             }
 
-            
+
             switch (session.State)
             {
                 case SessionState.Disconnected:
@@ -72,9 +73,9 @@ namespace Archimedes.Broker.Fxcm.Runner
 
                     _batchLog.Update(_logId, $"Connection status: {session.State}");
 
-                    if (CandleHistory(session,message))
+                    if (CandleHistory(session, request))
                     {
-                        PublishCandles(message);
+                        PublishCandles(request);
                         _logger.Info(_batchLog.Print(_logId));
                     }
 
@@ -100,7 +101,7 @@ namespace Archimedes.Broker.Fxcm.Runner
         {
             // we need to publish to both the individual candle queues for the trader service but also publish to the group for repo service
             _producerFanout.PublishMessage(message, message.QueueName);
-            _producerFanout.PublishMessage(message,"Archimedes_Candle");
+            _producerFanout.PublishMessage(message, "Archimedes_Candle");
             _batchLog.Update(_logId,
                 $"Publish to {message.QueueName} {message.Market} {message.Interval}{message.TimeFrame}");
         }
@@ -115,18 +116,18 @@ namespace Archimedes.Broker.Fxcm.Runner
 
                 var offer = offers.FirstOrDefault(o => o.Currency == request.Market);
 
-                _batchLog.Update(_logId,$"OfferId for {request.Market} {offer.OfferId}");
+                _batchLog.Update(_logId, $"OfferId for {request.Market} {offer.OfferId}");
 
                 var candles = session.GetCandles(request.ExternalMarketId, request.TimeFrameBroker, request.Intervals,
                     request.StartDate, request.EndDate);
 
-                if (candles==null)
+                if (candles == null)
                 {
                     _batchLog.Update(_logId,
                         $"Candle Response: Candle object is null {candles}");
                     return false;
                 }
-                
+
                 _batchLog.Update(_logId,
                     $"Candle Response: {candles.Count} Candle(s)");
 
@@ -144,7 +145,7 @@ namespace Archimedes.Broker.Fxcm.Runner
         private static void BuildResponse(CandleMessage request, IEnumerable<Candle> candles)
         {
             var distinctCandle = candles.Distinct();
-            
+
             var candleDto = distinctCandle.Select(c => new CandleDto()
                 {
                     TimeStamp = c.Timestamp,

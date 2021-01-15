@@ -30,32 +30,37 @@ namespace Archimedes.Broker.Fxcm.Runner
         {
             try
             {
+                _logId = _batchLog.Start(nameof(Run));
                 SubscribeToPrice(request);
+                _logger.Info(_batchLog.Print(_logId));
             }
             catch (Exception e)
             {
-                _logger.Error($"Error returned from BrokerProcesPrice \n\n{e.Message}\n\n{e.StackTrace}");
+                _logger.Error(_batchLog.Print(_logId,"Error returned from BrokerProcessPrice",e));
             }
         }
 
         private void SubscribeToPrice(PriceMessage request)
         {
-
-            _logId = _batchLog.Start();
+            _batchLog.Update(_logId, $"PriceRequest: {request.Id}");
             _batchLog.Update(_logId, $"PriceRequest: {request.Market}");
+
+            if (SubscribedMarkets.IsSubscribed(request.Market))
+            {
+                _logger.Info(_batchLog.Print(_logId, $"ALREADY SUBSCRIBED  to {request.Market}"));
+                return;
+            }
 
             var retry = 0;
             var session = BrokerSession.GetInstance();
 
             _batchLog.Update(_logId, $"Instance {request.Market} for Prices");
 
-
             if (session.State == SessionState.Disconnected)
             {
                 _batchLog.Update(_logId, $"Connection status: {session.State}");
                 session.Connect();
             }
-
 
             while (session.State == SessionState.Reconnecting && retry < RetryMax)
             {
@@ -73,12 +78,6 @@ namespace Archimedes.Broker.Fxcm.Runner
                     break;
 
                 case SessionState.Connected:
-
-                    if (SubscribedMarkets.IsSubscribed(request.Market))
-                    {
-                        _logger.Info(_batchLog.Print(_logId, $"ALREADY SUBSCRIBED  to {request.Market}"));
-                        break;
-                    }
 
                     Task.Run(() =>
                     {
