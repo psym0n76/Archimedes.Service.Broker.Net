@@ -66,11 +66,6 @@ namespace Archimedes.Service.Broker.Net
                 _logger.Info(_batchLog.Print(_logId));
             }
 
-            catch (UnauthorizedAccessException e)
-            {
-                _logger.Error(_batchLog.Print(_logId, BrokerSessionExceptionLogs.Print("Unable to connect to FXCM URL:")));
-            }
-
             catch (Exception e)
             {
                 _logger.Error(_batchLog.Print(_logId,"Error returned from Application Runner",e));

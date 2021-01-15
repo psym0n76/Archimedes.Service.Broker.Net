@@ -40,91 +40,98 @@ namespace Archimedes.Broker.Fxcm.Runner
 
         private void SubscribeToPrice(PriceMessage request)
         {
-            Task.Run(() =>
+
+            _logId = _batchLog.Start();
+            _batchLog.Update(_logId, $"PriceRequest: {request.Market}");
+
+            var retry = 0;
+            var session = BrokerSession.GetInstance();
+
+            _batchLog.Update(_logId, $"Instance {request.Market} for Prices");
+
+
+            if (session.State == SessionState.Disconnected)
             {
-                _logId = _batchLog.Start();
-                _batchLog.Update(_logId, $"PriceRequest: {request.Market}");
-
-                var retry = 0;
-                var session = BrokerSession.GetInstance();
-
-                _batchLog.Update(_logId, $"Instance {request.Market} for Prices");
+                _batchLog.Update(_logId, $"Connection status: {session.State}");
+                session.Connect();
+            }
 
 
-                if (session.State == SessionState.Disconnected)
-                {
-                    _batchLog.Update(_logId, $"Connection status: {session.State}");
-                    session.Connect();
-                }
+            while (session.State == SessionState.Reconnecting && retry < RetryMax)
+            {
+                _batchLog.Update(_logId, $"Waiting to Connect: {session.State} elapsed {retry * Timeout} Sec(s)");
+                Thread.Sleep(Timeout * 1000);
+                retry++;
+            }
 
 
-                while (session.State == SessionState.Reconnecting && retry < RetryMax)
-                {
-                    _batchLog.Update(_logId, $"Waiting to Connect: {session.State} elapsed {retry * Timeout} Sec(s)");
-                    Thread.Sleep(Timeout * 1000);
-                    retry++;
-                }
+            switch (session.State)
+            {
+                case SessionState.Disconnected:
 
+                    _logger.Error(_batchLog.Print(_logId, $"Unable to connect: {session.State}"));
+                    break;
 
-                switch (session.State)
-                {
-                    case SessionState.Disconnected:
+                case SessionState.Connected:
 
-                        _logger.Error(_batchLog.Print(_logId, $"Unable to connect: {session.State}"));
+                    if (SubscribedMarkets.IsSubscribed(request.Market))
+                    {
+                        _logger.Info(_batchLog.Print(_logId, $"ALREADY SUBSCRIBED  to {request.Market}"));
                         break;
+                    }
 
-                    case SessionState.Connected:
+                    Task.Run(() =>
+                    {
+                        SubscribeToPrice(request, session);
 
-                        _batchLog.Update(_logId, $"Connection status: {session.State}");
-
-
-                        if (SubscribedMarkets.IsSubscribed(request.Market))
+                        while (true)
                         {
-                            _logger.Info(_batchLog.Print(_logId, $"ALREADY SUBSCRIBED  to {request.Market}"));
-                            return;
+                            Thread.Sleep(3000);
                         }
+                    });
 
-                        session.SubscribeSymbol(request.Market);
+                    break;
 
-                        SubscribedMarkets.Add(request.Market);
+                case SessionState.Reconnecting:
 
-                        _logger.Info(_batchLog.Print(_logId, $"SUBSCRIBED {request.Market} - NO logs are published"));
-
-                        request.Prices = new List<PriceDto>();
-
-                        session.PriceUpdate += priceUpdate =>
-                        {
-                            if (SubscribedMarkets.IsSubscribed(request.Market))
-                            {
-                                ProcessMessage(request, priceUpdate);
-                            }
-                            else
-                            {
-                                _logger.Info($"UNSUBSCRIBED {request.Market}");
-                                session.UnsubscribeSymbol(request.Market);
-                            }
-                        };
-
-                        break;
-
-                    case SessionState.Reconnecting:
-
-                        _logger.Error(_batchLog.Print(_logId,
-                            $"Reconnection limit hit : {retry}"));
-                        break;
+                    _logger.Error(_batchLog.Print(_logId,
+                        $"Reconnection limit hit : {retry}"));
+                    break;
 
 
-                    default:
-                        _logger.Error(_batchLog.Print(_logId, $"Unknown SessionState : {session.State}"));
-                        break;
+                default:
+                    _logger.Error(_batchLog.Print(_logId, $"Unknown SessionState : {session.State}"));
+                    break;
 
-                }
+            }
+        }
 
-                while (true)
+        private bool SubscribeToPrice(PriceMessage request, Session session)
+        {
+            _batchLog.Update(_logId, $"Connection status: {session.State}");
+
+            session.SubscribeSymbol(request.Market);
+
+            SubscribedMarkets.Add(request.Market);
+
+            _logger.Info(_batchLog.Print(_logId, $"SUBSCRIBED {request.Market} - NO logs are published"));
+
+            request.Prices = new List<PriceDto>();
+
+            session.PriceUpdate += priceUpdate =>
+            {
+                if (SubscribedMarkets.IsSubscribed(request.Market))
                 {
-                    Thread.Sleep(3000);
+                    ProcessMessage(request, priceUpdate);
                 }
-            }).ConfigureAwait(false);
+                else
+                {
+                    //todo work out a cleaner exit
+                    _logger.Info($"UNSUBSCRIBED {request.Market}");
+                    session.UnsubscribeSymbol(request.Market);
+                }
+            };
+            return true;
         }
 
 
