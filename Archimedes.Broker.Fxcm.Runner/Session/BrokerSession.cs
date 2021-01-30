@@ -47,6 +47,7 @@ namespace Archimedes.Broker.Fxcm.Runner
 
                 if (session.State == SessionState.Connected)
                 {
+                    BatchLog.Update(LogId, "Already Connected - now Closing");
                     session.Close();
                     return new Tuple<BatchLog, bool>(BatchLog, true);
                 }
